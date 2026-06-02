@@ -46,6 +46,77 @@
   font-weight: 400;
 }
 
+.oauthGroup {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.oauthButton {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 0.65rem;
+  padding: 0.6rem 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.oauthButton:hover {
+  background: #f8fafc;
+}
+
+.oauthButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  margin: 0.9rem 0 0.2rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 0.6rem;
+}
+
+.passwordRow {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
+.passwordRow .input {
+  flex: 1;
+}
+
+.passwordToggle {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 0.6rem;
+  padding: 0 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.passwordToggle:hover {
+  background: #eef2f6;
+}
+
 .hint {
   font-size: 0.85rem;
   color: #64748b;

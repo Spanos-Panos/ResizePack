@@ -108,6 +108,7 @@ async function syncStripeSubscription(subscription: Stripe.Subscription, userId?
     stripe_subscription_id: subscription.id,
     status: subscription.status,
     current_period_end: currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : null,
+    cancel_at_period_end: subscription.cancel_at_period_end ?? false,
     updated_at: new Date().toISOString(),
   };
 
@@ -145,6 +146,7 @@ server.get('/entitlements', async (request, reply) => {
     plan: isPaidStatus(status) ? 'pro' : 'free',
     status,
     currentPeriodEnd: subscription?.current_period_end ?? null,
+    cancelAtPeriodEnd: subscription?.cancel_at_period_end ?? false,
   };
 });
 

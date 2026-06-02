@@ -120,9 +120,22 @@ export function AccountPage() {
               </p>
               {entitlements?.currentPeriodEnd ? (
                 <p className={styles.muted}>
-                  Renews on {new Date(entitlements.currentPeriodEnd).toLocaleDateString()}
+                  {entitlements.cancelAtPeriodEnd
+                    ? `Cancels on ${new Date(entitlements.currentPeriodEnd).toLocaleDateString()} — you keep Pro until then.`
+                    : `Renews on ${new Date(entitlements.currentPeriodEnd).toLocaleDateString()}`}
                 </p>
               ) : null}
+              {entitlements?.cancelAtPeriodEnd ? (
+                <p className={styles.muted}>
+                  Changed your mind? Use <strong>Manage billing</strong> to resume your
+                  subscription.
+                </p>
+              ) : (
+                <p className={styles.muted}>
+                  Need to cancel? Use <strong>Manage billing</strong> — you keep Pro until the end
+                  of the paid period.
+                </p>
+              )}
             </>
           ) : (
             <p className={styles.muted}>

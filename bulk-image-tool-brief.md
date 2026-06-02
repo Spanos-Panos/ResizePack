@@ -556,7 +556,11 @@ Order only — author proceeds when ready.
 | P6 — Billing | **Done (local, verified)** | Fastify API: `/entitlements`, Checkout, Customer Portal, Stripe webhook → Supabase sync; full Checkout→webhook→Pro flow confirmed locally |
 | P6 — Pro tiering | **Done (local)** | Free/Pro gates wired into the tool (§9.1): limits, presets, formats, upgrade prompts; Account page Pro state |
 | P6 — API hardening | **Done (local)** | CORS lock-down, per-IP rate limiting, env validation, prod-safe env loading (§13.1) |
-| P6 — API production host | **Done (test-mode production API live)** | Render free tier live at `https://resizepack-api.onrender.com`; `/health` returns `{"ok":true}`. Stripe test webhook destination created for `/webhooks/stripe` and its signing secret saved in Render. Remaining: point Vercel frontend env at Render and smoke test live site. |
+| P6 — API production host | **Done (test-mode production API live)** | Render free tier live at `https://resizepack-api.onrender.com`; `/health` → `{"ok":true}`. Stripe test webhook destination created for `/webhooks/stripe`, signing secret saved in Render. |
+| P6 — Vercel frontend env | **In progress** | Setting `VITE_API_BASE_URL=https://resizepack-api.onrender.com` (+ `VITE_SUPABASE_*`) in Vercel → redeploy → live smoke test |
+| P6 — SPA routing fix | **Done** | `vercel.json` catch-all rewrite to `/index.html` — fixes 404 on `/account`, `/login`, and Stripe portal/checkout returns (deep links / refresh) |
+| P6 — Auth QoL | **Done (code)** | Login: password show/hide toggle; **OAuth** "Continue with Google / GitHub" (`signInWithOAuth`). Needs provider setup in Supabase + dashboards (OPERATIONS §10) |
+| P6 — Cancel/renewal UX | **Done (code)** | `cancel_at_period_end` stored from Stripe webhook → `/entitlements` → Account shows "Cancels on X / Renews on X"; cancellation via Customer Portal keeps remaining days. **Requires** `supabase/add-cancel-at-period-end.sql` + portal cancel enabled (OPERATIONS §10) |
 
 ### 15.2 Testing & quality gates
 
@@ -686,6 +690,9 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | First Render deploy failed at API TypeScript build because `pnpm-workspace.yaml` did not list `apps/*`, so Render installed only root dependencies and `apps/api` could not resolve API-only packages (`dotenv`, `@fastify/rate-limit`, `fastify-raw-body`). Fixed workspace config (`packages: apps/*`), regenerated lockfile, and added an explicit `rawBody` request type cast. Verified `pnpm install --frozen-lockfile` + `pnpm --dir apps/api build` locally before redeploy. |
 | 2026-06-02 | Second Render deploy built successfully but failed at runtime with native ESM resolution: compiled `dist/index.js` imported `./env` instead of `./env.js`. Fixed API source import to `./env.js`, verified compiled output, and constrained Render Node via root `engines` (`>=20 <25`) so it does not select Node 26. Documented in OPERATIONS §5.7. |
 | 2026-06-02 | Render API is live in test-mode production at `https://resizepack-api.onrender.com`; `/health` verified. Stripe test webhook destination `ResizePack Render API` created for `https://resizepack-api.onrender.com/webhooks/stripe` and the dashboard signing secret was saved into Render `STRIPE_WEBHOOK_SECRET`; Render redeployed healthy. Next: Vercel env vars + live smoke test. |
+| 2026-06-02 | **Production 404 fixed:** returning from the Stripe Customer Portal to `/account` (and refresh/deep-links to `/login`) 404'd on Vercel because the Vite SPA had no fallback. Added `vercel.json` catch-all rewrite to `/index.html` (static files still served first by filesystem precedence). |
+| 2026-06-02 | **Auth QoL:** added password show/hide toggle and OAuth "Continue with Google / GitHub" (`supabase.auth.signInWithOAuth`, `redirectTo` = current origin `/account`). Requires enabling providers in Supabase + creating OAuth apps + redirect allowlist (OPERATIONS §10). |
+| 2026-06-02 | **Cancel/renewal UX:** webhook now stores `cancel_at_period_end`; `/entitlements` returns it; Account page shows "Cancels on X / Renews on X" + cancel-via-portal guidance (keeps remaining days). **DB migration required:** `supabase/add-cancel-at-period-end.sql` must run before the new API deploys (the sync row writes that column). Also enable cancellation in the Stripe Customer Portal config. |
 
 ---
 

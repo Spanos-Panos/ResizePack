@@ -4,6 +4,7 @@ export interface EntitlementsResponse {
   plan: 'free' | 'pro';
   status: string;
   currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
 }
 
 async function apiRequest<T>(path: string, accessToken: string, init?: RequestInit): Promise<T> {

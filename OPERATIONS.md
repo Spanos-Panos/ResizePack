@@ -362,7 +362,9 @@ Update this section when your routine changes.
 ### 7.5 Database migrations
 
 - **Initial:** `supabase/schema.sql`
-- **Fixes:** e.g. `supabase/fix-subscriptions-unique.sql` — run manually in SQL Editor; note date in §20 decision log
+- **Fixes / additive migrations (run manually in SQL Editor, note date in brief §20):**
+  - `supabase/fix-subscriptions-unique.sql` — unique constraint on `stripe_subscription_id`
+  - `supabase/add-cancel-at-period-end.sql` — adds `cancel_at_period_end` column. **Run this before deploying the API build that writes it**, or webhook subscription sync will fail with "column does not exist".
 - Prefer idempotent SQL (`if not exists`) for fixes
 
 ### 7.6 Before taking real money
@@ -406,12 +408,42 @@ flowchart LR
 
 | Path | Purpose |
 |------|---------|
-| `src/` | React app, auth, account page |
-| `apps/api/src/index.ts` | Entitlements, checkout, webhooks |
+| `src/` | React app, auth, account page, tool + plan gating |
+| `src/config/plans.ts` | Free/Pro limits (single source of truth) |
+| `apps/api/src/index.ts` | Entitlements, checkout, portal, webhooks |
 | `supabase/schema.sql` | Tables + RLS |
+| `supabase/*.sql` | Additive migrations (run manually — §7.5) |
+| `vercel.json` | SPA rewrite (client routes → index.html) |
+| `render.yaml` | Render API deploy blueprint |
 | `.env.local` | Local secrets (gitignored) |
 | `public/sitemap.xml` | SEO |
 | `index.html` | Meta / title |
+
+---
+
+## 10. Auth providers (OAuth) & Customer Portal setup
+
+### 10.1 OAuth — "Continue with Google / GitHub"
+
+The login page calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: <origin>/account } })`. Buttons exist in code but **each provider must be enabled in Supabase + backed by an OAuth app**, or the button errors.
+
+**Supabase (one-time):** Dashboard → Authentication → **URL Configuration**:
+- **Site URL:** `https://resizepack.vercel.app`
+- **Redirect URLs (allowlist):** add `https://resizepack.vercel.app/account` **and** `http://localhost:5173/account` (local dev).
+
+**Google:** Authentication → Providers → Google → enable. Create OAuth credentials in **Google Cloud Console** (APIs & Services → Credentials → OAuth client ID → Web application). Authorized redirect URI = the **Supabase callback** shown on the provider page (`https://<ref>.supabase.co/auth/v1/callback`). Paste Client ID + Secret into Supabase.
+
+**GitHub:** Authentication → Providers → GitHub → enable. Create a **GitHub OAuth App** (Settings → Developer settings → OAuth Apps). Authorization callback URL = the same Supabase callback URL. Paste Client ID + Secret into Supabase.
+
+**Facebook (optional, later):** heavier — requires a Meta app + app review for `email`/public_profile in production. Skipped for now; the same `signInWithProvider('facebook')` pattern applies if added.
+
+### 10.2 Customer Portal — allow cancellation
+
+Stripe Dashboard (test mode) → Settings → Billing → **Customer portal**:
+- Enable **Cancel subscriptions** → set to **at end of billing period** (so the user keeps Pro for the remaining days).
+- Optionally allow plan switches / payment method updates.
+
+App behavior: on cancel, Stripe sends `customer.subscription.updated` with `cancel_at_period_end = true` (status stays `active`). Our webhook stores it; `/entitlements` returns `cancelAtPeriodEnd`; the Account page shows "Cancels on <date> — you keep Pro until then" and offers resume via the portal. Plan flips to Free only when the period actually ends (`customer.subscription.deleted`).
 
 ---
 

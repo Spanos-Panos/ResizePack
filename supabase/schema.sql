@@ -16,6 +16,7 @@ create table if not exists public.subscriptions (
   stripe_subscription_id text unique,
   status text not null default 'free',
   current_period_end timestamptz,
+  cancel_at_period_end boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

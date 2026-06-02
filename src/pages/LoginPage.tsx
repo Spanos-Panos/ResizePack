@@ -8,6 +8,7 @@ export function LoginPage() {
   const { isConfigured, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,6 +19,23 @@ export function LoginPage() {
     const state = location.state as { from?: string } | null;
     return state?.from ?? '/account';
   }, [location.state]);
+
+  async function signInWithProvider(provider: 'google' | 'github') {
+    if (!supabase) {
+      setError('Supabase is not configured.');
+      return;
+    }
+    setError(null);
+    // OAuth returns the user to the app; AuthProvider picks up the session from
+    // the URL. /account is SPA-routed (vercel.json rewrite) so the deep link loads.
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/account` },
+    });
+    if (oauthError) {
+      setError(oauthError.message);
+    }
+  }
 
   if (user) {
     return (
@@ -43,7 +61,29 @@ export function LoginPage() {
             <code>pnpm dev</code>.
           </p>
         ) : (
-          <form
+          <>
+            <div className={styles.oauthGroup}>
+              <button
+                type="button"
+                className={styles.oauthButton}
+                onClick={() => signInWithProvider('google')}
+                disabled={isSubmitting}
+              >
+                Continue with Google
+              </button>
+              <button
+                type="button"
+                className={styles.oauthButton}
+                onClick={() => signInWithProvider('github')}
+                disabled={isSubmitting}
+              >
+                Continue with GitHub
+              </button>
+            </div>
+            <div className={styles.divider}>
+              <span>or use email</span>
+            </div>
+            <form
             className={styles.form}
             onSubmit={async (event) => {
               event.preventDefault();
@@ -82,15 +122,27 @@ export function LoginPage() {
             </label>
             <label className={styles.label}>
               Password
-              <input
-                className={styles.input}
-                type="password"
-                autoComplete={mode === 'sign_in' ? 'current-password' : 'new-password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-              />
+              <span className={styles.passwordRow}>
+                <input
+                  className={styles.input}
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete={mode === 'sign_in' ? 'current-password' : 'new-password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  className={styles.passwordToggle}
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPassword}
+                  tabIndex={-1}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </span>
               <span className={styles.hint}>Minimum 8 characters.</span>
             </label>
 
@@ -113,6 +165,7 @@ export function LoginPage() {
               {mode === 'sign_in' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
             </button>
           </form>
+          </>
         )}
 
         <p className={styles.backLink}>
