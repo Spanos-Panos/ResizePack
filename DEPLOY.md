@@ -55,3 +55,4 @@ When ready, connect your domain (for example `resizepack.com` or `resizepack.io`
 - Confirm Etsy disclaimer in footer is visible.
 - Confirm file limits and validation still work in production.
 - Confirm no login/paywall UI exists in v1.
+- Follow `LAUNCH.md` for Search Console + first validation loop.

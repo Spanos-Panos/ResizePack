@@ -602,6 +602,9 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-01 | Local implementation completed through P3 scope (upload, presets, EXIF option, ZIP, privacy page) |
 | 2026-06-02 | SEO pass added (meta/OG/Twitter/JSON-LD, `robots.txt`, `sitemap.xml`, long-tail on-page section) |
 | 2026-06-02 | Deploy preference locked: Vercel Hobby (free static); analytics preference: optional GA4 env var |
+| 2026-06-02 | Git initialized, first commit created, `main` pushed to private GitHub repo (`Spanos-Panos/ResizePack`) |
+| 2026-06-02 | v1 deployed live on Vercel: `https://resizepack.vercel.app` |
+| 2026-06-02 | Added `LAUNCH.md` checklist for §17 execution (Search Console, optional GA4, first feedback loop) |
 
 ---
 
@@ -612,11 +615,14 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 1 | ~~Choose product name~~ | **Done — ResizePack** |
 | 2 | ~~Create `Full Stack Apps/ResizePack/` — **Vite SPA only**~~ | **Done (local)** |
 | 3 | ~~Implement P0–P3 (§15) — browser resize + ZIP + presets + landing~~ | **Done (local)** |
-| 4 | Deploy on Vercel Hobby static hosting (§23.2) | Panos + AI |
-| 5 | Add `VITE_GA_MEASUREMENT_ID` only if/when GA4 is desired | Panos |
-| 6 | Confirm final production domain/URL, then update canonical + sitemap + robots URLs | Panos + AI before deploy |
-| 7 | Before **any** paid tier: read §24, speak to accountant | Before Stripe |
-| 8 | Keep PanChat deploy/video on separate track if desired | Panos |
+| 4 | ~~Initialize git and push first commit to GitHub~~ | **Done (private repo live)** |
+| 5 | ~~Deploy on Vercel Hobby static hosting (§23.2)~~ | **Done — live at `https://resizepack.vercel.app`** |
+| 6 | Add `VITE_GA_MEASUREMENT_ID` only if/when GA4 is desired | Panos |
+| 7 | ~~Confirm final production domain/URL, then update canonical + sitemap + robots URLs~~ | **Done — using `resizepack.vercel.app`** |
+| 8 | Add `https://resizepack.vercel.app/` to Google Search Console and submit sitemap | Panos |
+| 9 | Run first launch feedback loop from `LAUNCH.md` (§17) | Panos |
+| 10 | Before **any** paid tier: read §24, speak to accountant | Before Stripe |
+| 11 | Keep PanChat deploy/video on separate track if desired | Panos |
 
 ---
 
