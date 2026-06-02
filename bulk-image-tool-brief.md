@@ -522,7 +522,19 @@ Free/Pro limits (§9.1) are enforced in the **browser** (`fileValidation.ts`, ga
 | Accessibility | Keyboard drop zone focus, contrast for errors, `aria-live` on progress |
 | Brand | **ResizePack** — **no “Etsy” in domain** (Etsy only in preset + SEO copy) |
 | Empty state | Clear CTA: “Drop images here” |
-| Errors | Human English: “This file is too large (max 25 MB)” |
+| Errors | Human English: plan-aware (e.g. “…batch limit is 5 files. Upgrade to Pro for more.”) |
+
+### 14.1 Visual design system — "Print Studio" (locked 2026-06-02)
+
+Full UI rework away from the generic light/blue theme to a distinctive warm-editorial identity for a tool made by people who care about images.
+
+| Token group | Choice |
+|-------------|--------|
+| **Fonts** | Display: **Fraunces** (serif, characterful). Body/UI: **Hanken Grotesk**. Numerics/labels/tags: **DM Mono**. Loaded via Google Fonts in `index.html`. |
+| **Palette** | Warm paper `#f1e9da` bg, near-black ink `#221d16`, dominant **clay/terracotta** accent `#c2471a` (money actions), **sage** for Pro-active, **gold** for cancel-pending, plus danger. All as CSS variables in `index.css`. |
+| **Texture** | Fixed SVG film-grain overlay + two soft radial washes on `body` for depth (no flat fills). |
+| **Devices** | Clay top-rule "masthead" on hero/cards; mono eyebrows; editorial numbered SEO grid (CSS counters); bold dashed framed drop zone; ink-fill active tabs with clay-dashed Pro locks; staggered hero load reveal (`rp-rise`); `prefers-reduced-motion` respected. |
+| **Implementation** | CSS-only rework (tokens in `index.css`; per-component `*.module.css`). No JSX/logic changes — all Free/Pro gating, OAuth, and billing wiring untouched. |
 
 ---
 
@@ -694,6 +706,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **Production 404 fixed:** returning from the Stripe Customer Portal to `/account` (and refresh/deep-links to `/login`) 404'd on Vercel because the Vite SPA had no fallback. Added `vercel.json` catch-all rewrite to `/index.html` (static files still served first by filesystem precedence). |
 | 2026-06-02 | **Auth QoL:** added password show/hide toggle and OAuth "Continue with Google / GitHub" (`supabase.auth.signInWithOAuth`, `redirectTo` = current origin `/account`). Requires enabling providers in Supabase + creating OAuth apps + redirect allowlist (OPERATIONS §10). |
 | 2026-06-02 | **Cancel/renewal UX:** webhook now stores `cancel_at_period_end`; `/entitlements` returns it; Account page shows "Cancels on X / Renews on X" + cancel-via-portal guidance (keeps remaining days). **DB migration required:** `supabase/add-cancel-at-period-end.sql` must run before the new API deploys (the sync row writes that column). Also enable cancellation in the Stripe Customer Portal config. |
+| 2026-06-02 | **Full UI rework → "Print Studio" design system (§14.1):** Fraunces + Hanken Grotesk + DM Mono, warm paper/ink palette with clay accent, film-grain texture, editorial numbered sections, framed drop zone, staggered reveal. CSS-only (index.css tokens + per-component modules); no logic/JSX changes. Build clean (CSS 12→24 KB). |
 | 2026-06-02 | **Subscription status UX:** added shared `src/utils/subscriptionStatus.ts` (states `free` / `pro_active` / `pro_until` / `free_ended` with badge, detail copy, and primary/secondary actions). `usePlan` now exposes full entitlements + display model. Account page shows a status badge with Manage billing / Cancel / Resume / Upgrade; the tool banner mirrors the same state (renews date, "Pro until <date>", "Pro ended <date>"). Cancel/resume use the existing Customer Portal session (no public deep-link to the portal cancel screen). |
 
 ---

@@ -1,9 +1,62 @@
+/* ResizePack — "Print Studio" design system
+   Warm paper + ink, characterful serif display (Fraunces) over a clean
+   grotesque (Hanken Grotesk), DM Mono for technical numerics. */
+
 :root {
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  line-height: 1.5;
+  /* Surfaces */
+  --paper: #f1e9da;
+  --paper-2: #ece2cf;
+  --surface: #fbf7ee;
+  --surface-raised: #fffdf8;
+
+  /* Ink / text */
+  --ink: #221d16;
+  --ink-soft: #5a5145;
+  --ink-faint: #8c8270;
+
+  /* Lines */
+  --line: #ddd1bb;
+  --line-soft: #e7ddca;
+  --line-ink: #221d16;
+
+  /* Accent — clay / terracotta (the money action) */
+  --clay: #c2471a;
+  --clay-deep: #9b3712;
+  --clay-tint: #f6e1d4;
+  --clay-line: #e3a988;
+
+  /* Pro / gold */
+  --gold: #9a6b16;
+  --gold-tint: #f3e6c6;
+  --gold-line: #d9b878;
+
+  /* Success / sage */
+  --sage: #45614c;
+  --sage-tint: #e2ebe1;
+  --sage-line: #a9c0ac;
+
+  /* Danger */
+  --danger: #b03527;
+  --danger-tint: #f6ddd8;
+  --danger-line: #e2a89f;
+
+  /* Type */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Shape & depth */
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-pill: 999px;
+  --shadow: 0 22px 48px -28px rgba(34, 29, 22, 0.5);
+  --shadow-sm: 0 8px 20px -12px rgba(34, 29, 22, 0.38);
+
+  font-family: var(--font-body);
+  line-height: 1.55;
   font-weight: 400;
-  color: #0f172a;
-  background: #ffffff;
+  color: var(--ink);
+  background: var(--paper);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,9 +71,75 @@
 
 body {
   margin: 0;
-  background: #ffffff;
+  min-height: 100vh;
+  color: var(--ink);
+  background-color: var(--paper);
+  /* Layered warmth: two soft radial washes over the paper base. */
+  background-image:
+    radial-gradient(900px 520px at 88% -8%, rgba(194, 71, 26, 0.08), transparent 60%),
+    radial-gradient(720px 480px at -6% 8%, rgba(69, 97, 76, 0.07), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Fine film grain over everything, just enough to kill flatness. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
 
 #root {
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--clay);
+}
+
+::selection {
+  background: var(--clay);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+}
+
+input,
+button {
+  font-family: inherit;
+}
+
+@keyframes rp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
 }

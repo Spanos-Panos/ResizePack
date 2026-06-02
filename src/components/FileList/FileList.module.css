@@ -1,9 +1,9 @@
 .wrapper {
-  margin-top: 1rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  padding: 0.9rem;
-  background: #ffffff;
+  margin-top: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1.1rem;
+  background: var(--surface-raised);
 }
 
 .header {
@@ -14,21 +14,36 @@
 
 .title {
   margin: 0;
-  font-size: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 .clearButton {
-  border: 1px solid #cbd5e1;
-  border-radius: 0.45rem;
-  background: #fff;
-  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line-ink);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.32rem 0.7rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.clearButton:hover {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 .total {
-  margin: 0.45rem 0 0.8rem;
-  color: #334155;
-  font-size: 0.9rem;
+  margin: 0.55rem 0 0.9rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
 }
 
 .list {
@@ -37,7 +52,6 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
 }
 
 .row {
@@ -45,34 +59,50 @@
   gap: 0.5rem;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  border: 1px solid #f1f5f9;
-  border-radius: 0.55rem;
-  padding: 0.55rem;
+  padding: 0.6rem 0.2rem;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.row:last-child {
+  border-bottom: none;
 }
 
 .name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--ink);
+  font-size: 0.94rem;
 }
 
 .meta {
-  color: #64748b;
-  font-size: 0.85rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
 }
 
 .removeButton {
-  border: 1px solid #fecaca;
-  background: #fef2f2;
-  color: #b91c1c;
-  border-radius: 0.4rem;
-  padding: 0.25rem 0.55rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.6rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.14s ease;
+}
+
+.removeButton:hover {
+  background: var(--danger-tint);
+  border-color: var(--danger-line);
 }
 
 .empty {
-  margin-top: 1rem;
-  color: #64748b;
+  margin-top: 1.1rem;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
 }
 
 @media (max-width: 640px) {
@@ -88,10 +118,6 @@
   }
 
   .row {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .removeButton {
-    width: 100%;
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 }
