@@ -261,6 +261,27 @@ Enable **Customer Portal** in Stripe test dashboard. User must have completed ch
 
 Often temporary, or Vercel deployment protection blocking Googlebot. Wait 24–48h; confirm sitemap URL in browser; check property URL matches live site exactly.
 
+### 5.6 Render API build cannot find API-only packages
+
+Symptom:
+
+```text
+Cannot find module 'dotenv'
+Cannot find module '@fastify/rate-limit'
+Cannot find module 'fastify-raw-body'
+```
+
+Cause: Render installed the root package only because `apps/api` was not listed as a pnpm workspace package.
+
+Fix: `pnpm-workspace.yaml` must include:
+
+```yaml
+packages:
+  - apps/*
+```
+
+Then run `pnpm install --lockfile-only`, commit `pnpm-workspace.yaml` + `pnpm-lock.yaml`, push, and redeploy on Render.
+
 ---
 
 ## 6. Production deploy checklist

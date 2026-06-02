@@ -683,6 +683,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **API security hardening (§13.1):** CORS now requires `WEB_ORIGIN` in production (zod refine); added `@fastify/rate-limit` (global 100/min via `RATE_LIMIT_MAX`, checkout 10/min, webhook exempt, `trustProxy` on); env loads from host vars in production (skips `.env.local`). Documented client-side-limits caveat (§13.2). API build verified. |
 | 2026-06-02 | **Brief promoted to full master doc** per author: must always reflect everything (status, build history, apps, web, maintenance, testing, production, security). Added §13.1/§13.2 security, §15.2 testing gates, refreshed status header + §15.1 tracker. |
 | 2026-06-02 | **API host chosen: Render free tier** (author wants completely free now, upgrade when earning). Committed `render.yaml` blueprint; added `packageManager`/`engines` to root `package.json`. Documented cold-start tradeoff, optional free uptime-pinger, and full deploy steps in OPERATIONS §2.9 / §6.2. Deploy itself pending (author connects repo + sets secrets). |
+| 2026-06-02 | First Render deploy failed at API TypeScript build because `pnpm-workspace.yaml` did not list `apps/*`, so Render installed only root dependencies and `apps/api` could not resolve API-only packages (`dotenv`, `@fastify/rate-limit`, `fastify-raw-body`). Fixed workspace config (`packages: apps/*`), regenerated lockfile, and added an explicit `rawBody` request type cast. Verified `pnpm install --frozen-lockfile` + `pnpm --dir apps/api build` locally before redeploy. |
 
 ---
 
@@ -700,8 +701,8 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 8 | ~~Add `https://resizepack.vercel.app/` to Google Search Console and submit sitemap~~ | **Done** |
 | 9 | Review and customize `LAUNCH-POSTS.md`, then run first launch feedback loop from `LAUNCH.md` (§17) | Panos |
 | 10 | ~~Configure Stripe test keys + `STRIPE_PRICE_ID` and test billing locally~~ | **Done — full Checkout→webhook→Pro flow verified locally** |
-| **11** | **Commit + push Phase 2 to GitHub** (auth, API, `render.yaml`, Pro tiering, docs) — **blocks Render deploy** until on `main` | Panos |
-| **12** | **Deploy API on Render (free)** — Blueprint from `render.yaml` → set 5 secrets → `/health` OK (OPERATIONS §2.9) | Panos |
+| **11** | ~~Commit + push Phase 2 to GitHub~~ | **Done — commit `5e44316`; follow-up Render workspace fix pending push** |
+| **12** | **Deploy API on Render (free)** — Blueprint from `render.yaml` → set 5 secrets → `/health` OK (OPERATIONS §2.9). If the first deploy failed on missing API dependencies, pull/push the workspace fix and redeploy. | Panos |
 | **13** | **Stripe production webhook** → `https://<render-service>.onrender.com/webhooks/stripe` → copy signing secret into Render `STRIPE_WEBHOOK_SECRET` (not CLI `whsec_`) | Panos |
 | **14** | **Vercel env + redeploy** — `VITE_API_BASE_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` → production smoke: sign up → upgrade → Pro on live site | Panos + AI |
 | 15 | Before **any live paid tier**: read §24, speak to accountant; Stripe live mode + Terms/Privacy/refund | Before Stripe live mode |

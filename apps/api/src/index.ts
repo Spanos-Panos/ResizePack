@@ -6,6 +6,10 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { loadEnv } from './env';
 
+type RawBodyRequest = {
+  rawBody?: string | Buffer;
+};
+
 const env = loadEnv();
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' });
 const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
@@ -234,7 +238,7 @@ server.post(
       return reply.code(400).send({ error: 'Missing Stripe signature header' });
     }
 
-    const rawBody = request.rawBody;
+    const rawBody = (request as typeof request & RawBodyRequest).rawBody;
     if (!rawBody) {
       return reply.code(400).send({ error: 'Missing raw body' });
     }
