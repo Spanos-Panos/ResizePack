@@ -3,42 +3,154 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ResizePack Privacy</title>
+    <title>ResizePack — Privacy Policy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --paper: #f1e9da;
+        --ink: #221d16;
+        --ink-soft: #5a5145;
+        --clay: #c2471a;
+        --line: #ddd1bb;
+      }
       body {
-        font-family: Inter, system-ui, -apple-system, Segoe UI, sans-serif;
+        font-family: 'Hanken Grotesk', system-ui, sans-serif;
         margin: 0;
-        padding: 2rem 1rem;
-        color: #0f172a;
-        background: #ffffff;
+        padding: 2.5rem 1.15rem 4rem;
+        color: var(--ink);
+        background: var(--paper);
+        line-height: 1.65;
       }
       main {
         max-width: 720px;
         margin: 0 auto;
       }
+      h1,
+      h2 {
+        font-family: 'Fraunces', Georgia, serif;
+        letter-spacing: -0.01em;
+      }
       h1 {
-        margin-top: 0;
+        font-size: 2.3rem;
+        margin: 0 0 0.3rem;
+      }
+      h2 {
+        font-size: 1.3rem;
+        margin: 2rem 0 0.4rem;
       }
       p,
       li {
-        color: #334155;
-        line-height: 1.6;
+        color: var(--ink-soft);
+      }
+      a {
+        color: var(--clay);
+      }
+      .eyebrow {
+        font-family: ui-monospace, monospace;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--clay);
+      }
+      .note {
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--clay);
+        background: #fbf7ee;
+        border-radius: 10px;
+        padding: 0.9rem 1.1rem;
+        font-size: 0.92rem;
+        margin: 1.2rem 0;
+      }
+      .back {
+        display: inline-block;
+        margin-top: 2.5rem;
+        font-family: ui-monospace, monospace;
+        font-size: 0.82rem;
+        color: var(--ink-soft);
+        text-decoration: none;
+      }
+      footer {
+        margin-top: 2rem;
+        border-top: 1px solid var(--line);
+        padding-top: 1rem;
+        font-size: 0.82rem;
+        color: var(--ink-soft);
       }
     </style>
   </head>
   <body>
     <main>
-      <h1>Privacy Policy (v1)</h1>
-      <p>ResizePack processes your images in your browser for v1.</p>
+      <p class="eyebrow">ResizePack</p>
+      <h1>Privacy Policy</h1>
+      <p><strong>Last updated:</strong> 2 June 2026</p>
+
+      <div class="note">
+        <strong>Draft for review.</strong> Not legal advice. Confirm wording and your obligations
+        (GDPR / Greece) with a professional before paid launch.
+      </div>
+
+      <h2>Your images stay on your device</h2>
+      <p>
+        ResizePack processes your images <strong>entirely in your browser</strong>. Your images are
+        <strong>not uploaded</strong> to our servers, and processed files are downloaded directly to
+        your device as a ZIP. We never see, store, or transmit your image content.
+      </p>
+
+      <h2>Accounts</h2>
+      <p>
+        Creating an account is optional and only needed for the Pro plan. If you sign up, our
+        authentication provider (<strong>Supabase</strong>) stores your email address and an account
+        identifier. If you use Google or GitHub sign-in, we receive your email and basic profile from
+        that provider — not your password.
+      </p>
+
+      <h2>Payments</h2>
+      <p>
+        Pro subscriptions are handled by <strong>Stripe</strong>. Stripe processes your payment and
+        card details — <strong>we never receive or store your full card information</strong>. We keep
+        only your subscription status, billing period, and a Stripe customer/subscription identifier
+        so we can show your plan and let you manage billing.
+      </p>
+
+      <h2>Analytics</h2>
+      <p>
+        If analytics are enabled, they are limited to basic, privacy-conscious traffic metrics (for
+        example page views and referrers) via Google Analytics. No image data is ever collected. If
+        analytics are not configured, no analytics scripts load.
+      </p>
+
+      <h2>Service providers (data processors)</h2>
       <ul>
-        <li>Your images are not uploaded to our servers for processing.</li>
-        <li>Processed files are downloaded directly to your device as a ZIP.</li>
-        <li>
-          If analytics are enabled in hosting, they are limited to basic traffic metrics (for
-          example page views and referrers).
-        </li>
+        <li><strong>Vercel</strong> — hosts the website.</li>
+        <li><strong>Render</strong> — hosts the billing API.</li>
+        <li><strong>Supabase</strong> — authentication and account/subscription database.</li>
+        <li><strong>Stripe</strong> — payment processing.</li>
+        <li><strong>Google</strong> — optional analytics and (if used) Google sign-in.</li>
       </ul>
-      <p>ResizePack is not affiliated with Etsy, Inc.</p>
+
+      <h2>Your rights</h2>
+      <p>
+        You can request access to or deletion of your account data by contacting
+        <a href="mailto:CONTACT_EMAIL_HERE">CONTACT_EMAIL_HERE</a>. Deleting your account removes your
+        profile and subscription records from our database. <em>(Replace with your support email
+        before launch.)</em>
+      </p>
+
+      <h2>Disclaimer</h2>
+      <p>ResizePack is not affiliated with Etsy, Inc., Shopify Inc., Amazon.com, Inc., or Instagram/Meta.</p>
+
+      <footer>
+        <p>
+          See also: <a href="/terms.html">Terms of Service</a> ·
+          <a href="/refund.html">Refund &amp; Cancellation</a>
+        </p>
+      </footer>
+      <a class="back" href="/">← Back to ResizePack</a>
     </main>
   </body>
 </html>

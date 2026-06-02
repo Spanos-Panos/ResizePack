@@ -352,6 +352,12 @@ function App() {
         <a href="/privacy.html" target="_blank" rel="noreferrer">
           Privacy
         </a>
+        <a href="/terms.html" target="_blank" rel="noreferrer">
+          Terms
+        </a>
+        <a href="/refund.html" target="_blank" rel="noreferrer">
+          Refunds
+        </a>
       </footer>
     </main>
   );

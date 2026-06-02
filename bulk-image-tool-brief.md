@@ -507,6 +507,23 @@ flowchart LR
 
 Free/Pro limits (§9.1) are enforced in the **browser** (`fileValidation.ts`, gated UI). A technical user could bypass them by editing client code. This is **accepted**: processing runs on the user's own CPU with **zero server cost**, so a bypass only forgoes an upgrade prompt — it cannot run up our bill or touch other users' data. If/when server-side processing ships (post-Phase 2), limits move server-side and become authoritative.
 
+### 13.3 Security review (2026-06-02)
+
+Security-focused pass over the Phase 2 + redesign surface (API, auth, billing, env, deploy config), independently re-checked via a sub-task. **No HIGH/MEDIUM exploitable vulnerabilities found.** Verified adequate:
+
+- **AuthN:** every protected route (`/entitlements`, both `/billing/*`) validates the Supabase JWT server-side via `supabaseAdmin.auth.getUser(token)`; invalid/missing → 401. No route trusts a client-supplied identity.
+- **AuthZ / IDOR:** all reads/writes key on `user.id` from the validated token. No endpoint accepts a user/customer/subscription id from request body/query/header → no IDOR path.
+- **Webhook integrity:** `/webhooks/stripe` verifies `constructEvent(rawBody, signature, STRIPE_WEBHOOK_SECRET)` before processing; `user_id` flows only from server-set Stripe metadata, so Pro cannot be forged without the webhook secret.
+- **RLS:** enabled on all tables; clients (anon key) constrained to `auth.uid()`; subscription writes only via service role server-side.
+- **Secret hygiene:** only `VITE_*` (Supabase URL/anon key, GA id, API base) reach the bundle; service-role + Stripe secrets are server-only and never imported in `src/`. `.env.local` gitignored and never committed; Render secrets `sync:false`; static site serves only `dist/` (no env path). `.gitignore` broadened to `.env`/`.env.*`.
+- **XSS:** no `dangerouslySetInnerHTML`; React-escaped JSX throughout.
+- **Abuse:** per-IP rate limiting (global 100/min, checkout 10/min, webhook exempt + signature-gated) — see §13.1.
+
+**Hardening applied after the review:**
+- **Security headers** via `@fastify/helmet` (nosniff, frameguard, HSTS, referrer-policy; CSP off since JSON-only API, CORP cross-origin so frontend fetches aren't blocked).
+- **Generic billing errors:** `/billing/*` now return a generic client message ("Unable to start checkout…") with the real cause logged server-side only — no Stripe/internal detail leaked.
+- **`.gitignore`** broadened to `.env` / `.env.*` (keep `!.env.example`).
+
 ---
 
 ## 14. UI and UX direction
@@ -707,6 +724,8 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **Auth QoL:** added password show/hide toggle and OAuth "Continue with Google / GitHub" (`supabase.auth.signInWithOAuth`, `redirectTo` = current origin `/account`). Requires enabling providers in Supabase + creating OAuth apps + redirect allowlist (OPERATIONS §10). |
 | 2026-06-02 | **Cancel/renewal UX:** webhook now stores `cancel_at_period_end`; `/entitlements` returns it; Account page shows "Cancels on X / Renews on X" + cancel-via-portal guidance (keeps remaining days). **DB migration required:** `supabase/add-cancel-at-period-end.sql` must run before the new API deploys (the sync row writes that column). Also enable cancellation in the Stripe Customer Portal config. |
 | 2026-06-02 | **Full UI rework → "Print Studio" design system (§14.1):** Fraunces + Hanken Grotesk + DM Mono, warm paper/ink palette with clay accent, film-grain texture, editorial numbered sections, framed drop zone, staggered reveal. CSS-only (index.css tokens + per-component modules); no logic/JSX changes. Build clean (CSS 12→24 KB). |
+| 2026-06-02 | **Security review (§13.3):** focused pass + independent sub-task over API/auth/billing/env/deploy. No HIGH/MEDIUM exploitable findings. Confirmed JWT auth on all routes, no IDOR, signature-verified webhook, RLS, secrets server-only & never committed. Hardening: broadened `.gitignore` to `.env`/`.env.*`. |
+| 2026-06-02 | **Post-review hardening + legal drafts:** added `@fastify/helmet` (security headers, verified live); `/billing/*` now return generic client errors with full detail logged server-side only; drafted `public/terms.html` + `public/refund.html` and updated `public/privacy.html` (accounts/Stripe/processors), all footer-linked DRAFTS with `CONTACT_EMAIL_HERE` placeholder pending author review + accountant before live mode (§24.6). |
 | 2026-06-02 | **Subscription status UX:** added shared `src/utils/subscriptionStatus.ts` (states `free` / `pro_active` / `pro_until` / `free_ended` with badge, detail copy, and primary/secondary actions). `usePlan` now exposes full entitlements + display model. Account page shows a status badge with Manage billing / Cancel / Resume / Upgrade; the tool banner mirrors the same state (renews date, "Pro until <date>", "Pro ended <date>"). Cancel/resume use the existing Customer Portal session (no public deep-link to the portal cancel screen). |
 
 ---
@@ -895,11 +914,11 @@ Bring this checklist to one appointment **before** enabling payments:
 
 Add/update before paid launch:
 
-- **Terms of Service**
-- **Privacy Policy** (payments, data processors: Stripe)
-- **Refund policy** (especially subscriptions)
+- **Terms of Service** — **drafted** `public/terms.html`
+- **Privacy Policy** (payments, data processors) — **updated** `public/privacy.html` (accounts/Supabase, Stripe, processors list)
+- **Refund policy** (especially subscriptions) — **drafted** `public/refund.html`
 
-v1 free-only: Privacy + disclaimer sufficient.
+All three are linked from the app footer and styled to match. **Status: DRAFT templates** — each contains a "Draft for review / not legal advice" banner and a `CONTACT_EMAIL_HERE` placeholder. **Before live mode, Panos must:** (1) replace the contact email, (2) have the documents reviewed (Greece/EU consumer + GDPR specifics, esp. the 14-day digital-services withdrawal right), (3) confirm tax/invoicing with an accountant (§24.4). Test mode needs no live legal sign-off.
 
 ---
 

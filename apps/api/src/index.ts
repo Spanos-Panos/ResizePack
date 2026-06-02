@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import rawBody from 'fastify-raw-body';
 import { createClient } from '@supabase/supabase-js';
@@ -23,6 +24,14 @@ const server = Fastify({
   // Trust the proxy so rate limiting keys on the real client IP behind
   // Railway/Render/Fly load balancers rather than the proxy address.
   trustProxy: true,
+});
+
+// Security headers (nosniff, frameguard, HSTS, etc.). CSP is disabled because
+// this is a JSON API (no HTML rendered); CORP is set to cross-origin so the
+// CORS-allowed frontend fetches are never blocked.
+await server.register(helmet, {
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
 });
 
 // CORS: in production env.ts guarantees WEB_ORIGIN is set, so we never fall
@@ -201,9 +210,10 @@ server.post(
 
     return { url: session.url };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unable to create checkout session';
+    // Log the real cause server-side; return a generic message so we don't
+    // leak Stripe/internal error detail to the client.
     request.log.error({ error }, 'Checkout session creation failed');
-    return reply.code(400).send({ error: message });
+    return reply.code(400).send({ error: 'Unable to start checkout. Please try again.' });
   }
 });
 
@@ -218,12 +228,17 @@ server.post('/billing/create-portal-session', async (request, reply) => {
     return reply.code(400).send({ error: 'No Stripe customer found for this account' });
   }
 
-  const portalSession = await stripe.billingPortal.sessions.create({
-    customer: subscription.stripe_customer_id,
-    return_url: `${env.WEB_ORIGIN ?? 'http://localhost:5173'}/account`,
-  });
+  try {
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: subscription.stripe_customer_id,
+      return_url: `${env.WEB_ORIGIN ?? 'http://localhost:5173'}/account`,
+    });
 
-  return { url: portalSession.url };
+    return { url: portalSession.url };
+  } catch (error) {
+    request.log.error({ error }, 'Portal session creation failed');
+    return reply.code(400).send({ error: 'Unable to open billing portal. Please try again.' });
+  }
 });
 
 server.post(
