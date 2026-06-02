@@ -2,6 +2,8 @@
 
 This guide covers static deployment for the current browser-only v1.
 
+For **Phase 2** (Supabase, Stripe, local three-terminal setup, production API planning, and ongoing maintenance), see [`OPERATIONS.md`](./OPERATIONS.md).
+
 ## 1) Pre-deploy checks
 
 Run locally before pushing:

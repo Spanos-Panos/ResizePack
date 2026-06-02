@@ -1,4 +1,10 @@
-export type PresetId = 'etsy-listing' | 'web' | 'custom';
+export type PresetId =
+  | 'etsy-listing'
+  | 'web'
+  | 'shopify'
+  | 'amazon'
+  | 'instagram'
+  | 'custom';
 
 export type OutputFormat = 'jpeg' | 'webp';
 

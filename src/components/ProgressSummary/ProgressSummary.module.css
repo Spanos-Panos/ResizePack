@@ -100,3 +100,16 @@
   margin: 0.6rem 0 0;
   color: #b91c1c;
 }
+
+@media (max-width: 640px) {
+  .metrics,
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .status {
+    font-weight: 700;
+  }
+}

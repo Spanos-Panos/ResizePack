@@ -14,6 +14,9 @@ const EXTENSION_BY_FORMAT: Record<OutputFormat, string> = {
 const PRESET_SUFFIX: Record<ProcessingOptions['presetId'], string> = {
   'etsy-listing': 'etsy',
   web: 'web',
+  shopify: 'shopify',
+  amazon: 'amazon',
+  instagram: 'instagram',
   custom: 'custom',
 };
 

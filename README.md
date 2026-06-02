@@ -54,3 +54,21 @@ Open:
 - v1 processing is client-side only.
 - ResizePack is not affiliated with Etsy, Inc.
 - See `bulk-image-tool-brief.md` for locked product scope and decisions.
+
+## Phase 2 (accounts + billing)
+
+Phase 2 adds Supabase Auth + Stripe billing + a small Fastify API while keeping browser-first image processing.
+
+**Full runbook (services, startup order, Stripe CLI, troubleshooting, maintenance):** see [`OPERATIONS.md`](./OPERATIONS.md).
+
+Quick local start (three terminals):
+
+```bash
+pnpm dev                              # http://localhost:5173
+pnpm --dir apps/api dev               # http://localhost:8787
+stripe listen --forward-to localhost:8787/webhooks/stripe   # PowerShell; copy whsec_ to .env.local, restart API
+```
+
+Environment variables:
+- Copy `.env.example` to `.env.local` and fill values for Supabase.
+- `STRIPE_*` and `SUPABASE_SERVICE_ROLE_KEY` are **server-only** (for `apps/api`).

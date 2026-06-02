@@ -1,0 +1,38 @@
+# Render blueprint for the ResizePack Phase 2 API (apps/api — Fastify).
+# Free tier: spins down after ~15 min idle and cold-starts (~50s) on the next
+# request. Stripe retries webhooks for days, so subscriptions still sync.
+# Secrets are marked `sync: false` — set them in the Render dashboard, never in git.
+#
+# Setup: Render Dashboard → New → Blueprint → connect this repo → it reads this file.
+# Then fill the 5 secret env vars, deploy, and copy the service URL into:
+#   - Vercel:  VITE_API_BASE_URL = https://<service>.onrender.com
+#   - Stripe:  webhook endpoint  = https://<service>.onrender.com/webhooks/stripe
+services:
+  - type: web
+    name: resizepack-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: .
+    buildCommand: pnpm install --frozen-lockfile && pnpm --dir apps/api build
+    startCommand: node apps/api/dist/index.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: WEB_ORIGIN
+        value: https://resizepack.vercel.app
+      - key: RATE_LIMIT_MAX
+        value: "100"
+      # --- Secrets: set these in the Render dashboard (sync:false keeps them out of git) ---
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_ID
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false

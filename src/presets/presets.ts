@@ -21,6 +21,41 @@ export const PRESETS: Record<Exclude<PresetId, 'custom'>, PresetConfig> = {
     defaultQuality: 80,
     description: 'Balanced dimensions and quality for websites and blogs.',
   },
+  shopify: {
+    id: 'shopify',
+    label: 'Shopify',
+    maxLongestSidePx: 2048,
+    defaultFormat: 'jpeg',
+    defaultQuality: 82,
+    targetMaxBytes: 2 * 1024 * 1024,
+    description:
+      'Optimized for common Shopify product image guidelines. Not affiliated with Shopify Inc.',
+  },
+  amazon: {
+    id: 'amazon',
+    label: 'Amazon',
+    maxLongestSidePx: 2000,
+    defaultFormat: 'jpeg',
+    defaultQuality: 85,
+    description:
+      'Sized for common Amazon product image guidance (zoom-ready). Not affiliated with Amazon.com, Inc.',
+  },
+  instagram: {
+    id: 'instagram',
+    label: 'Instagram',
+    maxLongestSidePx: 1350,
+    defaultFormat: 'jpeg',
+    defaultQuality: 80,
+    description:
+      'Fits common Instagram post sizes (square and portrait). Not affiliated with Instagram or Meta.',
+  },
 };
 
-export const PRESET_ORDER: PresetId[] = ['etsy-listing', 'web', 'custom'];
+export const PRESET_ORDER: PresetId[] = [
+  'etsy-listing',
+  'web',
+  'shopify',
+  'amazon',
+  'instagram',
+  'custom',
+];

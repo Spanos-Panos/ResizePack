@@ -45,3 +45,14 @@
 .input {
   display: none;
 }
+
+@media (max-width: 640px) {
+  .zone {
+    padding: 1rem 0.75rem;
+  }
+
+  .browseButton {
+    width: 100%;
+    min-height: 44px;
+  }
+}

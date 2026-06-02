@@ -1,13 +1,13 @@
 # ResizePack — Project Master Brief
 
-> **Status:** **In progress** — local v1 core is implemented; deploy pending  
-> **Code location (planned):** `Full Stack Apps/ResizePack/` (Vite SPA — v1)  
+> **Status:** **In progress** — v1 live on Vercel; **Phase 2 (accounts + billing) works end-to-end locally**; **Pro tiering wired into the tool**; API production hosting not yet deployed  
+> **Code location:** `Full Stack Apps/ResizePack/` — frontend SPA at repo root + `apps/api/` (Fastify)  
 > **Product name:** **ResizePack** (locked 2026-05-20)  
 > **Display / npm name:** `ResizePack` / `resizepack` (package.json)  
-> **Domain (verify before purchase):** `resizepack.com`, `resizepack.io` — not required for v1 deploy  
-> **Author:** Panos, 21, self-taught developer  
-> **Last updated:** 2026-06-02 (implementation progress + SEO pass tracked)  
-> **Purpose of this document:** Single source of truth for any AI agent or human collaborator guiding design, implementation, and optional future monetization of this project.
+> **Domain (verify before purchase):** `resizepack.com`, `resizepack.io` — not required; live on `resizepack.vercel.app`  
+> **Author:** Panos, 21, self-taught developer (runs git himself)  
+> **Last updated:** 2026-06-02 (Phase 2 billing fixed + verified; Free/Pro tiering §9.1; API security hardening §13; testing §15.2)  
+> **Purpose of this document:** Single source of truth for any AI agent or human collaborator. **Keep this file fully updated after every change** — status, how things were built, apps, web, maintenance, testing, production, and security. Satellite docs (`README.md`, `DEPLOY.md`, `OPERATIONS.md`, `LAUNCH.md`) hold step detail; this brief indexes and summarizes them (§26).
 
 **Related project (separate brief):** [PanChat — thread-task-chat-brief.md](./thread-task-chat-brief.md) — portfolio full-stack app; this tool is a **parallel** self-serve utility track.
 
@@ -21,7 +21,7 @@
 4. **v1 ship order:** browser resize + ZIP **first** — **no** Postgres/Fastify/API in v1 unless author explicitly asks (§10, §23).
 5. **Positioning:** **Bulk Image Optimizer** hero — Etsy is a **preset + SEO**, not the product category (§3, §23).
 6. Billing, Stripe, Greece tax context: **§24** (informational only — not legal advice).
-7. Analytics & deploy: **§25** when author is ready.
+7. Analytics & deploy: **§23** when author is ready; day-to-day ops: **§26** + `OPERATIONS.md`.
 8. **Do not invent timelines** — author works at own pace (§7 Q4).
 9. Track decisions in **§19**; do not add features from **§9** to v1 without author approval.
 10. UI copy: **English only** in v1 (§7 Q2).
@@ -55,6 +55,7 @@
 23. [Analytics & deploy (practical v1)](#23-analytics--deploy-practical-v1)
 24. [Revenue, Stripe & Greece — author context (not legal advice)](#24-revenue-stripe--greece--author-context-not-legal-advice)
 25. [Appendices](#25-appendices)
+26. [Operations & maintenance runbook](#26-operations--maintenance-runbook)
 
 ---
 
@@ -310,6 +311,20 @@ Implementer may ship **browser-only v1** if SaaS API skeleton exists (§10).
 
 > **Do not build in v1** unless author explicitly approves. Listed so architecture supports them.
 
+### 9.1 Phase 2 Free vs Pro tiering — **LOCKED 2026-06-02**
+
+Pro is wired into the **browser** tool via `/entitlements` (no server processing yet). Free is a genuine taster that walls fast for volume users; Pro unlocks the full tool. Since processing is in-browser, "Pro limits" cost nothing to deliver — they exist to define the upgrade. Free **requires no account** (keeps Q9 / §7.7 + the SEO funnel intact); login is only needed to go Pro.
+
+| Capability | **Free** (no login) | **Pro** (€9/mo) |
+|-----------|---------------------|------------------|
+| Files per ZIP | **5** | **500** |
+| Max file size | **10 MB** | **50 MB** |
+| Max batch total | **50 MB** | **1 GB** |
+| Presets | **Etsy, Web** | **+ Shopify, Amazon, Instagram, Custom** |
+| Output formats | **JPEG** | **JPEG + WebP** |
+
+Implementation: limits in `src/config/plans.ts`; plan resolved by `src/hooks/usePlan.ts`; gating enforced in `fileValidation.ts`, `PresetSelector`, `OptionsPanel`, and `App.tsx` (locked items prompt upgrade). New marketplace presets carry "not affiliated" disclaimers.
+
 | Feature | Why later |
 |---------|-----------|
 | User accounts (email/OAuth) | Tie subscription to identity |
@@ -357,6 +372,18 @@ Author still wants **meaningful Pro later** (€9–19/mo class) — that is **P
 | Stripe | **No** | §24 |
 
 **Dev trap to avoid:** “2 weeks of architecture, zero images processed.”
+
+### 10.5 Phase 2 architecture (approved 2026-06)
+
+Phase 2 adds **accounts + billing** while keeping v1 processing browser-first.
+
+| Capability | Phase 2 choice | Notes |
+|-----------|-----------------|------|
+| Auth | **Supabase Auth** | Email/OAuth later if desired |
+| DB | **Supabase Postgres** | Store subscription + entitlement state |
+| Billing | **Stripe Checkout + Customer Portal** | Webhooks drive subscription status |
+| API | **Fastify (small)** | Stripe webhooks + entitlement endpoint |
+| Processing | **Still browser-first** | Server-side jobs remain post-Phase 2 |
 
 ### 10.3 Future repo layout (only when adding Pro/server)
 
@@ -456,12 +483,29 @@ flowchart LR
 
 | Topic | Policy |
 |-------|--------|
-| Image retention | **Do not** persist user images on server in v1 browser mode |
+| Image retention | **Do not** persist user images on server — all processing is in-browser |
 | Logs | No filenames with PII in production logs if avoidable; use counts/hashes |
 | HTTPS | Required in production |
-| Disclaimer | Not affiliated with Etsy / Shopify |
-| Abuse | IP rate limits on API; client-side file caps (§7.5) |
+| Disclaimer | Not affiliated with Etsy / Shopify / Amazon / Instagram (per-preset copy) |
+| Abuse | IP rate limits on API; client-side file caps (§7.5 / §9.1) |
 | GDPR | Minimal data; privacy policy page; no cookies except essential/analytics if added later |
+
+### 13.1 Implemented security measures (Phase 2 API)
+
+| Measure | Where | Detail |
+|---------|-------|--------|
+| **Auth on every protected route** | `apps/api/src/index.ts` `getAuthenticatedUser` | Verifies the Supabase JWT via `supabaseAdmin.auth.getUser(token)`; returns 401 if missing/invalid |
+| **Service-role key is server-only** | API env only | Never shipped to the browser; bypasses RLS, so it lives only in `apps/api` env / host secrets |
+| **Row Level Security** | `supabase/schema.sql` | Users read only their own rows; subscription writes happen via service role from webhooks |
+| **Webhook signature verification** | `/webhooks/stripe` | `stripe.webhooks.constructEvent` with `STRIPE_WEBHOOK_SECRET`; rejects unsigned/forged events (400). Uses raw body (not parsed JSON) |
+| **CORS lock-down** | `cors` plugin + `env.ts` refine | `WEB_ORIGIN` is **required in production** (zod refine), so CORS never falls back to "allow all"; permissive `true` only in local dev |
+| **Per-IP rate limiting** | `@fastify/rate-limit` | Global `RATE_LIMIT_MAX` (default 100)/min; checkout tightened to 10/min (creates Stripe customers); webhook **exempt** (Stripe bursts + is signature-authed). `trustProxy` so the real client IP is used behind a host LB |
+| **Env validation at boot** | `env.ts` (zod) | API refuses to start with missing/invalid secrets; clear error message |
+| **Secrets never committed** | `.gitignore` (`*.local`) | `.env.local` is gitignored; `.env.example` holds names only |
+
+### 13.2 Known limitation — client-side plan limits
+
+Free/Pro limits (§9.1) are enforced in the **browser** (`fileValidation.ts`, gated UI). A technical user could bypass them by editing client code. This is **accepted**: processing runs on the user's own CPU with **zero server cost**, so a bypass only forgoes an upgrade prompt — it cannot run up our bill or touch other users' data. If/when server-side processing ships (post-Phase 2), limits move server-side and become authoritative.
 
 ---
 
@@ -502,12 +546,33 @@ Order only — author proceeds when ready.
 
 | Item | State | Notes |
 |------|-------|-------|
-| P0 | **Done (local)** | Vite React TS app scaffolded; one-image browser processing path works |
-| P1 | **Done (local)** | Multi-file upload, progress states, ZIP download |
-| P2 | **Done (local)** | Preset config for Etsy/Web/Custom with localStorage preset persistence |
-| P3 | **Done (local)** | EXIF strip option, hero copy, privacy page |
-| P4 | **Pending** | Deploy target not chosen yet (Vercel vs Cloudflare) |
-| P5 | **In progress** | SEO metadata + robots + sitemap + on-page copy completed; demo GIF/public repo pending |
+| P0 | **Done** | Vite React TS app scaffolded; one-image browser processing path works |
+| P1 | **Done** | Multi-file upload, progress states, ZIP download |
+| P2 | **Done** | Preset config for Etsy/Web/Custom with localStorage preset persistence |
+| P3 | **Done** | EXIF strip option, hero copy, privacy page |
+| P4 | **Done** | Static deploy on **Vercel Hobby** → `https://resizepack.vercel.app` (auto-deploy on push to main) |
+| P5 | **Done (mostly)** | SEO metadata + robots + sitemap + long-tail copy + Search Console verified; demo GIF still pending |
+| P6 — Auth | **Done (local)** | Supabase Auth (email/password); login + account pages; `AuthProvider`/`useAuth` |
+| P6 — Billing | **Done (local, verified)** | Fastify API: `/entitlements`, Checkout, Customer Portal, Stripe webhook → Supabase sync; full Checkout→webhook→Pro flow confirmed locally |
+| P6 — Pro tiering | **Done (local)** | Free/Pro gates wired into the tool (§9.1): limits, presets, formats, upgrade prompts; Account page Pro state |
+| P6 — API hardening | **Done (local)** | CORS lock-down, per-IP rate limiting, env validation, prod-safe env loading (§13.1) |
+| P6 — API production host | **Ready to deploy** | Host chosen: **Render free tier**; `render.yaml` blueprint committed. Remaining: connect repo in Render, set 5 secrets, add prod Stripe webhook, point Vercel `VITE_API_BASE_URL` (steps: OPERATIONS §2.9) |
+
+### 15.2 Testing & quality gates
+
+How changes are verified before they are considered done. No automated test suite yet (small solo project); gates are typecheck + build + manual flows.
+
+| Gate | Command / method | When |
+|------|------------------|------|
+| Frontend typecheck | `npx tsc --noEmit -p tsconfig.app.json` | After any frontend change |
+| Frontend build | `pnpm build` (`tsc -b && vite build`) | Before push / deploy |
+| API typecheck/build | `pnpm --dir apps/api build` (`tsc`) | After any API change |
+| API smoke | `curl /health` → `{"ok":true}`; `/entitlements` no token → 401; rate-limit headers present | After API start / hardening |
+| Billing e2e (manual) | Sign up → Upgrade → test card `4242 4242 4242 4242` → Account shows `pro (active)`; Supabase `subscriptions` row `active` | After billing changes (§26 / OPERATIONS §4.4) |
+| Billing e2e (scripted) | Node script: admin-create user → password sign-in → `/entitlements` (200) → checkout (200 + Stripe URL) → delete user. Used to root-cause the 401/400 issues | Ad hoc when debugging auth/billing |
+| Tool regression | Upload mixed files → process → ZIP downloads; free limits reject 6th file; locked presets/WebP prompt upgrade | After tool/gating changes |
+
+**Future (optional):** Vitest unit tests for `fileValidation` + `imageProcessing`; Playwright for the upload→ZIP and upgrade flows. Not built yet — noted so architecture stays test-friendly.
 
 ---
 
@@ -605,6 +670,19 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | Git initialized, first commit created, `main` pushed to private GitHub repo (`Spanos-Panos/ResizePack`) |
 | 2026-06-02 | v1 deployed live on Vercel: `https://resizepack.vercel.app` |
 | 2026-06-02 | Added `LAUNCH.md` checklist for §17 execution (Search Console, optional GA4, first feedback loop) |
+| 2026-06-02 | Google Search Console property verified and sitemap submitted successfully |
+| 2026-06-02 | Added launch post drafts in `LAUNCH-POSTS.md` for first feedback loop (review before posting) |
+| 2026-06-02 | Phase 2 approved: Supabase Auth + Supabase Postgres + Stripe + small Fastify API (keep browser-first processing) |
+| 2026-06-02 | Supabase Auth wired locally; account creation and sign-in verified |
+| 2026-06-02 | Phase 2 implementation added: env/schema contract, Fastify billing API, entitlement checks, Stripe webhook sync, mobile-first CSS pass |
+| 2026-06-02 | Stripe account onboarding submitted with business website `https://resizepack.vercel.app/` and descriptor `RESIZEPACK` |
+| 2026-06-02 | Added `OPERATIONS.md` runbook (services, local 3-terminal order, troubleshooting, maintenance); linked from README, DEPLOY, brief §26 |
+| 2026-06-02 | Billing debug: webhook `checkout.session.completed` returned 200 but DB upsert failed (`42P10` missing unique on `stripe_subscription_id` if schema applied before constraint); API uses update/insert; `supabase/fix-subscriptions-unique.sql` for DB fix |
+| 2026-06-02 | Checkout 400 root-caused: frontend `api.ts` sent `Content-Type: application/json` on no-body POSTs → Fastify "Body cannot be empty"; fixed to set JSON content-type only when a body exists. Earlier `/entitlements` 401 was a stale API process holding an old service-role key (resolved by restart). |
+| 2026-06-02 | **Pro tiering locked (§9.1)** and wired into the browser tool: Free = 5 files/10MB/JPEG/Etsy+Web (no login); Pro = 500 files/50MB/JPEG+WebP/all presets+Custom. Added Shopify/Amazon/Instagram presets, `src/config/plans.ts`, `src/hooks/usePlan.ts`, plan-aware validation + upgrade prompts, Account page Pro state. |
+| 2026-06-02 | **API security hardening (§13.1):** CORS now requires `WEB_ORIGIN` in production (zod refine); added `@fastify/rate-limit` (global 100/min via `RATE_LIMIT_MAX`, checkout 10/min, webhook exempt, `trustProxy` on); env loads from host vars in production (skips `.env.local`). Documented client-side-limits caveat (§13.2). API build verified. |
+| 2026-06-02 | **Brief promoted to full master doc** per author: must always reflect everything (status, build history, apps, web, maintenance, testing, production, security). Added §13.1/§13.2 security, §15.2 testing gates, refreshed status header + §15.1 tracker. |
+| 2026-06-02 | **API host chosen: Render free tier** (author wants completely free now, upgrade when earning). Committed `render.yaml` blueprint; added `packageManager`/`engines` to root `package.json`. Documented cold-start tradeoff, optional free uptime-pinger, and full deploy steps in OPERATIONS §2.9 / §6.2. Deploy itself pending (author connects repo + sets secrets). |
 
 ---
 
@@ -619,10 +697,17 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 5 | ~~Deploy on Vercel Hobby static hosting (§23.2)~~ | **Done — live at `https://resizepack.vercel.app`** |
 | 6 | Add `VITE_GA_MEASUREMENT_ID` only if/when GA4 is desired | Panos |
 | 7 | ~~Confirm final production domain/URL, then update canonical + sitemap + robots URLs~~ | **Done — using `resizepack.vercel.app`** |
-| 8 | Add `https://resizepack.vercel.app/` to Google Search Console and submit sitemap | Panos |
-| 9 | Run first launch feedback loop from `LAUNCH.md` (§17) | Panos |
-| 10 | Before **any** paid tier: read §24, speak to accountant | Before Stripe |
-| 11 | Keep PanChat deploy/video on separate track if desired | Panos |
+| 8 | ~~Add `https://resizepack.vercel.app/` to Google Search Console and submit sitemap~~ | **Done** |
+| 9 | Review and customize `LAUNCH-POSTS.md`, then run first launch feedback loop from `LAUNCH.md` (§17) | Panos |
+| 10 | ~~Configure Stripe test keys + `STRIPE_PRICE_ID` and test billing locally~~ | **Done — full Checkout→webhook→Pro flow verified locally** |
+| **11** | **Commit + push Phase 2 to GitHub** (auth, API, `render.yaml`, Pro tiering, docs) — **blocks Render deploy** until on `main` | Panos |
+| **12** | **Deploy API on Render (free)** — Blueprint from `render.yaml` → set 5 secrets → `/health` OK (OPERATIONS §2.9) | Panos |
+| **13** | **Stripe production webhook** → `https://<render-service>.onrender.com/webhooks/stripe` → copy signing secret into Render `STRIPE_WEBHOOK_SECRET` (not CLI `whsec_`) | Panos |
+| **14** | **Vercel env + redeploy** — `VITE_API_BASE_URL`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` → production smoke: sign up → upgrade → Pro on live site | Panos + AI |
+| 15 | Before **any live paid tier**: read §24, speak to accountant; Stripe live mode + Terms/Privacy/refund | Before Stripe live mode |
+| 16 | Add a demo GIF to README/landing (finishes P5) | Panos |
+| 17 | Review `LAUNCH-POSTS.md` and run first feedback loop (`LAUNCH.md` §17) | Panos |
+| 18 | Keep PanChat deploy/video on separate track if desired | Panos |
 
 ---
 
@@ -850,4 +935,25 @@ export const ETSY_LISTING = {
 
 ---
 
-*End of document. v1 spec: §1–§8, §10–§11 (v1 rows), §14–§17, §22–§23. Future paid: §9, §18, §24. Tax section is planning only — not legal advice.*
+## 26. Operations & maintenance runbook
+
+**Canonical detail:** [`OPERATIONS.md`](./OPERATIONS.md) — update that file when services, env vars, startup order, or troubleshooting steps change.
+
+**Summary for agents:**
+
+| Area | Service | Notes |
+|------|---------|--------|
+| Frontend | Vercel | https://resizepack.vercel.app — static Vite build |
+| Auth + DB | Supabase | Project `ypxjadrmxxfikuygkgeg`; schema `supabase/schema.sql` |
+| Payments | Stripe (test first) | Checkout + webhooks; local via **Stripe CLI** |
+| SEO | Google Search Console | Sitemap on production URL |
+| Analytics | GA4 (optional) | `VITE_GA_MEASUREMENT_ID` |
+| API | `apps/api` Fastify :8787 | Local only until hosted; entitlements + webhooks |
+
+**Local startup order:** (1) `pnpm dev` → (2) `pnpm --dir apps/api dev` → (3) `stripe listen --forward-to localhost:8787/webhooks/stripe` → copy `whsec_` to `.env.local` → restart API.
+
+**Maintenance:** See `OPERATIONS.md` §7 (weekly/monthly checklists, secret rotation, DB migrations).
+
+---
+
+*End of document. v1 spec: §1–§8, §10–§11 (v1 rows), §14–§17, §22–§23. Future paid: §9, §18, §24. Ops: §26 + OPERATIONS.md. Tax section is planning only — not legal advice.*

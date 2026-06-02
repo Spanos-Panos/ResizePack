@@ -9,6 +9,27 @@
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
   padding: 1rem 1rem 1.2rem;
+  position: relative;
+}
+
+.accountRow {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+}
+
+.accountLink {
+  border: 1px solid #bfdbfe;
+  background: rgba(239, 246, 255, 0.9);
+  color: #1e3a8a;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.accountLink:hover {
+  background: #eff6ff;
 }
 
 .brandPill {
@@ -83,6 +104,48 @@
   border-radius: 1rem;
   padding: 1rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.upsell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+  border: 1px solid #fcd34d;
+  background: #fffbeb;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  color: #78350f;
+  font-size: 0.9rem;
+}
+
+.upsellCta {
+  border: 1px solid #d97706;
+  background: #f59e0b;
+  color: #1f2937;
+  border-radius: 0.55rem;
+  padding: 0.4rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.upsellCta:hover {
+  background: #fbbf24;
+}
+
+.proBadge {
+  margin-bottom: 0.9rem;
+  border: 1px solid #c7d2fe;
+  background: #eef2ff;
+  border-radius: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  color: #3730a3;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .errorList {
@@ -197,4 +260,47 @@
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 0.75rem 0.75rem 1.5rem;
+  }
+
+  .hero {
+    padding: 0.9rem;
+    padding-top: 3rem;
+  }
+
+  .accountRow {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .hero h1 {
+    font-size: 1.9rem;
+  }
+
+  .ctaRow,
+  .actions {
+    flex-direction: column;
+  }
+
+  .primaryCta,
+  .secondaryCta,
+  .processButton,
+  .secondaryButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .toolCard,
+  .seoSection {
+    padding: 0.8rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

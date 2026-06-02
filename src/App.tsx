@@ -1,10 +1,13 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './auth/useAuth';
+import { usePlan } from './hooks/usePlan';
 import { DropZone } from './components/DropZone/DropZone';
 import { FileList } from './components/FileList/FileList';
 import { OptionsPanel } from './components/OptionsPanel/OptionsPanel';
 import { PresetSelector } from './components/PresetSelector/PresetSelector';
 import { ProgressSummary } from './components/ProgressSummary/ProgressSummary';
-import { PRESETS, PRESET_STORAGE_KEY } from './presets/presets';
+import { PRESETS, PRESET_ORDER, PRESET_STORAGE_KEY } from './presets/presets';
 import type { BatchResult, FileProgress, OutputFormat, PresetId, ProcessingOptions } from './types/image';
 import { validateIncomingFiles } from './utils/fileValidation';
 import { processBatch } from './utils/imageProcessing';
@@ -20,8 +23,8 @@ function clampValue(value: number, min: number, max: number): number {
 
 function getDefaultPreset(): PresetId {
   const savedPreset = localStorage.getItem(PRESET_STORAGE_KEY);
-  return savedPreset === 'web' || savedPreset === 'custom' || savedPreset === 'etsy-listing'
-    ? savedPreset
+  return savedPreset && (PRESET_ORDER as string[]).includes(savedPreset)
+    ? (savedPreset as PresetId)
     : 'etsy-listing';
 }
 
@@ -36,6 +39,12 @@ function formatTimestamp(): string {
 }
 
 function App() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { plan, limits, isLoading: isPlanLoading } = usePlan();
+  const isFree = plan === 'free';
+  const allowWebp = limits.formats.includes('webp');
+  const maxFileMb = Math.round(limits.maxFileBytes / (1024 * 1024));
   const [selectedPreset, setSelectedPreset] = useState<PresetId>(() => getDefaultPreset());
   const [files, setFiles] = useState<File[]>([]);
   const [customMaxWidth, setCustomMaxWidth] = useState<number>(1920);
@@ -89,13 +98,38 @@ function App() {
     };
   }, [selectedPreset, customMaxWidth, customQuality, outputFormats, stripExif]);
 
+  // If the saved/active preset isn't available on the current plan (e.g. a
+  // free user with "custom" remembered), fall back to a free preset. Wait for
+  // the plan to resolve so we don't bump a Pro user off a Pro preset mid-load.
+  useEffect(() => {
+    if (!isPlanLoading && !limits.presets.includes(selectedPreset)) {
+      setSelectedPreset('etsy-listing');
+    }
+  }, [isPlanLoading, limits, selectedPreset]);
+
+  // Free plan cannot output WebP — keep the toggle consistent with the plan.
+  useEffect(() => {
+    if (!allowWebp && includeWebp) {
+      setIncludeWebp(false);
+    }
+  }, [allowWebp, includeWebp]);
+
+  const goPro = () => {
+    navigate(user ? '/account' : '/login');
+  };
+
   const handlePresetChange = (presetId: PresetId) => {
     setSelectedPreset(presetId);
     localStorage.setItem(PRESET_STORAGE_KEY, presetId);
   };
 
   const handleIncomingFiles = (incoming: File[]) => {
-    const validation = validateIncomingFiles(incoming, files);
+    const validation = validateIncomingFiles(incoming, files, {
+      maxFiles: limits.maxFiles,
+      maxFileBytes: limits.maxFileBytes,
+      maxTotalBytes: limits.maxTotalBytes,
+      isFree,
+    });
     setErrors(validation.rejected);
     if (validation.accepted.length > 0) {
       setFiles((previous) => [...previous, ...validation.accepted]);
@@ -163,6 +197,17 @@ function App() {
     <main className={styles.page}>
       <header className={styles.hero}>
         <p className={styles.brandPill}>ResizePack</p>
+        <div className={styles.accountRow}>
+          {user ? (
+            <Link className={styles.accountLink} to="/account">
+              Account
+            </Link>
+          ) : (
+            <Link className={styles.accountLink} to="/login">
+              Sign in
+            </Link>
+          )}
+        </div>
         <h1>Bulk Resize &amp; Compress Images</h1>
         <p className={styles.subhead}>Perfect for Etsy, Shopify, blogs, and websites.</p>
         <p className={styles.highlights}>
@@ -176,12 +221,38 @@ function App() {
             Privacy first
           </a>
         </div>
-        <PresetSelector selectedPreset={selectedPreset} onChange={handlePresetChange} />
+        <PresetSelector
+          selectedPreset={selectedPreset}
+          allowedPresets={limits.presets}
+          onChange={handlePresetChange}
+          onLockedClick={goPro}
+        />
         <p className={styles.presetDescription}>{presetDescription}</p>
       </header>
 
       <section id="tool" className={styles.toolCard}>
-        <DropZone onFilesSelected={handleIncomingFiles} disabled={isProcessing} />
+        {isFree ? (
+          <div className={styles.upsell}>
+            <span>
+              You&apos;re on <strong>Free</strong> — up to {limits.maxFiles} files, {maxFileMb} MB
+              each, JPEG, Etsy &amp; Web presets.
+            </span>
+            <button type="button" className={styles.upsellCta} onClick={goPro}>
+              Upgrade to Pro
+            </button>
+          </div>
+        ) : (
+          <div className={styles.proBadge}>
+            ★ Pro active — all presets, WebP &amp; custom sizes, up to {limits.maxFiles} files
+          </div>
+        )}
+
+        <DropZone
+          onFilesSelected={handleIncomingFiles}
+          disabled={isProcessing}
+          maxFiles={limits.maxFiles}
+          maxFileMb={maxFileMb}
+        />
         {errors.length > 0 ? (
           <ul className={styles.errorList}>
             {errors.map((error) => (
@@ -199,11 +270,13 @@ function App() {
           includeJpeg={includeJpeg}
           includeWebp={includeWebp}
           stripExif={stripExif}
+          allowWebp={allowWebp}
           onCustomMaxWidthChange={(value) => setCustomMaxWidth(clampValue(value, 400, 4000))}
           onCustomQualityChange={(value) => setCustomQuality(clampValue(value, 50, 95))}
           onIncludeJpegChange={setIncludeJpeg}
           onIncludeWebpChange={setIncludeWebp}
           onStripExifChange={setStripExif}
+          onLockedFormatClick={goPro}
         />
 
         <div className={styles.actions}>

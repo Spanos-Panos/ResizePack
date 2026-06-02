@@ -74,3 +74,24 @@
   margin-top: 1rem;
   color: #64748b;
 }
+
+@media (max-width: 640px) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .clearButton,
+  .removeButton {
+    min-height: 40px;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .removeButton {
+    width: 100%;
+  }
+}

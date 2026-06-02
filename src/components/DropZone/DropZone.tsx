@@ -4,9 +4,11 @@ import styles from './DropZone.module.css';
 interface DropZoneProps {
   onFilesSelected: (files: File[]) => void;
   disabled?: boolean;
+  maxFiles: number;
+  maxFileMb: number;
 }
 
-export function DropZone({ onFilesSelected, disabled = false }: DropZoneProps) {
+export function DropZone({ onFilesSelected, disabled = false, maxFiles, maxFileMb }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -48,7 +50,9 @@ export function DropZone({ onFilesSelected, disabled = false }: DropZoneProps) {
       aria-label="Drop images here"
     >
       <p className={styles.title}>Drop images here</p>
-      <p className={styles.subtitle}>JPEG, PNG, WebP | Max 50 files | Max 25 MB each</p>
+      <p className={styles.subtitle}>
+        JPEG, PNG, WebP | Max {maxFiles} files | Max {maxFileMb} MB each
+      </p>
       <button
         type="button"
         className={styles.browseButton}

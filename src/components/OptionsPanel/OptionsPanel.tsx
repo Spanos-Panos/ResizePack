@@ -8,11 +8,13 @@ interface OptionsPanelProps {
   includeJpeg: boolean;
   includeWebp: boolean;
   stripExif: boolean;
+  allowWebp: boolean;
   onCustomMaxWidthChange: (value: number) => void;
   onCustomQualityChange: (value: number) => void;
   onIncludeJpegChange: (value: boolean) => void;
   onIncludeWebpChange: (value: boolean) => void;
   onStripExifChange: (value: boolean) => void;
+  onLockedFormatClick: () => void;
 }
 
 export function OptionsPanel({
@@ -22,11 +24,13 @@ export function OptionsPanel({
   includeJpeg,
   includeWebp,
   stripExif,
+  allowWebp,
   onCustomMaxWidthChange,
   onCustomQualityChange,
   onIncludeJpegChange,
   onIncludeWebpChange,
   onStripExifChange,
+  onLockedFormatClick,
 }: OptionsPanelProps) {
   return (
     <section className={styles.wrapper}>
@@ -72,14 +76,20 @@ export function OptionsPanel({
           />
           JPEG
         </label>
-        <label className={styles.checkbox}>
-          <input
-            type="checkbox"
-            checked={includeWebp}
-            onChange={(event) => onIncludeWebpChange(event.target.checked)}
-          />
-          WebP
-        </label>
+        {allowWebp ? (
+          <label className={styles.checkbox}>
+            <input
+              type="checkbox"
+              checked={includeWebp}
+              onChange={(event) => onIncludeWebpChange(event.target.checked)}
+            />
+            WebP
+          </label>
+        ) : (
+          <button type="button" className={styles.lockedOption} onClick={onLockedFormatClick}>
+            WebP <span className={styles.lockTag}>🔒 Pro</span>
+          </button>
+        )}
       </div>
 
       <div className={styles.group}>
