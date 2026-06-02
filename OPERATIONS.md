@@ -212,8 +212,19 @@ Other events (`invoice.paid`, `customer.subscription.created`, etc.) also return
 2. Sign up / log in → **Account**
 3. **Upgrade with Stripe** → use test card `4242 4242 4242 4242`, any future expiry, any CVC
 4. Return to `/account?checkout=success`
-5. Plan should show **`pro (active)`** within a few seconds
+5. Plan should show the **Pro** badge with "renews on <date>" within a few seconds
 6. Supabase → `subscriptions` → row with `status = active`
+
+**Subscription status states to verify** (shared model in `src/utils/subscriptionStatus.ts`, shown on both Account and the tool banner):
+
+| State | How to reach it | Account / tool copy |
+|-------|------------------|---------------------|
+| `pro_active` | Active subscription | Badge **Pro** — "renews on <date>" |
+| `pro_until` | Cancel via Customer Portal (status stays `active`, `cancel_at_period_end = true`) | Badge **Pro until** — "you keep every feature until then" + **Resume subscription** |
+| `free_ended` | After the period ends (`customer.subscription.deleted`, status `canceled`) | Badge **Free** — "your Pro plan ended on <date>" + **Renew Pro** |
+| `free` | Never subscribed | Badge **Free** — taster limits |
+
+Note: cancel/resume go through `POST /billing/create-portal-session` (the Stripe Customer Portal). There is no reliable public deep-link straight to the portal cancel screen, so the buttons open the portal session rather than a direct Stripe URL.
 
 ### 4.5 If plan stays `free (free)` after successful Stripe CLI `[200]`
 

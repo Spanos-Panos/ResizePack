@@ -41,7 +41,7 @@ function formatTimestamp(): string {
 function App() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { plan, limits, isLoading: isPlanLoading } = usePlan();
+  const { plan, limits, isLoading: isPlanLoading, display } = usePlan();
   const isFree = plan === 'free';
   const allowWebp = limits.formats.includes('webp');
   const maxFileMb = Math.round(limits.maxFileBytes / (1024 * 1024));
@@ -234,16 +234,30 @@ function App() {
         {isFree ? (
           <div className={styles.upsell}>
             <span>
-              You&apos;re on <strong>Free</strong> — up to {limits.maxFiles} files, {maxFileMb} MB
-              each, JPEG, Etsy &amp; Web presets.
+              {display.uiState === 'free_ended' ? (
+                <>
+                  Your Pro plan ended on {display.date}. You&apos;re on <strong>Free</strong> — up
+                  to {limits.maxFiles} files, {maxFileMb} MB each, JPEG, Etsy &amp; Web presets.
+                </>
+              ) : (
+                <>
+                  You&apos;re on <strong>Free</strong> — up to {limits.maxFiles} files, {maxFileMb}{' '}
+                  MB each, JPEG, Etsy &amp; Web presets.
+                </>
+              )}
             </span>
             <button type="button" className={styles.upsellCta} onClick={goPro}>
-              Upgrade to Pro
+              {display.uiState === 'free_ended' ? 'Renew Pro' : 'Upgrade to Pro'}
             </button>
+          </div>
+        ) : display.uiState === 'pro_until' ? (
+          <div className={`${styles.proBadge} ${styles.proBadgeWarning}`}>
+            ★ Pro until {display.date} — all features stay active until then.
           </div>
         ) : (
           <div className={styles.proBadge}>
-            ★ Pro active — all presets, WebP &amp; custom sizes, up to {limits.maxFiles} files
+            ★ Pro active{display.date ? ` — renews ${display.date}` : ''} — all presets, WebP &amp;
+            custom sizes, up to {limits.maxFiles} files
           </div>
         )}
 

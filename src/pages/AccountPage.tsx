@@ -8,6 +8,7 @@ import {
   type EntitlementsResponse,
 } from '../utils/api';
 import { useCallback, useEffect, useState } from 'react';
+import { getSubscriptionDisplay } from '../utils/subscriptionStatus';
 import styles from './AccountPage.module.css';
 
 export function AccountPage() {
@@ -18,7 +19,13 @@ export function AccountPage() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isBillingLoading, setIsBillingLoading] = useState(false);
-  const isPro = entitlements?.plan === 'pro';
+  const display = getSubscriptionDisplay(entitlements);
+  const badgeClass =
+    display.uiState === 'pro_active'
+      ? styles.badgePro
+      : display.uiState === 'pro_until'
+        ? styles.badgeWarning
+        : styles.badgeMuted;
 
   const loadEntitlements = useCallback(async (accessToken: string) => {
     const data = await getEntitlements(accessToken);
@@ -112,48 +119,13 @@ export function AccountPage() {
 
         <div className={styles.section}>
           <h2>Plan</h2>
-          {isPro ? (
-            <>
-              <p className={styles.muted}>
-                You&apos;re on <strong>ResizePack Pro</strong> ✓ — up to 500 files per ZIP, all
-                presets, WebP &amp; custom sizes.
-              </p>
-              {entitlements?.currentPeriodEnd ? (
-                <p className={styles.muted}>
-                  {entitlements.cancelAtPeriodEnd
-                    ? `Cancels on ${new Date(entitlements.currentPeriodEnd).toLocaleDateString()} — you keep Pro until then.`
-                    : `Renews on ${new Date(entitlements.currentPeriodEnd).toLocaleDateString()}`}
-                </p>
-              ) : null}
-              {entitlements?.cancelAtPeriodEnd ? (
-                <p className={styles.muted}>
-                  Changed your mind? Use <strong>Manage billing</strong> to resume your
-                  subscription.
-                </p>
-              ) : (
-                <p className={styles.muted}>
-                  Need to cancel? Use <strong>Manage billing</strong> — you keep Pro until the end
-                  of the paid period.
-                </p>
-              )}
-            </>
-          ) : (
-            <p className={styles.muted}>
-              Current plan: <strong>Free</strong> — 5 files per ZIP, JPEG, Etsy &amp; Web presets.
-              Upgrade for 500 files, all presets, WebP &amp; custom sizes.
-            </p>
-          )}
+          <div className={styles.statusCard}>
+            <span className={`${styles.badge} ${badgeClass}`}>{display.badge}</span>
+            <p className={styles.statusDetail}>{display.detail}</p>
+          </div>
+
           <div className={styles.actions}>
-            {isPro ? (
-              <button
-                type="button"
-                className={styles.primaryButton}
-                disabled={isBillingLoading}
-                onClick={() => redirectToBilling('portal')}
-              >
-                Manage billing
-              </button>
-            ) : (
+            {display.primaryAction === 'upgrade' ? (
               <button
                 type="button"
                 className={styles.primaryButton}
@@ -162,8 +134,42 @@ export function AccountPage() {
               >
                 Upgrade with Stripe — €9/mo
               </button>
+            ) : display.primaryAction === 'resume' ? (
+              <button
+                type="button"
+                className={styles.primaryButton}
+                disabled={isBillingLoading}
+                onClick={() => redirectToBilling('portal')}
+              >
+                Resume subscription
+              </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.primaryButton}
+                disabled={isBillingLoading}
+                onClick={() => redirectToBilling('portal')}
+              >
+                Manage billing
+              </button>
             )}
+            {display.secondaryAction === 'cancel' ? (
+              <button
+                type="button"
+                className={styles.actionLink}
+                disabled={isBillingLoading}
+                onClick={() => redirectToBilling('portal')}
+              >
+                Cancel subscription
+              </button>
+            ) : null}
           </div>
+          {display.uiState === 'pro_until' ? (
+            <p className={styles.muted}>
+              Your cancellation is scheduled. Resume any time before {display.date} to keep Pro
+              without interruption.
+            </p>
+          ) : null}
           {successMessage ? <p className={styles.noticeSuccess}>{successMessage}</p> : null}
           {statusMessage ? <p className={styles.notice}>{statusMessage}</p> : null}
         </div>

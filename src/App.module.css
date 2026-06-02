@@ -148,6 +148,12 @@
   font-weight: 600;
 }
 
+.proBadgeWarning {
+  border-color: #fcd34d;
+  background: #fffbeb;
+  color: #92400e;
+}
+
 .errorList {
   margin: 1rem 0 0;
   border: 1px solid #fecaca;

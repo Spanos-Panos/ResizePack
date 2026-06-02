@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../auth/useAuth';
-import { getEntitlements } from '../utils/api';
+import { getEntitlements, type EntitlementsResponse } from '../utils/api';
 import { PLAN_LIMITS, type Plan, type PlanLimits } from '../config/plans';
+import { getSubscriptionDisplay, type SubscriptionDisplay } from '../utils/subscriptionStatus';
 
 export interface PlanState {
   plan: Plan;
   limits: PlanLimits;
   /** True while we are resolving entitlements for a signed-in user. */
   isLoading: boolean;
+  /** Raw entitlements from the API, or null for anonymous/unresolved users. */
+  entitlements: EntitlementsResponse | null;
+  /** Shared status model used by the Account page and tool banner. */
+  display: SubscriptionDisplay;
 }
 
 /**
@@ -18,12 +23,12 @@ export interface PlanState {
 export function usePlan(): PlanState {
   const { session } = useAuth();
   const accessToken = session?.access_token;
-  const [plan, setPlan] = useState<Plan>('free');
+  const [entitlements, setEntitlements] = useState<EntitlementsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!accessToken) {
-      setPlan('free');
+      setEntitlements(null);
       setIsLoading(false);
       return;
     }
@@ -32,14 +37,14 @@ export function usePlan(): PlanState {
     setIsLoading(true);
 
     getEntitlements(accessToken)
-      .then((entitlements) => {
+      .then((data) => {
         if (!cancelled) {
-          setPlan(entitlements.plan === 'pro' ? 'pro' : 'free');
+          setEntitlements(data);
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setPlan('free');
+          setEntitlements(null);
         }
       })
       .finally(() => {
@@ -53,5 +58,13 @@ export function usePlan(): PlanState {
     };
   }, [accessToken]);
 
-  return { plan, limits: PLAN_LIMITS[plan], isLoading };
+  const plan: Plan = entitlements?.plan === 'pro' ? 'pro' : 'free';
+
+  return {
+    plan,
+    limits: PLAN_LIMITS[plan],
+    isLoading,
+    entitlements,
+    display: getSubscriptionDisplay(entitlements),
+  };
 }

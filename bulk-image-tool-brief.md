@@ -561,6 +561,7 @@ Order only — author proceeds when ready.
 | P6 — SPA routing fix | **Done** | `vercel.json` catch-all rewrite to `/index.html` — fixes 404 on `/account`, `/login`, and Stripe portal/checkout returns (deep links / refresh) |
 | P6 — Auth QoL | **Done (code)** | Login: password show/hide toggle; **OAuth** "Continue with Google / GitHub" (`signInWithOAuth`). Needs provider setup in Supabase + dashboards (OPERATIONS §10) |
 | P6 — Cancel/renewal UX | **Done (code)** | `cancel_at_period_end` stored from Stripe webhook → `/entitlements` → Account shows "Cancels on X / Renews on X"; cancellation via Customer Portal keeps remaining days. **Requires** `supabase/add-cancel-at-period-end.sql` + portal cancel enabled (OPERATIONS §10) |
+| P6 — Subscription status UX | **Done (code)** | Shared `src/utils/subscriptionStatus.ts` maps entitlements → `free` / `pro_active` / `pro_until` / `free_ended`. Account shows a status badge + Manage/Cancel/Resume/Upgrade actions; tool banner mirrors the same state (Pro renews, Pro until, Pro ended). `usePlan` now returns full entitlements + display model |
 
 ### 15.2 Testing & quality gates
 
@@ -693,6 +694,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **Production 404 fixed:** returning from the Stripe Customer Portal to `/account` (and refresh/deep-links to `/login`) 404'd on Vercel because the Vite SPA had no fallback. Added `vercel.json` catch-all rewrite to `/index.html` (static files still served first by filesystem precedence). |
 | 2026-06-02 | **Auth QoL:** added password show/hide toggle and OAuth "Continue with Google / GitHub" (`supabase.auth.signInWithOAuth`, `redirectTo` = current origin `/account`). Requires enabling providers in Supabase + creating OAuth apps + redirect allowlist (OPERATIONS §10). |
 | 2026-06-02 | **Cancel/renewal UX:** webhook now stores `cancel_at_period_end`; `/entitlements` returns it; Account page shows "Cancels on X / Renews on X" + cancel-via-portal guidance (keeps remaining days). **DB migration required:** `supabase/add-cancel-at-period-end.sql` must run before the new API deploys (the sync row writes that column). Also enable cancellation in the Stripe Customer Portal config. |
+| 2026-06-02 | **Subscription status UX:** added shared `src/utils/subscriptionStatus.ts` (states `free` / `pro_active` / `pro_until` / `free_ended` with badge, detail copy, and primary/secondary actions). `usePlan` now exposes full entitlements + display model. Account page shows a status badge with Manage billing / Cancel / Resume / Upgrade; the tool banner mirrors the same state (renews date, "Pro until <date>", "Pro ended <date>"). Cancel/resume use the existing Customer Portal session (no public deep-link to the portal cancel screen). |
 
 ---
 
