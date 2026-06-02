@@ -1,0 +1,44 @@
+.wrapper {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.9rem;
+  background: #ffffff;
+}
+
+.title {
+  margin: 0 0 0.9rem;
+  font-size: 1rem;
+}
+
+.group {
+  margin-top: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.92rem;
+  color: #334155;
+}
+
+.input {
+  width: 100%;
+  max-width: 260px;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.55rem;
+}
+
+.checkbox {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.value {
+  font-size: 0.9rem;
+  color: #475569;
+}

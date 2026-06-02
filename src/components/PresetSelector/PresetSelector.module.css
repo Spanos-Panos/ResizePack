@@ -1,0 +1,25 @@
+.container {
+  display: inline-flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.item {
+  border: 1px solid #d0d7de;
+  background: #f8fafc;
+  color: #111827;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.item:hover {
+  background: #eef2ff;
+}
+
+.itemActive {
+  border-color: #4f46e5;
+  background: #4f46e5;
+  color: #ffffff;
+}

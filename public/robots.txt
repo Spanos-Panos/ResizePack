@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://resizepack.vercel.app/sitemap.xml

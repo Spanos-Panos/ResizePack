@@ -1,0 +1,200 @@
+.page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.hero {
+  background: radial-gradient(circle at top right, #dbeafe 0%, #ffffff 55%);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem 1rem 1.2rem;
+}
+
+.brandPill {
+  margin: 0 0 0.55rem;
+  display: inline-block;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  background: #eff6ff;
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1.15;
+}
+
+.subhead {
+  margin: 0.65rem 0 0;
+  color: #334155;
+}
+
+.highlights {
+  margin: 0.6rem 0 1rem;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+}
+
+.primaryCta,
+.secondaryCta {
+  border-radius: 0.6rem;
+  padding: 0.48rem 0.82rem;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.primaryCta {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.secondaryCta {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e3a8a;
+}
+
+.presetDescription {
+  margin: 0.85rem 0 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.toolCard {
+  margin-top: 1.1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+}
+
+.errorList {
+  margin: 1rem 0 0;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  border-radius: 0.75rem;
+  color: #b91c1c;
+  padding: 0.75rem 0.95rem 0.75rem 1.5rem;
+}
+
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.processButton {
+  border: 1px solid #4f46e5;
+  background: #4f46e5;
+  color: #ffffff;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.processButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(79, 70, 229, 0.22);
+}
+
+.processButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+  border-radius: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.secondaryButton:hover {
+  background: #f8fafc;
+}
+
+.seoSection {
+  margin-top: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.seoSection h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.35rem;
+}
+
+.seoSection > p {
+  margin: 0.65rem 0 0;
+  color: #475569;
+}
+
+.seoGrid {
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.7rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.seoGrid article {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+}
+
+.seoGrid h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.seoGrid p {
+  margin: 0.45rem 0 0;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.footer {
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.85rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer a {
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
