@@ -4,7 +4,7 @@ import rateLimit from '@fastify/rate-limit';
 import rawBody from 'fastify-raw-body';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
-import { loadEnv } from './env';
+import { loadEnv } from './env.js';
 
 type RawBodyRequest = {
   rawBody?: string | Buffer;

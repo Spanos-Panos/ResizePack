@@ -282,6 +282,25 @@ packages:
 
 Then run `pnpm install --lockfile-only`, commit `pnpm-workspace.yaml` + `pnpm-lock.yaml`, push, and redeploy on Render.
 
+### 5.7 Render API starts then fails with `ERR_MODULE_NOT_FOUND ... dist/env`
+
+Symptom:
+
+```text
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/opt/render/project/src/apps/api/dist/env'
+imported from /opt/render/project/src/apps/api/dist/index.js
+```
+
+Cause: the API is native ESM (`"type": "module"`), and Node requires local runtime imports to include the compiled `.js` extension. TypeScript accepted `import './env'`, but plain Node on Render could not resolve it after build.
+
+Fix: source imports local API files with `.js`, for example:
+
+```ts
+import { loadEnv } from './env.js';
+```
+
+Build check: `pnpm --dir apps/api build`, then confirm `apps/api/dist/index.js` imports `./env.js`.
+
 ---
 
 ## 6. Production deploy checklist
