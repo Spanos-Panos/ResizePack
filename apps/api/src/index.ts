@@ -204,6 +204,30 @@ server.post(
     const existingSubscription = await getLatestSubscription(user.id);
     let customerId = existingSubscription?.stripe_customer_id as string | undefined;
 
+    // Self-heal: a stored customer created in a different Stripe mode (test vs
+    // live) or since deleted will 404 here. Rather than fail checkout, drop it
+    // so a fresh customer is created below. This makes a test→live switch (and
+    // any stale row) transparent to new signups.
+    if (customerId) {
+      try {
+        const existingCustomer = await stripe.customers.retrieve(customerId);
+        if ((existingCustomer as Stripe.DeletedCustomer).deleted) {
+          customerId = undefined;
+        }
+      } catch (error) {
+        const stripeError = error as StripeErrorShape;
+        if (stripeError.code === 'resource_missing') {
+          request.log.warn(
+            { userId: user.id, customerId },
+            'Stored Stripe customer not found in current mode — creating a fresh one',
+          );
+          customerId = undefined;
+        } else {
+          throw error;
+        }
+      }
+    }
+
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email,
