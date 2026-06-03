@@ -21,7 +21,13 @@ export function LoginPage() {
 
   const redirectTo = useMemo(() => {
     const state = location.state as { from?: string } | null;
-    return state?.from ?? '/account';
+    const from = state?.from;
+    // Only allow internal absolute paths. Reject protocol-relative (`//host`)
+    // and absolute URLs so a crafted `from` can never become an open redirect.
+    if (from && from.startsWith('/') && !from.startsWith('//')) {
+      return from;
+    }
+    return '/account';
   }, [location.state]);
 
   function validate(): boolean {

@@ -1,4 +1,5 @@
 import Fastify from 'fastify';
+import type { FastifyError } from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
@@ -54,6 +55,24 @@ await server.register(rawBody, {
   global: false,
   encoding: false,
   runFirst: true,
+});
+
+// Sanitize errors so we never leak internal/stack detail to clients. 5xx are
+// logged in full server-side and returned as a generic message; intentional
+// 4xx (rate limit, validation) keep their own client-safe message.
+server.setErrorHandler((error: FastifyError, request, reply) => {
+  const statusCode = error.statusCode ?? 500;
+  if (statusCode >= 500) {
+    request.log.error({ err: error }, 'Unhandled server error');
+    return reply.code(500).send({ error: 'Something went wrong. Please try again.' });
+  }
+  request.log.warn({ err: error, statusCode }, 'Client error');
+  return reply.code(statusCode).send({ error: error.message });
+});
+
+// Generic 404 instead of Fastify's default, which echoes the probed route.
+server.setNotFoundHandler((_request, reply) => {
+  return reply.code(404).send({ error: 'Not found' });
 });
 
 server.get('/health', async () => ({ ok: true }));
@@ -265,8 +284,10 @@ server.post(
     try {
       event = stripe.webhooks.constructEvent(rawBody, signature, env.STRIPE_WEBHOOK_SECRET);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Invalid webhook signature';
-      return reply.code(400).send({ error: message });
+      // Log the real verification failure server-side; return a generic message
+      // so probes don't learn internal signature-validation detail.
+      request.log.warn({ err: error }, 'Stripe webhook signature verification failed');
+      return reply.code(400).send({ error: 'Invalid signature' });
     }
 
     if (event.type === 'checkout.session.completed') {
