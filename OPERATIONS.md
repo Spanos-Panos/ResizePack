@@ -463,7 +463,7 @@ flowchart LR
 
 The login page calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: <origin>/account } })`. Buttons exist in code but **each provider must be enabled in Supabase + backed by an OAuth app**, or the button errors.
 
-The login page calls `signInWithProvider` for **Google, GitHub, and Facebook** (all three buttons are wired in [`src/pages/LoginPage.tsx`](src/pages/LoginPage.tsx)). Each provider must still be enabled in Supabase + backed by an OAuth app or the button errors.
+The login page calls `signInWithProvider` for **Google and GitHub** ([`src/pages/LoginPage.tsx`](src/pages/LoginPage.tsx)). Each provider must be enabled in Supabase + backed by an OAuth app, or the button errors. **Facebook was removed** from the UI (Meta setup/review not worth it for v1).
 
 **Supabase (one-time):** Dashboard → Authentication → **URL Configuration**:
 - **Site URL:** `https://resizepack.vercel.app`
@@ -473,7 +473,7 @@ The login page calls `signInWithProvider` for **Google, GitHub, and Facebook** (
 
 **GitHub:** Authentication → Providers → GitHub → enable. Create a **GitHub OAuth App** (Settings → Developer settings → OAuth Apps). Authorization callback URL = the same Supabase callback URL. Paste Client ID + Secret into Supabase.
 
-**Facebook:** Authentication → Providers → Facebook → enable. Create a **Meta app** (developers.facebook.com → Facebook Login product). Valid OAuth redirect URI = the same Supabase callback URL. Paste App ID + App Secret into Supabase. Note: Meta requires app review / "Advanced access" for `email` before public (non-test) users can log in — keep it in dev mode for your own testing until reviewed.
+**Facebook:** not offered in the app. Leave disabled in Supabase (Authentication → Providers → Facebook).
 
 ### 10.3 Email confirmation (and cross-device verify)
 

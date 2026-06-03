@@ -29,7 +29,7 @@ export function TermsPage() {
 
       <h2>3. Accounts</h2>
       <p>
-        Some features require an account (email/password or Google/GitHub/Facebook sign-in via our
+        Some features require an account (email/password or Google/GitHub sign-in via our
         auth provider). You are responsible for keeping your credentials secure and for activity
         under your account. You must provide accurate information and be old enough to form a binding
         contract in your country.

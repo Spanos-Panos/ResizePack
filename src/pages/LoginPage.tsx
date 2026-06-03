@@ -41,7 +41,7 @@ export function LoginPage() {
     return ok;
   }
 
-  async function signInWithProvider(provider: 'google' | 'github' | 'facebook') {
+  async function signInWithProvider(provider: 'google' | 'github') {
     if (!supabase) {
       setError('Supabase is not configured.');
       return;
@@ -130,14 +130,6 @@ export function LoginPage() {
                 disabled={isSubmitting}
               >
                 Continue with GitHub
-              </button>
-              <button
-                type="button"
-                className={styles.oauthButton}
-                onClick={() => signInWithProvider('facebook')}
-                disabled={isSubmitting}
-              >
-                Continue with Facebook
               </button>
             </div>
             <div className={styles.divider}>

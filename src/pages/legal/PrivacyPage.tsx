@@ -24,7 +24,7 @@ export function PrivacyPage() {
       <p>
         Creating an account is optional and only needed for the Pro plan. If you sign up, our
         authentication provider (<strong>Supabase</strong>) stores your email address and an account
-        identifier. If you use Google, GitHub, or Facebook sign-in, we receive your email and basic
+        identifier. If you use Google or GitHub sign-in, we receive your email and basic
         profile from that provider — not your password.
       </p>
 

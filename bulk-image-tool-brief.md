@@ -1,6 +1,6 @@
 # ResizePack — Project Master Brief
 
-> **Status:** **In progress** — v1 live on Vercel; **Phase 2 billing works in test-mode production** (Render API + Stripe test webhook + Vercel env); **post-launch polish batch shipped** (fonts/FOUC, in-app legal, auth UX, OAuth Facebook, CI, live Stripe runbook)  
+> **Status:** **In progress** — v1 live on Vercel; **Phase 2 billing works in test-mode production** (Render API + Stripe test webhook + Vercel env); auth: email confirm + Google/GitHub OAuth (Facebook dropped)  
 > **Code location:** `Full Stack Apps/ResizePack/` — frontend SPA at repo root + `apps/api/` (Fastify)  
 > **Product name:** **ResizePack** (locked 2026-05-20)  
 > **Display / npm name:** `ResizePack` / `resizepack` (package.json)  
@@ -594,7 +594,7 @@ Order only — author proceeds when ready.
 | P6 — Style-on-refresh fix | **Done** | Font FOUC / stale-style on refresh+Back fixed: font preload in `index.html`, `vercel.json` cache headers (immutable assets, must-revalidate HTML), bfcache `pageshow` reload in `main.tsx` |
 | P6 — Legal pages in-app | **Done** | `/privacy`, `/terms`, `/refund` are React routes (`src/pages/legal/*`, shared `LegalLayout`); footer/hero use same-tab `<Link>`; old `public/*.html` are redirects; sitemap updated; support email in `src/config/site.ts` |
 | P6 — Auth UX + email verify | **Done (code)** | Login: inline validation, `authErrors.ts`, post-signup confirm state, `emailRedirectTo` on signUp; Supabase client uses `flowType: 'implicit'` + `detectSessionInUrl` for cross-device confirm. Needs Supabase Site URL/allowlist (OPERATIONS §10.3) |
-| P6 — OAuth Facebook | **Done (code)** | Facebook button wired alongside Google/GitHub; friendly OAuth errors. Each provider needs dashboard setup (OPERATIONS §10.1) |
+| P6 — OAuth (Google/GitHub) | **In progress** | Login offers Google + GitHub only; Facebook removed (Meta friction). Enable each in Supabase + provider dashboards (OPERATIONS §10.1) |
 | P6 — CI | **Done** | `.github/workflows/ci.yml` runs lint + frontend build + API build on push/PR to `main` (OPERATIONS §11) |
 | P6 — Stripe live | **Ready (runbook)** | No code mode-switch; live cutover is env/config. Step-by-step in OPERATIONS §6.3; gated on accountant/tax + legal review (§24) |
 
@@ -734,6 +734,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **Security review (§13.3):** focused pass + independent sub-task over API/auth/billing/env/deploy. No HIGH/MEDIUM exploitable findings. Confirmed JWT auth on all routes, no IDOR, signature-verified webhook, RLS, secrets server-only & never committed. Hardening: broadened `.gitignore` to `.env`/`.env.*`. |
 | 2026-06-02 | **Post-review hardening + legal drafts:** added `@fastify/helmet` (security headers, verified live); `/billing/*` now return generic client errors with full detail logged server-side only; drafted `public/terms.html` + `public/refund.html` and updated `public/privacy.html` (accounts/Stripe/processors), all footer-linked DRAFTS with `CONTACT_EMAIL_HERE` placeholder pending author review + accountant before live mode (§24.6). |
 | 2026-06-02 | **Subscription status UX:** added shared `src/utils/subscriptionStatus.ts` (states `free` / `pro_active` / `pro_until` / `free_ended` with badge, detail copy, and primary/secondary actions). `usePlan` now exposes full entitlements + display model. Account page shows a status badge with Manage billing / Cancel / Resume / Upgrade; the tool banner mirrors the same state (renews date, "Pro until <date>", "Pro ended <date>"). Cancel/resume use the existing Customer Portal session (no public deep-link to the portal cancel screen). |
+| 2026-06-03 | **Facebook OAuth dropped** — removed login button and legal copy; Google + GitHub only (OPERATIONS §10.1). Email confirm + URL config verified on production. |
 | 2026-06-03 | **Post-launch polish batch.** (1) Style-on-refresh/Back glitch fixed: Google Fonts preload in `index.html`, `vercel.json` cache headers (immutable `/assets/*`, must-revalidate HTML), bfcache `pageshow` reload in `main.tsx`. (2) Legal pages moved into the app as React routes `/privacy` `/terms` `/refund` (`src/pages/legal/*` + `LegalLayout`); `public/*.html` now redirect; footer/hero links same-tab; sitemap updated; `src/config/site.ts` holds `SUPPORT_EMAIL`. (3) Login UX: inline validation, friendly error mapping (`src/utils/authErrors.ts`), post-signup confirm state, `emailRedirectTo` for cross-device email verification; Supabase client `flowType: 'implicit'` for cross-device confirm links. (4) Facebook OAuth wired (+ friendly OAuth errors). (5) CI added (`.github/workflows/ci.yml`: lint + both builds on push/PR). (6) Stripe live cutover runbook documented (OPERATIONS §6.3) — env/config swap, gated on accountant/tax + legal review. Lint fixes: derived preset/WebP in `App.tsx`, `usePlan` logout without effect setState. |
 
 ---
