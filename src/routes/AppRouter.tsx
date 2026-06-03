@@ -1,34 +1,48 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '../auth/AuthContext';
 import { RequireAuth } from './RequireAuth';
-import { AccountPage } from '../pages/AccountPage';
-import { LoginPage } from '../pages/LoginPage';
 import { ToolPage } from '../pages/ToolPage';
-import { PrivacyPage } from '../pages/legal/PrivacyPage';
-import { TermsPage } from '../pages/legal/TermsPage';
-import { RefundPage } from '../pages/legal/RefundPage';
+
+// The landing/tool page is what most visitors hit, so it stays eager. The
+// secondary routes are lazy-loaded to keep the initial bundle small (cuts
+// unused JS on first paint — see brief §15.2 / PageSpeed).
+const LoginPage = lazy(() => import('../pages/LoginPage').then((m) => ({ default: m.LoginPage })));
+const AccountPage = lazy(() =>
+  import('../pages/AccountPage').then((m) => ({ default: m.AccountPage })),
+);
+const PrivacyPage = lazy(() =>
+  import('../pages/legal/PrivacyPage').then((m) => ({ default: m.PrivacyPage })),
+);
+const TermsPage = lazy(() =>
+  import('../pages/legal/TermsPage').then((m) => ({ default: m.TermsPage })),
+);
+const RefundPage = lazy(() =>
+  import('../pages/legal/RefundPage').then((m) => ({ default: m.RefundPage })),
+);
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Routes>
-          <Route path="/" element={<ToolPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/refund" element={<RefundPage />} />
-          <Route
-            path="/account"
-            element={
-              <RequireAuth>
-                <AccountPage />
-              </RequireAuth>
-            }
-          />
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/" element={<ToolPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/refund" element={<RefundPage />} />
+            <Route
+              path="/account"
+              element={
+                <RequireAuth>
+                  <AccountPage />
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </Suspense>
       </AuthProvider>
     </BrowserRouter>
   );
 }
-
