@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './auth/useAuth';
 import { usePlan } from './hooks/usePlan';
@@ -58,26 +58,31 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [zipBlob, setZipBlob] = useState<Blob | null>(null);
 
+  // Fall back when the saved preset isn't on the current plan (no effect — avoids stale UI).
+  const activePreset: PresetId =
+    isPlanLoading || limits.presets.includes(selectedPreset) ? selectedPreset : 'etsy-listing';
+  const effectiveIncludeWebp = allowWebp && includeWebp;
+
   const presetDescription = useMemo(() => {
-    if (selectedPreset === 'custom') {
+    if (activePreset === 'custom') {
       return 'Set your own max width and quality values.';
     }
-    return PRESETS[selectedPreset].description;
-  }, [selectedPreset]);
+    return PRESETS[activePreset].description;
+  }, [activePreset]);
 
   const outputFormats = useMemo<OutputFormat[]>(() => {
     const formats: OutputFormat[] = [];
     if (includeJpeg) {
       formats.push('jpeg');
     }
-    if (includeWebp) {
+    if (effectiveIncludeWebp) {
       formats.push('webp');
     }
     return formats;
-  }, [includeJpeg, includeWebp]);
+  }, [includeJpeg, effectiveIncludeWebp]);
 
   const activeProcessingOptions = useMemo<ProcessingOptions>(() => {
-    if (selectedPreset === 'custom') {
+    if (activePreset === 'custom') {
       return {
         presetId: 'custom',
         maxLongestSidePx: clampValue(customMaxWidth, 400, 4000),
@@ -87,7 +92,7 @@ function App() {
       };
     }
 
-    const preset = PRESETS[selectedPreset];
+    const preset = PRESETS[activePreset];
     return {
       presetId: preset.id,
       maxLongestSidePx: preset.maxLongestSidePx,
@@ -96,23 +101,7 @@ function App() {
       stripExif,
       targetMaxBytes: preset.targetMaxBytes,
     };
-  }, [selectedPreset, customMaxWidth, customQuality, outputFormats, stripExif]);
-
-  // If the saved/active preset isn't available on the current plan (e.g. a
-  // free user with "custom" remembered), fall back to a free preset. Wait for
-  // the plan to resolve so we don't bump a Pro user off a Pro preset mid-load.
-  useEffect(() => {
-    if (!isPlanLoading && !limits.presets.includes(selectedPreset)) {
-      setSelectedPreset('etsy-listing');
-    }
-  }, [isPlanLoading, limits, selectedPreset]);
-
-  // Free plan cannot output WebP — keep the toggle consistent with the plan.
-  useEffect(() => {
-    if (!allowWebp && includeWebp) {
-      setIncludeWebp(false);
-    }
-  }, [allowWebp, includeWebp]);
+  }, [activePreset, customMaxWidth, customQuality, outputFormats, stripExif]);
 
   const goPro = () => {
     navigate(user ? '/account' : '/login');
@@ -217,12 +206,12 @@ function App() {
           <a className={styles.primaryCta} href="#tool">
             Start optimizing now
           </a>
-          <a className={styles.secondaryCta} href="/privacy.html" target="_blank" rel="noreferrer">
+          <Link className={styles.secondaryCta} to="/privacy">
             Privacy first
-          </a>
+          </Link>
         </div>
         <PresetSelector
-          selectedPreset={selectedPreset}
+          selectedPreset={activePreset}
           allowedPresets={limits.presets}
           onChange={handlePresetChange}
           onLockedClick={goPro}
@@ -278,11 +267,11 @@ function App() {
         <FileList files={files} onRemove={handleRemoveFile} onClearAll={handleClearAllFiles} />
 
         <OptionsPanel
-          selectedPreset={selectedPreset}
+          selectedPreset={activePreset}
           customMaxWidth={customMaxWidth}
           customQuality={customQuality}
           includeJpeg={includeJpeg}
-          includeWebp={includeWebp}
+          includeWebp={effectiveIncludeWebp}
           stripExif={stripExif}
           allowWebp={allowWebp}
           onCustomMaxWidthChange={(value) => setCustomMaxWidth(clampValue(value, 400, 4000))}
@@ -349,15 +338,9 @@ function App() {
 
       <footer className={styles.footer}>
         <span>ResizePack is not affiliated with Etsy, Inc.</span>
-        <a href="/privacy.html" target="_blank" rel="noreferrer">
-          Privacy
-        </a>
-        <a href="/terms.html" target="_blank" rel="noreferrer">
-          Terms
-        </a>
-        <a href="/refund.html" target="_blank" rel="noreferrer">
-          Refunds
-        </a>
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
+        <Link to="/refund">Refunds</Link>
       </footer>
     </main>
   );

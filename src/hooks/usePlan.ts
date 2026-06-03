@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 import { useAuth } from '../auth/useAuth';
 import { getEntitlements, type EntitlementsResponse } from '../utils/api';
 import { PLAN_LIMITS, type Plan, type PlanLimits } from '../config/plans';
@@ -28,13 +28,11 @@ export function usePlan(): PlanState {
 
   useEffect(() => {
     if (!accessToken) {
-      setEntitlements(null);
-      setIsLoading(false);
       return;
     }
 
     let cancelled = false;
-    setIsLoading(true);
+    startTransition(() => setIsLoading(true));
 
     getEntitlements(accessToken)
       .then((data) => {
@@ -58,13 +56,15 @@ export function usePlan(): PlanState {
     };
   }, [accessToken]);
 
-  const plan: Plan = entitlements?.plan === 'pro' ? 'pro' : 'free';
+  const resolvedEntitlements = accessToken ? entitlements : null;
+  const resolvedLoading = Boolean(accessToken) && isLoading;
+  const plan: Plan = resolvedEntitlements?.plan === 'pro' ? 'pro' : 'free';
 
   return {
     plan,
     limits: PLAN_LIMITS[plan],
-    isLoading,
-    entitlements,
-    display: getSubscriptionDisplay(entitlements),
+    isLoading: resolvedLoading,
+    entitlements: resolvedEntitlements,
+    display: getSubscriptionDisplay(resolvedEntitlements),
   };
 }

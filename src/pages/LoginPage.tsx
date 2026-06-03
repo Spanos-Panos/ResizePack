@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase/client';
 import { useAuth } from '../auth/useAuth';
+import { friendlyAuthError, isValidEmail } from '../utils/authErrors';
 import styles from './LoginPage.module.css';
 
 export function LoginPage() {
@@ -11,6 +12,9 @@ export function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<'sign_in' | 'sign_up'>('sign_in');
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [confirmationSent, setConfirmationSent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,7 +24,24 @@ export function LoginPage() {
     return state?.from ?? '/account';
   }, [location.state]);
 
-  async function signInWithProvider(provider: 'google' | 'github') {
+  function validate(): boolean {
+    let ok = true;
+    if (!isValidEmail(email)) {
+      setEmailError('Enter a valid email address.');
+      ok = false;
+    } else {
+      setEmailError(null);
+    }
+    if (password.length < 8) {
+      setPasswordError('Use at least 8 characters.');
+      ok = false;
+    } else {
+      setPasswordError(null);
+    }
+    return ok;
+  }
+
+  async function signInWithProvider(provider: 'google' | 'github' | 'facebook') {
     if (!supabase) {
       setError('Supabase is not configured.');
       return;
@@ -33,7 +54,7 @@ export function LoginPage() {
       options: { redirectTo: `${window.location.origin}/account` },
     });
     if (oauthError) {
-      setError(oauthError.message);
+      setError(friendlyAuthError(oauthError.message));
     }
   }
 
@@ -44,6 +65,37 @@ export function LoginPage() {
           <h1>You’re already signed in</h1>
           <p className={styles.muted}>
             Go to your <Link to="/account">account</Link>.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (confirmationSent) {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <h1>Confirm your email</h1>
+          <p className={styles.muted}>
+            We sent a verification link to <strong>{email}</strong>. Open it to activate your
+            account, then come back and sign in.
+          </p>
+          <p className={styles.notice}>
+            The link works on any device — if you opened it on your phone, just return here on this
+            device to sign in.
+          </p>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => {
+              setConfirmationSent(false);
+              setMode('sign_in');
+            }}
+          >
+            Back to sign in
+          </button>
+          <p className={styles.backLink}>
+            <Link to="/">← Back to tool</Link>
           </p>
         </div>
       </main>
@@ -79,6 +131,14 @@ export function LoginPage() {
               >
                 Continue with GitHub
               </button>
+              <button
+                type="button"
+                className={styles.oauthButton}
+                onClick={() => signInWithProvider('facebook')}
+                disabled={isSubmitting}
+              >
+                Continue with Facebook
+              </button>
             </div>
             <div className={styles.divider}>
               <span>or use email</span>
@@ -88,6 +148,9 @@ export function LoginPage() {
             onSubmit={async (event) => {
               event.preventDefault();
               setError(null);
+              if (!validate()) {
+                return;
+              }
               setIsSubmitting(true);
               try {
                 if (!supabase) {
@@ -95,12 +158,32 @@ export function LoginPage() {
                   return;
                 }
 
-                const { error: authError } =
-                  mode === 'sign_in'
-                    ? await supabase.auth.signInWithPassword({ email, password })
-                    : await supabase.auth.signUp({ email, password });
+                if (mode === 'sign_in') {
+                  const { error: authError } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                  });
+                  if (authError) {
+                    setError(friendlyAuthError(authError.message));
+                    return;
+                  }
+                  navigate(redirectTo, { replace: true });
+                  return;
+                }
+
+                const { data, error: authError } = await supabase.auth.signUp({
+                  email,
+                  password,
+                  options: { emailRedirectTo: `${window.location.origin}/account` },
+                });
                 if (authError) {
-                  setError(authError.message);
+                  setError(friendlyAuthError(authError.message));
+                  return;
+                }
+                // When email confirmation is required, Supabase returns a user
+                // with no active session. Show the "check your email" state.
+                if (!data.session) {
+                  setConfirmationSent(true);
                   return;
                 }
                 navigate(redirectTo, { replace: true });
@@ -117,8 +200,15 @@ export function LoginPage() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={() =>
+                  setEmailError(
+                    email && !isValidEmail(email) ? 'Enter a valid email address.' : null,
+                  )
+                }
+                aria-invalid={emailError ? true : undefined}
                 required
               />
+              {emailError ? <span className={styles.fieldError}>{emailError}</span> : null}
             </label>
             <label className={styles.label}>
               Password
@@ -129,6 +219,12 @@ export function LoginPage() {
                   autoComplete={mode === 'sign_in' ? 'current-password' : 'new-password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() =>
+                    setPasswordError(
+                      password && password.length < 8 ? 'Use at least 8 characters.' : null,
+                    )
+                  }
+                  aria-invalid={passwordError ? true : undefined}
                   required
                   minLength={8}
                 />
@@ -143,10 +239,18 @@ export function LoginPage() {
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </span>
-              <span className={styles.hint}>Minimum 8 characters.</span>
+              {passwordError ? (
+                <span className={styles.fieldError}>{passwordError}</span>
+              ) : (
+                <span className={styles.hint}>Minimum 8 characters.</span>
+              )}
             </label>
 
-            {error ? <p className={styles.error}>{error}</p> : null}
+            {error ? (
+              <p className={styles.error} role="alert">
+                {error}
+              </p>
+            ) : null}
 
             <button className={styles.primaryButton} type="submit" disabled={isSubmitting}>
               {isSubmitting

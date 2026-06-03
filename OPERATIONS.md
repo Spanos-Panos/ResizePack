@@ -2,7 +2,7 @@
 
 > **Purpose:** How this project is hosted, which services we use, how to run everything locally, how to deploy, and how to maintain it over time.  
 > **Keep updated:** When you add a service, change env vars, or fix a recurring issue, update this file (and note it in `bulk-image-tool-brief.md` §20 decision log if it affects product/architecture).  
-> **Last updated:** 2026-06-02
+> **Last updated:** 2026-06-03
 
 **Related docs**
 
@@ -28,7 +28,7 @@ Production today:
 
 - **Live site:** https://resizepack.vercel.app/
 - **Repo:** GitHub → connected to Vercel (auto-deploy on push to main)
-- **Phase 2 locally:** Works with three terminals (see §4). Production API hosting is **not** deployed yet — plan before taking real payments on the live domain.
+- **Phase 2 API (test mode):** `https://resizepack-api.onrender.com` — Stripe **test** webhook + Vercel `VITE_*` env wired. **Live** Stripe charges require §6.3 cutover + accountant/legal gates.
 
 ---
 
@@ -321,7 +321,7 @@ Build check: `pnpm --dir apps/api build`, then confirm `apps/api/dist/index.js` 
 1. `pnpm lint && pnpm build` locally.
 2. Push to GitHub → Vercel builds automatically.
 3. Set Vercel env vars for Phase 2 when ready (§3).
-4. Smoke test: upload → ZIP, `/privacy.html`, login, account page.
+4. Smoke test: upload → ZIP, `/privacy` (+ `/terms`, `/refund`), login, account page.
 
 ### 6.2 API (when you go live with billing)
 
@@ -333,6 +333,28 @@ Build check: `pnpm --dir apps/api build`, then confirm `apps/api/dist/index.js` 
 4. `WEB_ORIGIN=https://resizepack.vercel.app` (preset in blueprint).
 5. `VITE_API_BASE_URL=https://<service>.onrender.com` on Vercel → redeploy frontend.
 6. Stripe **live** mode (new keys, price, webhook) + accountant/tax + Terms/Privacy/refund **before real charges** (`bulk-image-tool-brief.md` §24). Test mode is fine until then.
+
+### 6.3 Stripe live cutover runbook (test → live)
+
+The API has **no hardcoded mode** — going live is an env/config swap, not a code change. Do these in order:
+
+**Non-code gates (must be done first):**
+1. Stripe business/identity verification complete (Dashboard shows live mode available).
+2. Accountant / Greece tax setup: invoicing, VAT/OSS, income declaration (brief §24).
+3. Legal pages reviewed: set `SUPPORT_EMAIL` in [`src/config/site.ts`](src/config/site.ts) to a real monitored address and remove the "Draft for review" banners in the legal page components once a professional has signed off.
+
+**Stripe (live mode):**
+4. Toggle the Dashboard to **live mode**.
+5. Create the live **Product + Price** (recurring €9/mo) → copy the live `price_...`.
+6. Developers → Webhooks → add endpoint `https://resizepack-api.onrender.com/webhooks/stripe` with events `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted` → copy the live signing secret (`whsec_...`).
+7. Settings → Billing → **Customer portal**: enable cancellation "at end of billing period" (mirror test config, §10.2).
+
+**Render (live env):**
+8. Update env vars: `STRIPE_SECRET_KEY` (live `sk_live_...`), `STRIPE_PRICE_ID` (live price), `STRIPE_WEBHOOK_SECRET` (live `whsec_`). Keep the test values noted somewhere for rollback.
+9. Redeploy; confirm `/health` is `{"ok":true}`.
+
+**Verify:**
+10. Real card, small charge → Account shows Pro → cancel via portal → `Pro until` → optionally refund from Stripe. Roll back by restoring test env values if anything is wrong.
 
 ---
 
@@ -421,14 +443,17 @@ flowchart LR
 |------|---------|
 | `src/` | React app, auth, account page, tool + plan gating |
 | `src/config/plans.ts` | Free/Pro limits (single source of truth) |
+| `src/config/site.ts` | Support email + site URL constants |
+| `src/pages/legal/*` | In-app Privacy / Terms / Refund routes + shared layout |
 | `apps/api/src/index.ts` | Entitlements, checkout, portal, webhooks |
 | `supabase/schema.sql` | Tables + RLS |
 | `supabase/*.sql` | Additive migrations (run manually — §7.5) |
-| `vercel.json` | SPA rewrite (client routes → index.html) |
+| `vercel.json` | SPA rewrite + cache headers |
 | `render.yaml` | Render API deploy blueprint |
+| `.github/workflows/ci.yml` | CI: lint + build on push/PR |
 | `.env.local` | Local secrets (gitignored) |
 | `public/sitemap.xml` | SEO |
-| `index.html` | Meta / title |
+| `index.html` | Meta / title / font preload |
 
 ---
 
@@ -438,6 +463,8 @@ flowchart LR
 
 The login page calls `supabase.auth.signInWithOAuth({ provider, options: { redirectTo: <origin>/account } })`. Buttons exist in code but **each provider must be enabled in Supabase + backed by an OAuth app**, or the button errors.
 
+The login page calls `signInWithProvider` for **Google, GitHub, and Facebook** (all three buttons are wired in [`src/pages/LoginPage.tsx`](src/pages/LoginPage.tsx)). Each provider must still be enabled in Supabase + backed by an OAuth app or the button errors.
+
 **Supabase (one-time):** Dashboard → Authentication → **URL Configuration**:
 - **Site URL:** `https://resizepack.vercel.app`
 - **Redirect URLs (allowlist):** add `https://resizepack.vercel.app/account` **and** `http://localhost:5173/account` (local dev).
@@ -446,7 +473,16 @@ The login page calls `supabase.auth.signInWithOAuth({ provider, options: { redir
 
 **GitHub:** Authentication → Providers → GitHub → enable. Create a **GitHub OAuth App** (Settings → Developer settings → OAuth Apps). Authorization callback URL = the same Supabase callback URL. Paste Client ID + Secret into Supabase.
 
-**Facebook (optional, later):** heavier — requires a Meta app + app review for `email`/public_profile in production. Skipped for now; the same `signInWithProvider('facebook')` pattern applies if added.
+**Facebook:** Authentication → Providers → Facebook → enable. Create a **Meta app** (developers.facebook.com → Facebook Login product). Valid OAuth redirect URI = the same Supabase callback URL. Paste App ID + App Secret into Supabase. Note: Meta requires app review / "Advanced access" for `email` before public (non-test) users can log in — keep it in dev mode for your own testing until reviewed.
+
+### 10.3 Email confirmation (and cross-device verify)
+
+Sign-up sends a confirmation link. `signUp` sets `emailRedirectTo` to `<origin>/account`, and the login page shows a "Confirm your email" screen after sign-up.
+
+For the link to work (including when opened on a different device than sign-up):
+- Supabase Site URL + redirect allowlist must include the deployed app (above).
+- The app uses **implicit** auth flow in [`src/supabase/client.ts`](src/supabase/client.ts) (`flowType: 'implicit'`, `detectSessionInUrl: true`). Clicking the link confirms the account; the user then signs in on whichever device they want. (PKCE would tie confirmation to the originating browser — avoid for email confirm if cross-device is desired.)
+- Review the confirmation email template under Authentication → Email Templates if you want to customize copy.
 
 ### 10.2 Customer Portal — allow cancellation
 
@@ -455,6 +491,28 @@ Stripe Dashboard (test mode) → Settings → Billing → **Customer portal**:
 - Optionally allow plan switches / payment method updates.
 
 App behavior: on cancel, Stripe sends `customer.subscription.updated` with `cancel_at_period_end = true` (status stays `active`). Our webhook stores it; `/entitlements` returns `cancelAtPeriodEnd`; the Account page shows "Cancels on <date> — you keep Pro until then" and offers resume via the portal. Plan flips to Free only when the period actually ends (`customer.subscription.deleted`).
+
+---
+
+## 11. CI (GitHub Actions)
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and PR to `main`:
+
+1. `pnpm install --frozen-lockfile`
+2. `pnpm lint`
+3. `pnpm build` (frontend typecheck + Vite build)
+4. `pnpm --dir apps/api build` (API typecheck)
+
+This catches breakage before Vercel/Render auto-deploy (which still happen on push). It does **not** deploy — hosting is handled by Vercel and Render.
+
+Optional later: enable branch protection on `main` requiring the CI check to pass before merge (GitHub → Settings → Branches → add rule).
+
+---
+
+## 12. Legal pages & fonts notes
+
+- **Legal pages are in-app React routes:** `/privacy`, `/terms`, `/refund` (`src/pages/legal/*`), sharing `LegalLayout`. The old `public/*.html` files are now thin redirects to those routes (kept for any external links). Footer/hero links use in-app `<Link>` (same tab). Support email lives in [`src/config/site.ts`](src/config/site.ts).
+- **Font FOUC / style-on-refresh fix:** `index.html` preloads the Google Fonts stylesheet; `vercel.json` sets `immutable` cache for `/assets/*` and `must-revalidate` for HTML; `main.tsx` reloads on bfcache restore (`pageshow` + `persisted`) so a back/refresh never shows stale pre-deploy styling.
 
 ---
 

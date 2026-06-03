@@ -5,6 +5,13 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undef
 
 export const supabase =
   supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
+    ? createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+          // Implicit flow lets email confirmation links work on any device
+          // (PKCE ties the verifier to the browser that started sign-up).
+          flowType: 'implicit',
+          detectSessionInUrl: true,
+        },
+      })
     : null;
 

@@ -1,12 +1,12 @@
 # ResizePack — Project Master Brief
 
-> **Status:** **In progress** — v1 live on Vercel; **Phase 2 (accounts + billing) works end-to-end locally**; **Pro tiering wired into the tool**; API production hosting not yet deployed  
+> **Status:** **In progress** — v1 live on Vercel; **Phase 2 billing works in test-mode production** (Render API + Stripe test webhook + Vercel env); **post-launch polish batch shipped** (fonts/FOUC, in-app legal, auth UX, OAuth Facebook, CI, live Stripe runbook)  
 > **Code location:** `Full Stack Apps/ResizePack/` — frontend SPA at repo root + `apps/api/` (Fastify)  
 > **Product name:** **ResizePack** (locked 2026-05-20)  
 > **Display / npm name:** `ResizePack` / `resizepack` (package.json)  
 > **Domain (verify before purchase):** `resizepack.com`, `resizepack.io` — not required; live on `resizepack.vercel.app`  
 > **Author:** Panos, 21, self-taught developer (runs git himself)  
-> **Last updated:** 2026-06-02 (Phase 2 billing fixed + verified; Free/Pro tiering §9.1; API security hardening §13; testing §15.2)  
+> **Last updated:** 2026-06-03 (post-launch polish: FOUC/fonts, legal routes, auth UX, cross-device email, OAuth Facebook, CI, Stripe live runbook — OPERATIONS §6.3/§10–§12)  
 > **Purpose of this document:** Single source of truth for any AI agent or human collaborator. **Keep this file fully updated after every change** — status, how things were built, apps, web, maintenance, testing, production, and security. Satellite docs (`README.md`, `DEPLOY.md`, `OPERATIONS.md`, `LAUNCH.md`) hold step detail; this brief indexes and summarizes them (§26).
 
 **Related project (separate brief):** [PanChat — thread-task-chat-brief.md](./thread-task-chat-brief.md) — portfolio full-stack app; this tool is a **parallel** self-serve utility track.
@@ -586,11 +586,17 @@ Order only — author proceeds when ready.
 | P6 — Pro tiering | **Done (local)** | Free/Pro gates wired into the tool (§9.1): limits, presets, formats, upgrade prompts; Account page Pro state |
 | P6 — API hardening | **Done (local)** | CORS lock-down, per-IP rate limiting, env validation, prod-safe env loading (§13.1) |
 | P6 — API production host | **Done (test-mode production API live)** | Render free tier live at `https://resizepack-api.onrender.com`; `/health` → `{"ok":true}`. Stripe test webhook destination created for `/webhooks/stripe`, signing secret saved in Render. |
-| P6 — Vercel frontend env | **In progress** | Setting `VITE_API_BASE_URL=https://resizepack-api.onrender.com` (+ `VITE_SUPABASE_*`) in Vercel → redeploy → live smoke test |
+| P6 — Vercel frontend env | **Done** | `VITE_API_BASE_URL=https://resizepack-api.onrender.com` + `VITE_SUPABASE_*` set on Vercel; live Checkout→webhook→Pro flow verified |
 | P6 — SPA routing fix | **Done** | `vercel.json` catch-all rewrite to `/index.html` — fixes 404 on `/account`, `/login`, and Stripe portal/checkout returns (deep links / refresh) |
 | P6 — Auth QoL | **Done (code)** | Login: password show/hide toggle; **OAuth** "Continue with Google / GitHub" (`signInWithOAuth`). Needs provider setup in Supabase + dashboards (OPERATIONS §10) |
 | P6 — Cancel/renewal UX | **Done (code)** | `cancel_at_period_end` stored from Stripe webhook → `/entitlements` → Account shows "Cancels on X / Renews on X"; cancellation via Customer Portal keeps remaining days. **Requires** `supabase/add-cancel-at-period-end.sql` + portal cancel enabled (OPERATIONS §10) |
 | P6 — Subscription status UX | **Done (code)** | Shared `src/utils/subscriptionStatus.ts` maps entitlements → `free` / `pro_active` / `pro_until` / `free_ended`. Account shows a status badge + Manage/Cancel/Resume/Upgrade actions; tool banner mirrors the same state (Pro renews, Pro until, Pro ended). `usePlan` now returns full entitlements + display model |
+| P6 — Style-on-refresh fix | **Done** | Font FOUC / stale-style on refresh+Back fixed: font preload in `index.html`, `vercel.json` cache headers (immutable assets, must-revalidate HTML), bfcache `pageshow` reload in `main.tsx` |
+| P6 — Legal pages in-app | **Done** | `/privacy`, `/terms`, `/refund` are React routes (`src/pages/legal/*`, shared `LegalLayout`); footer/hero use same-tab `<Link>`; old `public/*.html` are redirects; sitemap updated; support email in `src/config/site.ts` |
+| P6 — Auth UX + email verify | **Done (code)** | Login: inline validation, `authErrors.ts`, post-signup confirm state, `emailRedirectTo` on signUp; Supabase client uses `flowType: 'implicit'` + `detectSessionInUrl` for cross-device confirm. Needs Supabase Site URL/allowlist (OPERATIONS §10.3) |
+| P6 — OAuth Facebook | **Done (code)** | Facebook button wired alongside Google/GitHub; friendly OAuth errors. Each provider needs dashboard setup (OPERATIONS §10.1) |
+| P6 — CI | **Done** | `.github/workflows/ci.yml` runs lint + frontend build + API build on push/PR to `main` (OPERATIONS §11) |
+| P6 — Stripe live | **Ready (runbook)** | No code mode-switch; live cutover is env/config. Step-by-step in OPERATIONS §6.3; gated on accountant/tax + legal review (§24) |
 
 ### 15.2 Testing & quality gates
 
@@ -598,6 +604,7 @@ How changes are verified before they are considered done. No automated test suit
 
 | Gate | Command / method | When |
 |------|------------------|------|
+| Frontend lint | `pnpm lint` (ESLint) | Before push / PR (also in CI) |
 | Frontend typecheck | `npx tsc --noEmit -p tsconfig.app.json` | After any frontend change |
 | Frontend build | `pnpm build` (`tsc -b && vite build`) | Before push / deploy |
 | API typecheck/build | `pnpm --dir apps/api build` (`tsc`) | After any API change |
@@ -727,6 +734,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-02 | **Security review (§13.3):** focused pass + independent sub-task over API/auth/billing/env/deploy. No HIGH/MEDIUM exploitable findings. Confirmed JWT auth on all routes, no IDOR, signature-verified webhook, RLS, secrets server-only & never committed. Hardening: broadened `.gitignore` to `.env`/`.env.*`. |
 | 2026-06-02 | **Post-review hardening + legal drafts:** added `@fastify/helmet` (security headers, verified live); `/billing/*` now return generic client errors with full detail logged server-side only; drafted `public/terms.html` + `public/refund.html` and updated `public/privacy.html` (accounts/Stripe/processors), all footer-linked DRAFTS with `CONTACT_EMAIL_HERE` placeholder pending author review + accountant before live mode (§24.6). |
 | 2026-06-02 | **Subscription status UX:** added shared `src/utils/subscriptionStatus.ts` (states `free` / `pro_active` / `pro_until` / `free_ended` with badge, detail copy, and primary/secondary actions). `usePlan` now exposes full entitlements + display model. Account page shows a status badge with Manage billing / Cancel / Resume / Upgrade; the tool banner mirrors the same state (renews date, "Pro until <date>", "Pro ended <date>"). Cancel/resume use the existing Customer Portal session (no public deep-link to the portal cancel screen). |
+| 2026-06-03 | **Post-launch polish batch.** (1) Style-on-refresh/Back glitch fixed: Google Fonts preload in `index.html`, `vercel.json` cache headers (immutable `/assets/*`, must-revalidate HTML), bfcache `pageshow` reload in `main.tsx`. (2) Legal pages moved into the app as React routes `/privacy` `/terms` `/refund` (`src/pages/legal/*` + `LegalLayout`); `public/*.html` now redirect; footer/hero links same-tab; sitemap updated; `src/config/site.ts` holds `SUPPORT_EMAIL`. (3) Login UX: inline validation, friendly error mapping (`src/utils/authErrors.ts`), post-signup confirm state, `emailRedirectTo` for cross-device email verification; Supabase client `flowType: 'implicit'` for cross-device confirm links. (4) Facebook OAuth wired (+ friendly OAuth errors). (5) CI added (`.github/workflows/ci.yml`: lint + both builds on push/PR). (6) Stripe live cutover runbook documented (OPERATIONS §6.3) — env/config swap, gated on accountant/tax + legal review. Lint fixes: derived preset/WebP in `App.tsx`, `usePlan` logout without effect setState. |
 
 ---
 
@@ -914,11 +922,11 @@ Bring this checklist to one appointment **before** enabling payments:
 
 Add/update before paid launch:
 
-- **Terms of Service** — **drafted** `public/terms.html`
-- **Privacy Policy** (payments, data processors) — **updated** `public/privacy.html` (accounts/Supabase, Stripe, processors list)
-- **Refund policy** (especially subscriptions) — **drafted** `public/refund.html`
+- **Terms of Service** — **drafted**, in-app route `/terms` (`src/pages/legal/TermsPage.tsx`)
+- **Privacy Policy** (payments, data processors) — **drafted**, in-app route `/privacy` (accounts/Supabase, Stripe, processors list)
+- **Refund policy** (especially subscriptions) — **drafted**, in-app route `/refund`
 
-All three are linked from the app footer and styled to match. **Status: DRAFT templates** — each contains a "Draft for review / not legal advice" banner and a `CONTACT_EMAIL_HERE` placeholder. **Before live mode, Panos must:** (1) replace the contact email, (2) have the documents reviewed (Greece/EU consumer + GDPR specifics, esp. the 14-day digital-services withdrawal right), (3) confirm tax/invoicing with an accountant (§24.4). Test mode needs no live legal sign-off.
+All three are now in-app React routes sharing `LegalLayout`, linked same-tab from the footer/hero; the old `public/*.html` files redirect to them. The contact email comes from `src/config/site.ts` (`SUPPORT_EMAIL`). **Status: DRAFT templates** — each still shows a "Draft for review / not legal advice" banner. **Before live mode, Panos must:** (1) set `SUPPORT_EMAIL` to a real monitored address, (2) have the documents reviewed (Greece/EU consumer + GDPR specifics, esp. the 14-day digital-services withdrawal right) and then remove the draft banners, (3) confirm tax/invoicing with an accountant (§24.4). Test mode needs no live legal sign-off.
 
 ---
 

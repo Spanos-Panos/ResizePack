@@ -138,6 +138,16 @@
   font-weight: 400;
 }
 
+.fieldError {
+  font-size: 0.82rem;
+  color: var(--danger);
+  font-weight: 500;
+}
+
+.input[aria-invalid='true'] {
+  border-color: var(--danger-line);
+}
+
 .passwordRow {
   display: flex;
   align-items: stretch;
