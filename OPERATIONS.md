@@ -132,6 +132,13 @@ The Fastify app in `apps/api` runs on a public HTTPS URL for production billing.
 5. **Vercel:** set `VITE_API_BASE_URL=https://<service>.onrender.com` (+ `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) → redeploy frontend.
 6. Smoke test on the live site: sign up → Upgrade → test card → Account shows Pro; Supabase `subscriptions` row `active`.
 
+**Troubleshooting — "Manage billing" returns 400 / "Unable to open billing portal":**
+The portal endpoint logs the exact Stripe cause (`Portal session creation failed` with `stripeType`/`stripeCode`/`stripeMessage`). Read the Render log line and match:
+- **"No configuration provided … default configuration has not been created"** → the Customer Portal isn't configured **in the same Stripe mode as the API keys**. Stripe Dashboard → in the matching mode (TEST vs LIVE — check whether Render's `STRIPE_SECRET_KEY` is `sk_test_` or `sk_live_`) → Settings → Billing → **Customer portal** → activate & save. (Configuring LIVE while Render runs TEST keys, or vice-versa, is the usual cause.)
+- **"No such customer: cus_…"** → the stored `stripe_customer_id` was created in the *other* mode. Align the keys, or clear that user's `subscriptions` row so the next checkout creates a fresh customer in the current mode.
+
+**Account deletion (`POST /account/delete`):** cancels the Stripe subscription immediately (no refund), deletes the Stripe customer (Stripe still retains invoices for tax/legal — GDPR Art 17(3)(b)), then deletes the Supabase auth user, which **FK-cascades** to `profiles`+`subscriptions` and nulls `usage_events`. A webhook arriving after deletion FK-fails harmlessly (logged). No migration needed.
+
 ---
 
 ## 3. Environment variables

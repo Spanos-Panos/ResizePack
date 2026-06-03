@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../supabase/client';
 import { useAuth } from '../auth/useAuth';
 import { friendlyAuthError, isValidEmail } from '../utils/authErrors';
@@ -18,6 +18,11 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  // True while we process a `?confirmed=1` landing (from the email link).
+  const [confirming, setConfirming] = useState(() => searchParams.get('confirmed') === '1');
+  // Shows the "✓ Email confirmed — sign in" notice on the sign-in form.
+  const [justConfirmed, setJustConfirmed] = useState(false);
 
   const redirectTo = useMemo(() => {
     const state = location.state as { from?: string } | null;
@@ -27,8 +32,79 @@ export function LoginPage() {
     if (from && from.startsWith('/') && !from.startsWith('//')) {
       return from;
     }
-    return '/account';
+    // Default destination after auth is the main tool (sign up → confirm →
+    // login → tool). Protected-route redirects still honor `from`.
+    return '/';
   }, [location.state]);
+
+  // The confirmation email link lands on /login?confirmed=1. The implicit flow
+  // may have auto-created a session from the URL hash; sign it out so the user
+  // explicitly signs in (sign up → confirm → login → tool), then show the
+  // confirmed notice. Applies to whichever device opened the link.
+  useEffect(() => {
+    if (!confirming) return;
+    let active = true;
+    (async () => {
+      if (supabase) {
+        try {
+          await supabase.auth.signOut();
+        } catch {
+          /* ignore — no session to clear is fine */
+        }
+      }
+      if (!active) return;
+      setMode('sign_in');
+      setJustConfirmed(true);
+      setConfirming(false);
+      searchParams.delete('confirmed');
+      setSearchParams(searchParams, { replace: true });
+    })();
+    return () => {
+      active = false;
+    };
+  }, [confirming, searchParams, setSearchParams]);
+
+  // Cross-device auto-advance: while waiting on the "check your email" screen,
+  // poll sign-in with the password still in state. Supabase has no
+  // unauthenticated "is this email confirmed yet?" check (anti-enumeration), so
+  // a successful sign-in is our signal the email was confirmed — possibly on
+  // another device. We immediately sign back out so the user lands on the manual
+  // sign-in step. Modest interval + cap avoids tripping auth rate limits.
+  useEffect(() => {
+    if (!confirmationSent || !supabase || !password) return;
+    const client = supabase;
+    let active = true;
+    let attempts = 0;
+    const maxAttempts = 30; // ~2.5 min at 5s intervals
+    const id = window.setInterval(async () => {
+      attempts += 1;
+      if (attempts > maxAttempts) {
+        window.clearInterval(id);
+        return;
+      }
+      const { data, error: signInError } = await client.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (!active) return;
+      if (!signInError && data.session) {
+        window.clearInterval(id);
+        try {
+          await client.auth.signOut();
+        } catch {
+          /* ignore */
+        }
+        if (!active) return;
+        setMode('sign_in');
+        setJustConfirmed(true);
+        setConfirmationSent(false);
+      }
+    }, 5000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, [confirmationSent, email, password]);
 
   function validate(): boolean {
     let ok = true;
@@ -64,7 +140,21 @@ export function LoginPage() {
     }
   }
 
-  if (user) {
+  if (confirming) {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <h1>Finishing confirmation…</h1>
+          <p className={styles.muted}>One moment while we complete your email confirmation.</p>
+        </div>
+      </main>
+    );
+  }
+
+  // While `justConfirmed` is set we deliberately fall through to the sign-in
+  // form even if a transient session is still clearing, so the user signs in
+  // explicitly rather than seeing the "already signed in" screen.
+  if (user && !justConfirmed) {
     return (
       <main className={styles.page}>
         <div className={styles.card}>
@@ -87,9 +177,10 @@ export function LoginPage() {
             account, then come back and sign in.
           </p>
           <p className={styles.notice}>
-            The link works on any device — if you opened it on your phone, just return here on this
-            device to sign in.
+            The link works on any device — if you opened it on your phone, this page will move you to
+            sign-in automatically once it’s confirmed.
           </p>
+          <p className={styles.waiting}>Waiting for confirmation… this page updates automatically.</p>
           <button
             type="button"
             className={styles.secondaryButton}
@@ -112,6 +203,9 @@ export function LoginPage() {
     <main className={styles.page}>
       <div className={styles.card}>
         <h1>{mode === 'sign_in' ? 'Sign in' : 'Create account'}</h1>
+        {justConfirmed ? (
+          <p className={styles.noticeSuccess}>✓ Email confirmed — sign in to continue.</p>
+        ) : null}
         {!isConfigured ? (
           <p className={styles.notice}>
             Supabase isn’t configured yet. Add <code>VITE_SUPABASE_URL</code> and{' '}
@@ -172,7 +266,7 @@ export function LoginPage() {
                 const { data, error: authError } = await supabase.auth.signUp({
                   email,
                   password,
-                  options: { emailRedirectTo: `${window.location.origin}/account` },
+                  options: { emailRedirectTo: `${window.location.origin}/login?confirmed=1` },
                 });
                 if (authError) {
                   setError(friendlyAuthError(authError.message));

@@ -27,6 +27,15 @@ export function RefundPage() {
         — you keep Pro access until then, and you are not charged again.
       </p>
 
+      <h2>Deleting your account</h2>
+      <p>
+        Deleting your account (<strong>Account → Delete account</strong>) is different from
+        cancelling: it cancels your subscription <strong>immediately</strong> and{' '}
+        <strong>forfeits any remaining paid time</strong>, with no refund for the unused part of the
+        period. If you want to use the time you have already paid for, cancel instead of deleting,
+        and delete after the period ends.
+      </p>
+
       <h2>Refunds</h2>
       <p>
         Because cancellation lets you keep access for the period you already paid for, we generally

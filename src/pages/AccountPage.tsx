@@ -1,9 +1,10 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../supabase/client';
 import { useAuth } from '../auth/useAuth';
 import {
   createCheckoutSession,
   createPortalSession,
+  deleteAccount,
   getEntitlements,
   type EntitlementsResponse,
 } from '../utils/api';
@@ -13,12 +14,17 @@ import styles from './AccountPage.module.css';
 
 export function AccountPage() {
   const { session, user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const checkoutResult = searchParams.get('checkout');
   const [entitlements, setEntitlements] = useState<EntitlementsResponse | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isBillingLoading, setIsBillingLoading] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const display = getSubscriptionDisplay(entitlements);
   const badgeClass =
     display.uiState === 'pro_active'
@@ -109,6 +115,25 @@ export function AccountPage() {
     }
   }
 
+  async function handleDeleteAccount() {
+    if (!session?.access_token) return;
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount(session.access_token);
+      // Account is gone server-side; clear the local session and return to the
+      // tool, which still works fully without an account.
+      if (supabase) {
+        await supabase.auth.signOut();
+      }
+      navigate('/', { replace: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not delete account.';
+      setDeleteError(message);
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <main className={styles.page}>
       <div className={styles.card}>
@@ -188,6 +213,64 @@ export function AccountPage() {
           <Link className={styles.link} to="/">
             Back to tool
           </Link>
+        </div>
+
+        <div className={styles.dangerZone}>
+          <h2 className={styles.dangerTitle}>Delete account</h2>
+          <p className={styles.muted}>
+            Permanently delete your account and data. This cancels any active Pro subscription
+            immediately — you won’t be refunded for the remaining days — and removes your profile and
+            billing records. This cannot be undone.
+          </p>
+          {!showDelete ? (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                onClick={() => setShowDelete(true)}
+              >
+                Delete my account
+              </button>
+            </div>
+          ) : (
+            <div className={styles.dangerConfirm}>
+              <label className={styles.dangerLabel}>
+                Type <strong>DELETE</strong> to confirm
+                <input
+                  className={styles.input}
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  aria-label="Type DELETE to confirm account deletion"
+                  disabled={isDeleting}
+                />
+              </label>
+              <div className={styles.dangerActions}>
+                <button
+                  type="button"
+                  className={styles.dangerButton}
+                  disabled={deleteConfirm !== 'DELETE' || isDeleting}
+                  onClick={handleDeleteAccount}
+                >
+                  {isDeleting ? 'Deleting…' : 'Permanently delete'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.actionLink}
+                  disabled={isDeleting}
+                  onClick={() => {
+                    setShowDelete(false);
+                    setDeleteConfirm('');
+                    setDeleteError(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+              {deleteError ? <p className={styles.notice}>{deleteError}</p> : null}
+            </div>
+          )}
         </div>
       </div>
     </main>

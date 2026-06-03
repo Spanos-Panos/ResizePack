@@ -197,6 +197,84 @@
   font-size: 0.9rem;
 }
 
+.dangerZone {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--danger-line);
+  padding-top: 1.4rem;
+}
+
+.dangerTitle {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--danger);
+  margin: 0 0 0.9rem;
+}
+
+.dangerButton {
+  border: 1px solid var(--danger-line);
+  background: var(--danger-tint);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 0.68rem 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.dangerButton:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
+}
+
+.dangerButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dangerConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.dangerLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--ink);
+  font-size: 0.92rem;
+}
+
+.dangerLabel strong {
+  font-family: var(--font-mono);
+  color: var(--danger);
+}
+
+.input {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.62rem 0.7rem;
+  background: var(--surface-raised);
+  color: var(--ink);
+  max-width: 220px;
+}
+
+.input:focus-visible {
+  border-color: var(--danger);
+  outline: none;
+}
+
+.dangerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  align-items: center;
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 1.25rem 0.85rem;

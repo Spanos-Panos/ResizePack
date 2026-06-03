@@ -34,6 +34,12 @@ export function TermsPage() {
         under your account. You must provide accurate information and be old enough to form a binding
         contract in your country.
       </p>
+      <p>
+        You may delete your account at any time from your Account page. Deletion is{' '}
+        <strong>permanent and immediate</strong>: it cancels any active subscription without a refund
+        for remaining paid time and removes your account data, as described in the Privacy Policy and
+        the Refund &amp; Cancellation Policy.
+      </p>
 
       <h2>4. Free and Pro plans</h2>
       <p>

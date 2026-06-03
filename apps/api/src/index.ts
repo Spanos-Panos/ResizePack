@@ -12,6 +12,14 @@ type RawBodyRequest = {
   rawBody?: string | Buffer;
 };
 
+// Minimal view of a Stripe error for structured logging / branching. Stripe's
+// error classes are runtime values, so we describe just the fields we read.
+type StripeErrorShape = {
+  type?: string;
+  code?: string;
+  message?: string;
+};
+
 const env = loadEnv();
 const stripe = new Stripe(env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' });
 const supabaseAdmin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
@@ -255,10 +263,91 @@ server.post('/billing/create-portal-session', async (request, reply) => {
 
     return { url: portalSession.url };
   } catch (error) {
-    request.log.error({ error }, 'Portal session creation failed');
+    // Surface the Stripe specifics in the log so the 400 is diagnosable in one
+    // line (e.g. missing portal configuration for the current mode, or a
+    // test/live customer mismatch). The client still gets a generic message.
+    const stripeError = error as StripeErrorShape;
+    request.log.error(
+      {
+        err: error,
+        stripeType: stripeError.type,
+        stripeCode: stripeError.code,
+        stripeMessage: stripeError.message,
+        customerId: subscription.stripe_customer_id,
+      },
+      'Portal session creation failed',
+    );
     return reply.code(400).send({ error: 'Unable to open billing portal. Please try again.' });
   }
 });
+
+server.post(
+  '/account/delete',
+  {
+    // Destructive + irreversible: keep a tight cap on top of the global limit.
+    config: { rateLimit: { max: 5, timeWindow: '1 minute' } },
+  },
+  async (request, reply) => {
+    const user = await getAuthenticatedUser(request.headers.authorization);
+    if (!user) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
+
+    // Acts only on the authenticated user's own id (no body params) → no IDOR.
+    const subscription = await getLatestSubscription(user.id);
+
+    // 1) Cancel any live subscription first so a deleted account can never keep
+    //    billing. Immediate cancellation forfeits remaining paid time
+    //    (consistent with the no-partial-refund policy).
+    if (
+      subscription?.stripe_subscription_id &&
+      ['active', 'trialing', 'past_due', 'unpaid'].includes(subscription.status)
+    ) {
+      try {
+        await stripe.subscriptions.cancel(subscription.stripe_subscription_id);
+      } catch (error) {
+        const stripeError = error as StripeErrorShape;
+        // Already-cancelled / missing is fine; any other failure aborts so we
+        // never delete an account that might still be billable.
+        if (stripeError.code !== 'resource_missing') {
+          request.log.error(
+            { err: error, userId: user.id },
+            'Account deletion: subscription cancel failed',
+          );
+          return reply.code(500).send({ error: 'Could not delete account. Please try again.' });
+        }
+      }
+    }
+
+    // 2) Delete the Stripe customer to strip stored PII / payment methods.
+    //    Non-fatal: Stripe still retains invoices/payment records for tax/legal
+    //    compliance (lawful retention under GDPR Art 17(3)(b)).
+    if (subscription?.stripe_customer_id) {
+      try {
+        await stripe.customers.del(subscription.stripe_customer_id);
+      } catch (error) {
+        request.log.warn(
+          { err: error, userId: user.id },
+          'Account deletion: Stripe customer delete failed (non-fatal)',
+        );
+      }
+    }
+
+    // 3) Delete the Supabase auth user. FK cascades remove profiles +
+    //    subscriptions and null usage_events (see supabase/schema.sql). A
+    //    late webhook arriving after this point FK-fails harmlessly.
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(user.id);
+    if (deleteError) {
+      request.log.error(
+        { err: deleteError, userId: user.id },
+        'Account deletion: auth user delete failed',
+      );
+      return reply.code(500).send({ error: 'Could not delete account. Please try again.' });
+    }
+
+    return { deleted: true };
+  },
+);
 
 server.post(
   '/webhooks/stripe',

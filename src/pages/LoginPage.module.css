@@ -51,6 +51,24 @@
   color: var(--clay);
 }
 
+.noticeSuccess {
+  margin: 0.9rem 0 0;
+  color: var(--sage);
+  background: var(--sage-tint);
+  border: 1px solid var(--sage-line);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.waiting {
+  margin: 0.9rem 0 0;
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
 .oauthGroup {
   margin-top: 1.3rem;
   display: flex;

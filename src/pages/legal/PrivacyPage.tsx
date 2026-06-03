@@ -62,11 +62,28 @@ export function PrivacyPage() {
         </li>
       </ul>
 
-      <h2>Your rights</h2>
+      <h2>Account deletion &amp; data retention</h2>
       <p>
-        You can request access to or deletion of your account data by contacting{' '}
-        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Deleting your account removes your
-        profile and subscription records from our database.
+        You can delete your account at any time from your{' '}
+        <strong>Account page → Delete account</strong>. Deletion is immediate and permanent. It:
+      </p>
+      <ul>
+        <li>cancels any active Pro subscription right away (no refund of remaining paid time);</li>
+        <li>
+          removes your profile, subscription records, and account login from our database and
+          authentication provider;
+        </li>
+        <li>deletes your customer record and stored payment methods at Stripe.</li>
+      </ul>
+      <p>
+        <strong>What is retained:</strong> Stripe keeps a record of past invoices and payments after
+        deletion because payment processors are legally required to retain transaction records for
+        tax and accounting purposes. This is lawful retention under GDPR Article 17(3)(b) and is
+        outside our control. We do not keep your image content at any point (see above).
+      </p>
+      <p>
+        You can also request access to your data, or ask us to delete it on your behalf, by
+        contacting <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
 
       <h2>Disclaimer</h2>

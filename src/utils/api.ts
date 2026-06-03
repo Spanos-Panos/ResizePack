@@ -59,3 +59,9 @@ export function createPortalSession(accessToken: string) {
   });
 }
 
+export function deleteAccount(accessToken: string) {
+  return apiRequest<{ deleted: boolean }>('/account/delete', accessToken, {
+    method: 'POST',
+  });
+}
+
