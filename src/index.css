@@ -12,7 +12,7 @@
   /* Ink / text */
   --ink: #221d16;
   --ink-soft: #5a5145;
-  --ink-faint: #8c8270;
+  --ink-faint: #6e6553; /* darkened to pass WCAG AA (4.8:1 on --paper) */
 
   /* Lines */
   --line: #ddd1bb;

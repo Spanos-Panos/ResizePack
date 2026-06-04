@@ -37,7 +37,7 @@ export function ProgressSummary({ progress, result, isProcessing }: ProgressSumm
 
   return (
     <section className={styles.wrapper} aria-live="polite">
-      <h3 className={styles.title}>Progress</h3>
+      <h2 className={styles.title}>Progress</h2>
       {progress.length > 0 ? (
         <div className={styles.overview}>
           <div className={styles.metrics}>

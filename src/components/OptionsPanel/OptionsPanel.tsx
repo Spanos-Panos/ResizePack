@@ -34,7 +34,7 @@ export function OptionsPanel({
 }: OptionsPanelProps) {
   return (
     <section className={styles.wrapper}>
-      <h3 className={styles.title}>Processing options</h3>
+      <h2 className={styles.title}>Processing options</h2>
 
       {selectedPreset === 'custom' ? (
         <div className={styles.group}>

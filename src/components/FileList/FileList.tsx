@@ -26,7 +26,7 @@ export function FileList({ files, onRemove, onClearAll }: FileListProps) {
   return (
     <section className={styles.wrapper}>
       <div className={styles.header}>
-        <h3 className={styles.title}>Files ({files.length})</h3>
+        <h2 className={styles.title}>Files ({files.length})</h2>
         <button type="button" className={styles.clearButton} onClick={onClearAll}>
           Clear all
         </button>
