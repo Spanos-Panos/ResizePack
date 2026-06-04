@@ -21,8 +21,11 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Comma-separated allowlist. First entry is canonical (used for Stripe
+      # redirect URLs); the rest just stay allowed for CORS. The old *.vercel.app
+      # URL is kept so bookmarks/links don't break.
       - key: WEB_ORIGIN
-        value: https://resizepack.vercel.app
+        value: https://www.resizepack.tech,https://resizepack.tech,https://resizepack.vercel.app
       - key: RATE_LIMIT_MAX
         value: "100"
       # --- Secrets: set these in the Render dashboard (sync:false keeps them out of git) ---

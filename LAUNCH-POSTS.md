@@ -3,7 +3,7 @@
 These are short, honest launch drafts aligned with `bulk-image-tool-brief.md` §17.
 
 Live app:
-- `https://resizepack.vercel.app`
+- `https://www.resizepack.tech`
 
 ## 1) Reddit (r/Etsy) draft
 
@@ -17,7 +17,7 @@ Body:
 
 `It runs in the browser for v1, so there is no account and no paywall.`
 
-`Link: https://resizepack.vercel.app`
+`Link: https://www.resizepack.tech`
 
 `I’m looking for feedback on output quality defaults (too soft / too aggressive / just right).`
 
@@ -33,7 +33,7 @@ Body:
 
 `Stack is React + Vite, processing is browser-side (no backend image storage in v1).`
 
-`Live: https://resizepack.vercel.app`
+`Live: https://www.resizepack.tech`
 
 `Would appreciate feedback on UX and default compression quality.`
 
@@ -47,7 +47,7 @@ Body:
 
 `It targets Etsy/web use cases and keeps v1 very simple: no account, no paywall, one ZIP output.`
 
-`Live app: https://resizepack.vercel.app`
+`Live app: https://www.resizepack.tech`
 
 `Main goal is learning + shipping. I’d love feedback on usefulness and positioning.`
 
@@ -56,7 +56,7 @@ Body:
 `Just launched ResizePack: a free bulk image optimizer for Etsy/web workflows.`
 `Drop multiple photos, pick preset, download one ZIP.`
 `No login in v1.`
-`https://resizepack.vercel.app`
+`https://www.resizepack.tech`
 `Feedback welcome (especially quality defaults).`
 
 ## 5) Feedback questions to ask users

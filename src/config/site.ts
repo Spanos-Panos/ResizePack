@@ -4,4 +4,4 @@
  */
 export const SUPPORT_EMAIL = 'panosspanoscode@gmail.com';
 
-export const SITE_URL = 'https://resizepack.vercel.app';
+export const SITE_URL = 'https://www.resizepack.tech';

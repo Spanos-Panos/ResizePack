@@ -5,10 +5,10 @@ This follows `bulk-image-tool-brief.md` §17 and keeps everything free.
 ## 1) Google Search Console setup (free)
 
 1. Open Google Search Console and add property:
-   - Preferred: `https://resizepack.vercel.app/`
+   - Preferred: `https://www.resizepack.tech/`
 2. Verify ownership (URL prefix flow is simplest on Vercel).
 3. Submit sitemap:
-   - `https://resizepack.vercel.app/sitemap.xml`
+   - `https://www.resizepack.tech/sitemap.xml`
 4. Check indexing status after a few days.
 
 ## 2) Optional GA4 setup (free)

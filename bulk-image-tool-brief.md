@@ -4,9 +4,9 @@
 > **Code location:** `Full Stack Apps/ResizePack/` — frontend SPA at repo root + `apps/api/` (Fastify)  
 > **Product name:** **ResizePack** (locked 2026-05-20)  
 > **Display / npm name:** `ResizePack` / `resizepack` (package.json)  
-> **Domain (verify before purchase):** `resizepack.com`, `resizepack.io` — not required; live on `resizepack.vercel.app`  
+> **Domain:** **`resizepack.tech`** (bought 2026-06-04 via Papaki) — live on **`https://www.resizepack.tech`** (apex redirects to www); old `resizepack.vercel.app` kept as fallback  
 > **Author:** Panos, 21, self-taught developer (runs git himself)  
-> **Last updated:** 2026-06-03 (post-launch polish: FOUC/fonts, legal routes, auth UX, cross-device email, OAuth Facebook, CI, Stripe live runbook — OPERATIONS §6.3/§10–§12)  
+> **Last updated:** 2026-06-04 (custom domain `resizepack.tech` live + URL migration + new favicon; prior: post-launch polish — FOUC/fonts, legal routes, auth UX, cross-device email, CI, Stripe live runbook — OPERATIONS §6.3/§10–§12)  
 > **Purpose of this document:** Single source of truth for any AI agent or human collaborator. **Keep this file fully updated after every change** — status, how things were built, apps, web, maintenance, testing, production, and security. Satellite docs (`README.md`, `DEPLOY.md`, `OPERATIONS.md`, `LAUNCH.md`) hold step detail; this brief indexes and summarizes them (§26).
 
 **Related project (separate brief):** [PanChat — thread-task-chat-brief.md](./thread-task-chat-brief.md) — portfolio full-stack app; this tool is a **parallel** self-serve utility track.
@@ -761,6 +761,7 @@ Author wants v1 **fully free**. Long-term, consider keeping a **generous free ti
 | 2026-06-03 | **MoR decision: B — stay on direct Stripe; do NOT adopt a Merchant of Record now.** Clarified the misconception: Stripe (Checkout/Billing/Connect/Tax) is **not** and cannot be a MoR — on direct Stripe, **we are the Merchant of Record** and own VAT/OSS/sales-tax/chargeback liability. A true MoR (would handle all tax/liability) means a separate provider — **Lemon Squeezy** (Stripe-owned), Paddle, or Polar — and a full billing-layer rebuild. Decision: defer; nothing owed in test mode. **Before live charges:** sit with λογιστής to either register for EU OSS ourselves or switch to a MoR. Recorded as a conscious, accepted risk — not a blind spot. |
 | 2026-06-03 | **General security audit (§13.4).** Reviewed API hardening, private-data placement, no hardcoded API/secrets in frontend, input/XSS, and URL/open-redirect. All clean (images never leave browser; no card data on our side; anon key public-by-design; React auto-escapes; no raw SQL). One defensive hardening: `LoginPage` redirect now restricted to single-slash internal paths (open-redirect belt-and-suspenders). |
 | 2026-06-03 | **Error-message / endpoint hardening (§13.3).** Global `setErrorHandler` (5xx → generic client message, full detail logged server-side; 4xx keep client-safe message) + generic `setNotFoundHandler` + webhook signature error genericised (`'Invalid signature'`). Re-confirmed every data endpoint is JWT/signature-gated with no IDOR. Pagination: documented as a forward rule (no list endpoint exists yet, so no code added — avoid dead plumbing). |
+| 2026-06-04 | **Custom domain live: `resizepack.tech`** (bought via Papaki). DNS at Papaki (A `@`→`216.198.79.1`, CNAME `www`→Vercel) verified in Vercel; apex 308-redirects to `www`. Replaced the new ResizePack favicon (was the leftover Vercel logo, which is why search showed "Vercel"). Migrated all hardcoded URLs `resizepack.vercel.app` → `https://www.resizepack.tech` (`index.html` canonical/OG/Twitter/JSON-LD, `sitemap.xml`, `robots.txt`, `src/config/site.ts`, `public/*.html` canonicals, docs). `WEB_ORIGIN` is now a **comma-separated allowlist** (`www.resizepack.tech,resizepack.tech,resizepack.vercel.app`; first entry canonical for Stripe redirects) so CORS + Stripe work on the new domain while old links keep resolving — see `env.ts`/`index.ts`/`render.yaml`. Manual follow-ups: Supabase URL config, Stripe portal/checkout return domains, Google Search Console new property + sitemap. |
 | 2026-06-03 | **Post-launch polish batch.** (1) Style-on-refresh/Back glitch fixed: Google Fonts preload in `index.html`, `vercel.json` cache headers (immutable `/assets/*`, must-revalidate HTML), bfcache `pageshow` reload in `main.tsx`. (2) Legal pages moved into the app as React routes `/privacy` `/terms` `/refund` (`src/pages/legal/*` + `LegalLayout`); `public/*.html` now redirect; footer/hero links same-tab; sitemap updated; `src/config/site.ts` holds `SUPPORT_EMAIL`. (3) Login UX: inline validation, friendly error mapping (`src/utils/authErrors.ts`), post-signup confirm state, `emailRedirectTo` for cross-device email verification; Supabase client `flowType: 'implicit'` for cross-device confirm links. (4) Facebook OAuth wired (+ friendly OAuth errors). (5) CI added (`.github/workflows/ci.yml`: lint + both builds on push/PR). (6) Stripe live cutover runbook documented (OPERATIONS §6.3) — env/config swap, gated on accountant/tax + legal review. Lint fixes: derived preset/WebP in `App.tsx`, `usePlan` logout without effect setState. |
 
 ---
@@ -1022,7 +1023,7 @@ export const ETSY_LISTING = {
 
 | Area | Service | Notes |
 |------|---------|--------|
-| Frontend | Vercel | https://resizepack.vercel.app — static Vite build |
+| Frontend | Vercel | https://www.resizepack.tech (custom domain `resizepack.tech`) — static Vite build; `resizepack.vercel.app` still resolves |
 | Auth + DB | Supabase | Project `ypxjadrmxxfikuygkgeg`; schema `supabase/schema.sql` |
 | Payments | Stripe (test first) | Checkout + webhooks; local via **Stripe CLI** |
 | SEO | Google Search Console | Sitemap on production URL |

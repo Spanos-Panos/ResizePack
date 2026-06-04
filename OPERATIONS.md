@@ -26,7 +26,7 @@
 
 Production today:
 
-- **Live site:** https://resizepack.vercel.app/
+- **Live site:** https://www.resizepack.tech/
 - **Repo:** GitHub → connected to Vercel (auto-deploy on push to main)
 - **Phase 2 API (test mode):** `https://resizepack-api.onrender.com` — Stripe **test** webhook + Vercel `VITE_*` env wired. **Live** Stripe charges require §6.3 cutover + accountant/legal gates.
 
@@ -44,7 +44,7 @@ Production today:
 ### 2.2 Vercel
 
 - **Role:** Hosts the **frontend** (Vite build → static `dist/`).
-- **URL:** https://resizepack.vercel.app/
+- **URL:** https://www.resizepack.tech/
 - **Dashboard:** https://vercel.com/dashboard
 - **Settings that matter:**
   - Framework: **Vite**
@@ -62,8 +62,8 @@ Production today:
 
 - **Role:** Tell Google about the site, submit sitemap, see indexing/coverage.
 - **URL:** https://search.google.com/search-console
-- **Property:** `https://resizepack.vercel.app/` (URL prefix)
-- **Sitemap:** `https://resizepack.vercel.app/sitemap.xml`
+- **Property:** `https://www.resizepack.tech/` (URL prefix)
+- **Sitemap:** `https://www.resizepack.tech/sitemap.xml`
 - **Verification:** HTML tag or DNS (however you verified on Vercel).
 - **Maintenance:** After deploy or URL changes, resubmit sitemap if needed; check Coverage for errors every few weeks.
 
@@ -156,7 +156,7 @@ Copy `.env.example` → `.env.local` at repo root (never commit).
 | `STRIPE_SECRET_KEY` | API | `sk_test_...` or live later |
 | `STRIPE_WEBHOOK_SECRET` | API | From `stripe listen` locally; from Dashboard in prod |
 | `STRIPE_PRICE_ID` | API | Test price id |
-| `WEB_ORIGIN` | API | `http://localhost:5173` local; `https://resizepack.vercel.app` prod |
+| `WEB_ORIGIN` | API | `http://localhost:5173` local; prod = comma-separated allowlist `https://www.resizepack.tech,https://resizepack.tech,https://resizepack.vercel.app` (first entry is canonical → used for Stripe redirect URLs) |
 
 **API loads env:** `apps/api` uses `dotenv` to read `../../.env.local`.
 
@@ -337,7 +337,7 @@ Build check: `pnpm --dir apps/api build`, then confirm `apps/api/dist/index.js` 
 1. Deploy `apps/api` via the committed `render.yaml` blueprint (HTTPS automatic).
 2. Set the 5 secret env vars in Render (`sync: false` keeps them out of git); `NODE_ENV=production` makes `WEB_ORIGIN` required (CORS lock-down).
 3. Add the production **Stripe webhook** endpoint → put its signing secret in Render `STRIPE_WEBHOOK_SECRET` (no Stripe CLI in prod).
-4. `WEB_ORIGIN=https://resizepack.vercel.app` (preset in blueprint).
+4. `WEB_ORIGIN=https://www.resizepack.tech,https://resizepack.tech,https://resizepack.vercel.app` (comma-separated allowlist; first entry is canonical and builds Stripe redirect URLs; preset in blueprint).
 5. `VITE_API_BASE_URL=https://<service>.onrender.com` on Vercel → redeploy frontend.
 6. Stripe **live** mode (new keys, price, webhook) + accountant/tax + Terms/Privacy/refund **before real charges** (`bulk-image-tool-brief.md` §24). Test mode is fine until then.
 
@@ -473,8 +473,8 @@ The login page calls `supabase.auth.signInWithOAuth({ provider, options: { redir
 The login page calls `signInWithProvider` for **Google and GitHub** ([`src/pages/LoginPage.tsx`](src/pages/LoginPage.tsx)). Each provider must be enabled in Supabase + backed by an OAuth app, or the button errors. **Facebook was removed** from the UI (Meta setup/review not worth it for v1).
 
 **Supabase (one-time):** Dashboard → Authentication → **URL Configuration**:
-- **Site URL:** `https://resizepack.vercel.app`
-- **Redirect URLs (allowlist):** add `https://resizepack.vercel.app/account` **and** `http://localhost:5173/account` (local dev).
+- **Site URL:** `https://www.resizepack.tech`
+- **Redirect URLs (allowlist):** add `https://www.resizepack.tech/**` (wildcard covers `/login?confirmed=1` and `/account`), keep `https://resizepack.vercel.app/**` as fallback, and `http://localhost:5173/**` for local dev.
 
 **Google:** Authentication → Providers → Google → enable. Create OAuth credentials in **Google Cloud Console** (APIs & Services → Credentials → OAuth client ID → Web application). Authorized redirect URI = the **Supabase callback** shown on the provider page (`https://<ref>.supabase.co/auth/v1/callback`). Paste Client ID + Secret into Supabase.
 

@@ -43,10 +43,16 @@ await server.register(helmet, {
   crossOriginResourcePolicy: { policy: 'cross-origin' },
 });
 
+// WEB_ORIGIN may be a single origin or a comma-separated allowlist, so the new
+// custom domain and the old *.vercel.app URL both keep working through the DNS
+// migration. The first entry is canonical and is used for Stripe redirect URLs.
+const webOrigins = env.WEB_ORIGIN?.split(',').map((origin) => origin.trim()).filter(Boolean) ?? [];
+const primaryOrigin = webOrigins[0] ?? 'http://localhost:5173';
+
 // CORS: in production env.ts guarantees WEB_ORIGIN is set, so we never fall
 // back to the permissive `true` outside local development.
 await server.register(cors, {
-  origin: env.WEB_ORIGIN ?? true,
+  origin: webOrigins.length > 0 ? webOrigins : true,
 });
 
 // Per-IP rate limit for abuse prevention (brief §13). The Stripe webhook is
@@ -247,8 +253,8 @@ server.post(
           quantity: 1,
         },
       ],
-      success_url: `${env.WEB_ORIGIN ?? 'http://localhost:5173'}/account?checkout=success`,
-      cancel_url: `${env.WEB_ORIGIN ?? 'http://localhost:5173'}/account?checkout=cancelled`,
+      success_url: `${primaryOrigin}/account?checkout=success`,
+      cancel_url: `${primaryOrigin}/account?checkout=cancelled`,
       metadata: {
         user_id: user.id,
       },
@@ -282,7 +288,7 @@ server.post('/billing/create-portal-session', async (request, reply) => {
   try {
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripe_customer_id,
-      return_url: `${env.WEB_ORIGIN ?? 'http://localhost:5173'}/account`,
+      return_url: `${primaryOrigin}/account`,
     });
 
     return { url: portalSession.url };
