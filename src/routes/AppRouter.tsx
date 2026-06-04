@@ -8,6 +8,9 @@ import { ToolPage } from '../pages/ToolPage';
 // secondary routes are lazy-loaded to keep the initial bundle small (cuts
 // unused JS on first paint — see brief §15.2 / PageSpeed).
 const LoginPage = lazy(() => import('../pages/LoginPage').then((m) => ({ default: m.LoginPage })));
+const ResetPasswordPage = lazy(() =>
+  import('../pages/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage })),
+);
 const AccountPage = lazy(() =>
   import('../pages/AccountPage').then((m) => ({ default: m.AccountPage })),
 );
@@ -29,6 +32,7 @@ export function AppRouter() {
           <Routes>
             <Route path="/" element={<ToolPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/refund" element={<RefundPage />} />

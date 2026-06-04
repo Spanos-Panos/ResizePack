@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import { supabase } from '../supabase/client';
 import { useAuth } from '../auth/useAuth';
 import { friendlyAuthError, isValidEmail } from '../utils/authErrors';
+import { ThemeToggle } from '../components/ThemeToggle/ThemeToggle';
 import styles from './LoginPage.module.css';
 
 export function LoginPage() {
@@ -10,7 +11,8 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [mode, setMode] = useState<'sign_in' | 'sign_up'>('sign_in');
+  const [mode, setMode] = useState<'sign_in' | 'sign_up' | 'forgot'>('sign_in');
+  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
@@ -199,9 +201,115 @@ export function LoginPage() {
     );
   }
 
+  if (mode === 'forgot') {
+    return (
+      <main className={styles.page}>
+        <div className={styles.card}>
+          <div className={styles.themeCorner}>
+            <ThemeToggle />
+          </div>
+          {resetSent ? (
+            <>
+              <h1>Check your email</h1>
+              <p className={styles.muted}>
+                If an account exists for <strong>{email}</strong>, we’ve sent a link to reset your
+                password. Open it to choose a new one.
+              </p>
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => {
+                  setResetSent(false);
+                  setMode('sign_in');
+                }}
+              >
+                Back to sign in
+              </button>
+            </>
+          ) : (
+            <>
+              <h1>Reset password</h1>
+              <p className={styles.muted}>
+                Enter your account email and we’ll send you a link to set a new password.
+              </p>
+              <form
+                className={styles.form}
+                onSubmit={async (event) => {
+                  event.preventDefault();
+                  setError(null);
+                  if (!isValidEmail(email)) {
+                    setEmailError('Enter a valid email address.');
+                    return;
+                  }
+                  setEmailError(null);
+                  if (!supabase) {
+                    setError('Supabase is not configured.');
+                    return;
+                  }
+                  setIsSubmitting(true);
+                  try {
+                    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+                      redirectTo: `${window.location.origin}/reset-password`,
+                    });
+                    if (resetError) {
+                      setError(friendlyAuthError(resetError.message));
+                      return;
+                    }
+                    setResetSent(true);
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+              >
+                <label className={styles.label}>
+                  Email
+                  <input
+                    className={styles.input}
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={emailError ? true : undefined}
+                    required
+                  />
+                  {emailError ? <span className={styles.fieldError}>{emailError}</span> : null}
+                </label>
+                {error ? (
+                  <p className={styles.error} role="alert">
+                    {error}
+                  </p>
+                ) : null}
+                <button className={styles.primaryButton} type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending…' : 'Send reset link'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.secondaryButton}
+                  onClick={() => {
+                    setError(null);
+                    setMode('sign_in');
+                  }}
+                  disabled={isSubmitting}
+                >
+                  Back to sign in
+                </button>
+              </form>
+            </>
+          )}
+          <p className={styles.backLink}>
+            <Link to="/">← Back to tool</Link>
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className={styles.page}>
       <div className={styles.card}>
+        <div className={styles.themeCorner}>
+          <ThemeToggle />
+        </div>
         <h1>{mode === 'sign_in' ? 'Sign in' : 'Create account'}</h1>
         {justConfirmed ? (
           <p className={styles.noticeSuccess}>✓ Email confirmed — sign in to continue.</p>
@@ -360,6 +468,22 @@ export function LoginPage() {
             >
               {mode === 'sign_in' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
             </button>
+
+            {mode === 'sign_in' ? (
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => {
+                  setError(null);
+                  setEmailError(null);
+                  setPasswordError(null);
+                  setMode('forgot');
+                }}
+                disabled={isSubmitting}
+              >
+                Forgot password?
+              </button>
+            ) : null}
           </form>
           </>
         )}
