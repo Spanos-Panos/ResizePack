@@ -15,6 +15,13 @@
   animation: rp-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.themeCorner {
+  position: absolute;
+  top: 0.95rem;
+  right: 1rem;
+  z-index: 2;
+}
+
 .card::before {
   content: '';
   position: absolute;

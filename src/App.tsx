@@ -7,6 +7,7 @@ import { FileList } from './components/FileList/FileList';
 import { OptionsPanel } from './components/OptionsPanel/OptionsPanel';
 import { PresetSelector } from './components/PresetSelector/PresetSelector';
 import { ProgressSummary } from './components/ProgressSummary/ProgressSummary';
+import { ThemeToggle } from './components/ThemeToggle/ThemeToggle';
 import { PRESETS, PRESET_ORDER, PRESET_STORAGE_KEY } from './presets/presets';
 import type { BatchResult, FileProgress, OutputFormat, PresetId, ProcessingOptions } from './types/image';
 import { validateIncomingFiles } from './utils/fileValidation';
@@ -187,6 +188,7 @@ function App() {
       <header className={styles.hero}>
         <p className={styles.brandPill}>ResizePack</p>
         <div className={styles.accountRow}>
+          <ThemeToggle />
           {user ? (
             <Link className={styles.accountLink} to="/account">
               Account

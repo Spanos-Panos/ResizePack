@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { ThemeToggle } from '../../components/ThemeToggle/ThemeToggle';
 import styles from './LegalLayout.module.css';
 
 interface LegalLayoutProps {
@@ -13,6 +14,9 @@ export function LegalLayout({ title, lastUpdated, note, children }: LegalLayoutP
   return (
     <main className={styles.page}>
       <article className={styles.card}>
+        <div className={styles.themeCorner}>
+          <ThemeToggle />
+        </div>
         <p className={styles.eyebrow}>ResizePack</p>
         <h1 className={styles.title}>{title}</h1>
         <p className={styles.meta}>

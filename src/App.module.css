@@ -40,6 +40,9 @@
   position: absolute;
   top: 1.3rem;
   right: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   animation: none !important;
 }
 

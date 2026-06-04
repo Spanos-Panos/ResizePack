@@ -77,7 +77,7 @@
 }
 
 .lockedOption:hover {
-  background: #f1d2c0;
+  background: var(--clay-tint);
 }
 
 .lockTag {

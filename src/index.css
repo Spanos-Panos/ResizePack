@@ -52,6 +52,7 @@
   --shadow: 0 22px 48px -28px rgba(34, 29, 22, 0.5);
   --shadow-sm: 0 8px 20px -12px rgba(34, 29, 22, 0.38);
 
+  color-scheme: light;
   font-family: var(--font-body);
   line-height: 1.55;
   font-weight: 400;
@@ -61,6 +62,56 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark theme — warm "espresso" inversion of Print Studio. Set via the
+   [data-theme="dark"] attribute on <html> (no-flash inline script in
+   index.html + ThemeToggle). Every token below mirrors its :root sibling so
+   components keep working through the same semantic variables. Text tokens are
+   tuned to stay ≥ WCAG AA on the dark surfaces. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --paper: #18140f;
+  --paper-2: #211b15;
+  --surface: #221c16;
+  --surface-raised: #2b241c;
+
+  /* Ink / text (warm light) */
+  --ink: #f1e9da;
+  --ink-soft: #c9c0b1;
+  --ink-faint: #9d9485;
+
+  /* Lines */
+  --line: #3a322a;
+  --line-soft: #2c2620;
+  --line-ink: #f1e9da;
+
+  /* Accent — clay (brightened for dark) */
+  --clay: #d9602f;
+  --clay-deep: #b8481f;
+  --clay-tint: #3a241a;
+  --clay-line: #6f3c23;
+
+  /* Pro / gold */
+  --gold: #c89b3f;
+  --gold-tint: #322a17;
+  --gold-line: #5e4b25;
+
+  /* Success / sage */
+  --sage: #82a78a;
+  --sage-tint: #1f2a22;
+  --sage-line: #3b5042;
+
+  /* Danger */
+  --danger: #e06a5c;
+  --danger-tint: #341c19;
+  --danger-line: #6f342d;
+
+  /* Depth — deeper shadows on dark */
+  --shadow: 0 22px 48px -28px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 8px 20px -12px rgba(0, 0, 0, 0.55);
 }
 
 *,
@@ -91,6 +142,17 @@ body::before {
   opacity: 0.5;
   mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
+/* Dark theme: retune the warm washes for the dark base and dial back grain. */
+:root[data-theme='dark'] body {
+  background-image:
+    radial-gradient(900px 520px at 88% -8%, rgba(217, 96, 47, 0.1), transparent 60%),
+    radial-gradient(720px 480px at -6% 8%, rgba(130, 167, 138, 0.07), transparent 55%);
+}
+
+:root[data-theme='dark'] body::before {
+  opacity: 0.32;
 }
 
 #root {

@@ -10,6 +10,7 @@ import {
 } from '../utils/api';
 import { useCallback, useEffect, useState } from 'react';
 import { getSubscriptionDisplay } from '../utils/subscriptionStatus';
+import { ThemeToggle } from '../components/ThemeToggle/ThemeToggle';
 import styles from './AccountPage.module.css';
 
 export function AccountPage() {
@@ -137,6 +138,9 @@ export function AccountPage() {
   return (
     <main className={styles.page}>
       <div className={styles.card}>
+        <div className={styles.themeCorner}>
+          <ThemeToggle />
+        </div>
         <h1>Account</h1>
         <p className={styles.muted}>
           Signed in as <strong>{user?.email ?? 'unknown email'}</strong>
