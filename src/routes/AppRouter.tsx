@@ -23,6 +23,7 @@ const TermsPage = lazy(() =>
 const RefundPage = lazy(() =>
   import('../pages/legal/RefundPage').then((m) => ({ default: m.RefundPage })),
 );
+const FAQPage = lazy(() => import('../pages/FAQPage').then((m) => ({ default: m.FAQPage })));
 
 export function AppRouter() {
   return (
@@ -36,6 +37,7 @@ export function AppRouter() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/refund" element={<RefundPage />} />
+            <Route path="/faq" element={<FAQPage />} />
             <Route
               path="/account"
               element={

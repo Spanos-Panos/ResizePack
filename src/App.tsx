@@ -311,7 +311,9 @@ function App() {
         <h2>Bulk image optimizer for Etsy listings and websites</h2>
         <p>
           ResizePack helps you bulk resize images for Etsy, Shopify, blogs, and product pages in
-          one flow. Drop your photos, choose a preset, and download one compressed ZIP.
+          one flow. Drop your photos, choose a preset, and download one compressed ZIP. It’s made
+          for sellers and creators who prep listing photos in batches — without uploading anything
+          to a server.
         </p>
         <div className={styles.seoGrid}>
           <article>
@@ -336,10 +338,14 @@ function App() {
             </p>
           </article>
         </div>
+        <p className={styles.seoFaqLink}>
+          <Link to="/faq">Questions? Read the FAQ →</Link>
+        </p>
       </section>
 
       <footer className={styles.footer}>
         <span>ResizePack is not affiliated with Etsy, Inc.</span>
+        <Link to="/faq">FAQ</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
         <Link to="/refund">Refunds</Link>

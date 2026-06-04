@@ -331,6 +331,22 @@
   font-size: 0.93rem;
 }
 
+.seoFaqLink {
+  margin: 1.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+
+.seoFaqLink a {
+  color: var(--clay);
+  text-decoration: none;
+}
+
+.seoFaqLink a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* ---------- Footer ---------- */
 .footer {
   margin-top: 2rem;

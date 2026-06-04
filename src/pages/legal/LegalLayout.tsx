@@ -5,7 +5,7 @@ import styles from './LegalLayout.module.css';
 
 interface LegalLayoutProps {
   title: string;
-  lastUpdated: string;
+  lastUpdated?: string;
   note?: ReactNode;
   children: ReactNode;
 }
@@ -19,9 +19,11 @@ export function LegalLayout({ title, lastUpdated, note, children }: LegalLayoutP
         </div>
         <p className={styles.eyebrow}>ResizePack</p>
         <h1 className={styles.title}>{title}</h1>
-        <p className={styles.meta}>
-          <strong>Last updated:</strong> {lastUpdated}
-        </p>
+        {lastUpdated ? (
+          <p className={styles.meta}>
+            <strong>Last updated:</strong> {lastUpdated}
+          </p>
+        ) : null}
 
         {note ? <div className={styles.note}>{note}</div> : null}
 
@@ -33,6 +35,8 @@ export function LegalLayout({ title, lastUpdated, note, children }: LegalLayoutP
           <Link to="/terms">Terms of Service</Link>
           <span aria-hidden="true"> · </span>
           <Link to="/refund">Refund &amp; Cancellation</Link>
+          <span aria-hidden="true"> · </span>
+          <Link to="/faq">FAQ</Link>
         </footer>
 
         <Link className={styles.back} to="/">
