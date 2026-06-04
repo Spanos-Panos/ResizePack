@@ -491,6 +491,8 @@ For the link to work (including when opened on a different device than sign-up):
 - The app uses **implicit** auth flow in [`src/supabase/client.ts`](src/supabase/client.ts) (`flowType: 'implicit'`, `detectSessionInUrl: true`). Clicking the link confirms the account; the user then signs in on whichever device they want. (PKCE would tie confirmation to the originating browser — avoid for email confirm if cross-device is desired.)
 - Review the confirmation email template under Authentication → Email Templates if you want to customize copy.
 
+**Production email (Resend):** Supabase's built-in email is rate-limited (~a few/hour) and unbranded, so before driving real signups configure custom SMTP via **Resend** (`noreply@resizepack.tech`) and paste the branded templates. Full runbook + ready-to-paste HTML: [`EMAIL-SETUP.md`](EMAIL-SETUP.md). Password reset (`/reset-password`, [`src/pages/ResetPasswordPage.tsx`](src/pages/ResetPasswordPage.tsx)) uses the same recovery email + the wildcard redirect allowlist.
+
 ### 10.2 Customer Portal — allow cancellation
 
 Stripe Dashboard (test mode) → Settings → Billing → **Customer portal**:
