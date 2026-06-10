@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <!-- ResizePack social avatar / app icon. On-brand "Print Studio" mark:
+       espresso ground, paper photo-card with a sage mountain + clay sun, and
+       clay resize brackets. 1024x1024, safe for circular crops. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2b241c"/>
+      <stop offset="1" stop-color="#18140f"/>
+    </linearGradient>
+    <radialGradient id="clayWash" cx="80%" cy="14%" r="62%">
+      <stop offset="0%" stop-color="#d9602f" stop-opacity="0.30"/>
+      <stop offset="60%" stop-color="#d9602f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sageWash" cx="16%" cy="86%" r="56%">
+      <stop offset="0%" stop-color="#82a78a" stop-opacity="0.18"/>
+      <stop offset="55%" stop-color="#82a78a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="208" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="208" fill="url(#clayWash)"/>
+  <rect width="1024" height="1024" rx="208" fill="url(#sageWash)"/>
+
+  <!-- favicon mark scaled to fill (48 units -> 1024) -->
+  <g transform="scale(21.3333)">
+    <!-- the image being resized -->
+    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="#f1e9da"/>
+    <circle cx="27.5" cy="20.5" r="1.9" fill="#d9602f"/>
+    <path d="M16.8 31 L22 23.5 L25 27 L27.5 24 L31.2 31 Z" fill="#45614c"/>
+    <!-- resize / crop brackets -->
+    <g stroke="#d9602f" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M10 15 L10 10 L15 10"/>
+      <path d="M38 33 L38 38 L33 38"/>
+    </g>
+  </g>
+</svg>
