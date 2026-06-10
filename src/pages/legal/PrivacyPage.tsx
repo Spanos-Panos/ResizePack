@@ -36,11 +36,13 @@ export function PrivacyPage() {
         so we can show your plan and let you manage billing.
       </p>
 
-      <h2>Analytics</h2>
+      <h2>Analytics &amp; cookies</h2>
       <p>
-        If analytics are enabled, they are limited to basic, privacy-conscious traffic metrics (for
-        example page views and referrers) via Google Analytics. No image data is ever collected. If
-        analytics are not configured, no analytics scripts load.
+        We use <strong>Google Analytics</strong> to understand basic usage (for example page views,
+        referrers, and whether the tool was used). It sets cookies, so it loads{' '}
+        <strong>only after you accept</strong> the cookie banner — if you decline, no analytics
+        scripts or cookies load. <strong>No image data is ever collected</strong>, and we don’t use
+        analytics for advertising.
       </p>
 
       <h2>Service providers (data processors)</h2>

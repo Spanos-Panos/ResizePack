@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '../auth/AuthContext';
 import { RequireAuth } from './RequireAuth';
 import { ToolPage } from '../pages/ToolPage';
+import { ConsentBanner } from '../components/ConsentBanner/ConsentBanner';
 
 // The landing/tool page is what most visitors hit, so it stays eager. The
 // secondary routes are lazy-loaded to keep the initial bundle small (cuts
@@ -48,6 +49,7 @@ export function AppRouter() {
             />
           </Routes>
         </Suspense>
+        <ConsentBanner />
       </AuthProvider>
     </BrowserRouter>
   );

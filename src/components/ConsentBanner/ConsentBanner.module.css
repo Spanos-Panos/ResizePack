@@ -1,0 +1,68 @@
+.banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--line-ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.95rem 1.1rem;
+}
+
+.text {
+  margin: 0;
+  flex: 1 1 280px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.text a {
+  color: var(--clay);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.accept,
+.decline {
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.95rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.accept {
+  border: 1px solid var(--clay-deep);
+  background: var(--clay);
+  color: #fff;
+}
+
+.accept:hover {
+  background: var(--clay-deep);
+}
+
+.decline {
+  border: 1px solid var(--line-ink);
+  background: transparent;
+  color: var(--ink);
+}
+
+.decline:hover {
+  background: var(--ink);
+  color: var(--paper);
+}

@@ -13,6 +13,7 @@ import type { BatchResult, FileProgress, OutputFormat, PresetId, ProcessingOptio
 import { validateIncomingFiles } from './utils/fileValidation';
 import { processBatch } from './utils/imageProcessing';
 import { createZipBlob, downloadBlob } from './utils/zip';
+import { trackEvent } from './utils/analytics';
 import styles from './App.module.css';
 
 function clampValue(value: number, min: number, max: number): number {
@@ -173,6 +174,13 @@ function App() {
         const zip = await createZipBlob(batchResult.outputs);
         setZipBlob(zip);
         downloadBlob(zip, `resizepack-${formatTimestamp()}.zip`);
+        // Did the visitor actually use the tool? (No PII / no image data.)
+        trackEvent('batch_processed', {
+          count: batchResult.outputs.length,
+          preset: activePreset,
+          plan,
+          formats: activeProcessingOptions.formats.join(','),
+        });
       }
     } catch (error) {
       const message =
