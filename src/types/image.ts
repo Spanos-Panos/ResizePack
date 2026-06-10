@@ -34,6 +34,8 @@ export interface ProcessingOptions {
   targetMaxBytes?: number;
   /** Pro-only: rename outputs to a sequential pattern instead of the default. */
   rename?: RenameOptions;
+  /** Pro-only: center-crop each image to this aspect ratio before resizing. */
+  cropAspect?: { w: number; h: number };
 }
 
 export interface ProcessedOutput {

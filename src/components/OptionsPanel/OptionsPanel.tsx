@@ -1,4 +1,5 @@
 import type { PresetId } from '../../types/image';
+import { CROP_ASPECTS, NO_CROP_ID } from '../../config/cropAspects';
 import styles from './OptionsPanel.module.css';
 
 interface OptionsPanelProps {
@@ -15,6 +16,8 @@ interface OptionsPanelProps {
   allowTargetSize: boolean;
   targetSizeOn: boolean;
   targetSizeKb: number;
+  allowCrop: boolean;
+  cropAspectId: string;
   onCustomMaxWidthChange: (value: number) => void;
   onCustomQualityChange: (value: number) => void;
   onIncludeJpegChange: (value: boolean) => void;
@@ -24,9 +27,11 @@ interface OptionsPanelProps {
   onCustomStartNumberChange: (value: number) => void;
   onTargetSizeOnChange: (value: boolean) => void;
   onTargetSizeKbChange: (value: number) => void;
+  onCropAspectChange: (value: string) => void;
   onLockedFormatClick: () => void;
   onLockedRenameClick: () => void;
   onLockedTargetClick: () => void;
+  onLockedCropClick: () => void;
 }
 
 /** Mirror of the worker-side sanitizer so the preview matches the real output. */
@@ -51,6 +56,8 @@ export function OptionsPanel({
   allowTargetSize,
   targetSizeOn,
   targetSizeKb,
+  allowCrop,
+  cropAspectId,
   onCustomMaxWidthChange,
   onCustomQualityChange,
   onIncludeJpegChange,
@@ -60,9 +67,11 @@ export function OptionsPanel({
   onCustomStartNumberChange,
   onTargetSizeOnChange,
   onTargetSizeKbChange,
+  onCropAspectChange,
   onLockedFormatClick,
   onLockedRenameClick,
   onLockedTargetClick,
+  onLockedCropClick,
 }: OptionsPanelProps) {
   const renameActive = allowRename && customBaseName.trim().length > 0;
   const renamePreviewBase = sanitizeBaseName(customBaseName.trim()) || 'image';
@@ -137,6 +146,35 @@ export function OptionsPanel({
           />
           Strip EXIF metadata
         </label>
+      </div>
+
+      <div className={styles.group}>
+        <p className={styles.label}>Crop to aspect ratio</p>
+        {allowCrop ? (
+          <>
+            <select
+              id="crop-aspect"
+              className={styles.input}
+              value={cropAspectId}
+              onChange={(event) => onCropAspectChange(event.target.value)}
+            >
+              <option value={NO_CROP_ID}>No crop (keep original shape)</option>
+              {CROP_ASPECTS.map((aspect) => (
+                <option key={aspect.id} value={aspect.id}>
+                  {aspect.label}
+                </option>
+              ))}
+            </select>
+            <p className={styles.hint}>
+              Center-crops every image to the chosen shape — trims evenly from the edges. Great for
+              uniform square listing thumbnails.
+            </p>
+          </>
+        ) : (
+          <button type="button" className={styles.lockedOption} onClick={onLockedCropClick}>
+            Crop to 1:1, 4:5, 16:9… <span className={styles.lockTag}>🔒 Pro</span>
+          </button>
+        )}
       </div>
 
       <div className={styles.group}>

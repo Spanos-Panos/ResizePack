@@ -9,6 +9,7 @@ import { PresetSelector } from './components/PresetSelector/PresetSelector';
 import { ProgressSummary } from './components/ProgressSummary/ProgressSummary';
 import { ThemeToggle } from './components/ThemeToggle/ThemeToggle';
 import { PRESETS, PRESET_ORDER, PRESET_STORAGE_KEY } from './presets/presets';
+import { NO_CROP_ID, findCropAspect } from './config/cropAspects';
 import type { BatchResult, FileProgress, OutputFormat, PresetId, ProcessingOptions } from './types/image';
 import { validateIncomingFiles } from './utils/fileValidation';
 import { processBatch } from './utils/imageProcessing';
@@ -58,6 +59,7 @@ function App() {
   const [customStartNumber, setCustomStartNumber] = useState(1);
   const [targetSizeOn, setTargetSizeOn] = useState(false);
   const [targetSizeKb, setTargetSizeKb] = useState(300);
+  const [cropAspectId, setCropAspectId] = useState(NO_CROP_ID);
   const [errors, setErrors] = useState<string[]>([]);
   const [result, setResult] = useState<BatchResult | null>(null);
   const [progress, setProgress] = useState<FileProgress[]>([]);
@@ -70,6 +72,7 @@ function App() {
   const effectiveIncludeWebp = allowWebp && includeWebp;
   const allowRename = plan === 'pro';
   const allowTargetSize = plan === 'pro';
+  const allowCrop = plan === 'pro';
 
   const presetDescription = useMemo(() => {
     if (activePreset === 'custom') {
@@ -100,6 +103,9 @@ function App() {
     const userTargetBytes =
       allowTargetSize && targetSizeOn ? clampValue(targetSizeKb, 10, 20000) * 1024 : undefined;
 
+    const aspect = allowCrop && cropAspectId !== NO_CROP_ID ? findCropAspect(cropAspectId) : undefined;
+    const cropAspect = aspect ? { w: aspect.w, h: aspect.h } : undefined;
+
     if (activePreset === 'custom') {
       return {
         presetId: 'custom',
@@ -109,6 +115,7 @@ function App() {
         stripExif,
         targetMaxBytes: userTargetBytes,
         rename,
+        cropAspect,
       };
     }
 
@@ -121,6 +128,7 @@ function App() {
       stripExif,
       targetMaxBytes: userTargetBytes ?? preset.targetMaxBytes,
       rename,
+      cropAspect,
     };
   }, [
     activePreset,
@@ -134,6 +142,8 @@ function App() {
     allowTargetSize,
     targetSizeOn,
     targetSizeKb,
+    allowCrop,
+    cropAspectId,
   ]);
 
   const goPro = () => {
@@ -333,6 +343,10 @@ function App() {
           onTargetSizeOnChange={setTargetSizeOn}
           onTargetSizeKbChange={(value) => setTargetSizeKb(clampValue(value, 10, 20000))}
           onLockedTargetClick={goPro}
+          allowCrop={allowCrop}
+          cropAspectId={cropAspectId}
+          onCropAspectChange={setCropAspectId}
+          onLockedCropClick={goPro}
         />
 
         <div className={styles.actions}>
