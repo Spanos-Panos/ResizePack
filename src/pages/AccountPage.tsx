@@ -8,7 +8,7 @@ import {
   getEntitlements,
   type EntitlementsResponse,
 } from '../utils/api';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type FormEvent } from 'react';
 import { getSubscriptionDisplay } from '../utils/subscriptionStatus';
 import { ThemeToggle } from '../components/ThemeToggle/ThemeToggle';
 import styles from './AccountPage.module.css';
@@ -26,6 +26,23 @@ export function AccountPage() {
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSaved, setPasswordSaved] = useState(false);
+
+  // Which sign-in methods are linked. Email-signup users already have a
+  // password; OAuth-only users (Google/GitHub) can set one to also enable
+  // email + password sign-in.
+  const providers = (user?.app_metadata?.providers as string[] | undefined) ?? [];
+  const hasPassword = providers.includes('email');
+  const oauthProvider = user?.app_metadata?.provider;
+  const providerLabel =
+    oauthProvider && oauthProvider !== 'email'
+      ? oauthProvider.charAt(0).toUpperCase() + oauthProvider.slice(1)
+      : null;
   const display = getSubscriptionDisplay(entitlements);
   const badgeClass =
     display.uiState === 'pro_active'
@@ -116,6 +133,36 @@ export function AccountPage() {
     }
   }
 
+  async function handleSavePassword(event: FormEvent) {
+    event.preventDefault();
+    if (!supabase) return;
+    if (newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match.');
+      return;
+    }
+    setIsSavingPassword(true);
+    setPasswordError(null);
+    setPasswordSaved(false);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        setPasswordError(error.message);
+        return;
+      }
+      setPasswordSaved(true);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error) {
+      setPasswordError(error instanceof Error ? error.message : 'Could not update password.');
+    } finally {
+      setIsSavingPassword(false);
+    }
+  }
+
   async function handleDeleteAccount() {
     if (!session?.access_token) return;
     setIsDeleting(true);
@@ -201,6 +248,79 @@ export function AccountPage() {
           ) : null}
           {successMessage ? <p className={styles.noticeSuccess}>{successMessage}</p> : null}
           {statusMessage ? <p className={styles.notice}>{statusMessage}</p> : null}
+        </div>
+
+        <div className={styles.section}>
+          <h2>{hasPassword ? 'Password' : 'Set a password'}</h2>
+          <p className={styles.muted}>
+            {hasPassword
+              ? 'Change the password you use to sign in with email.'
+              : providerLabel
+                ? `You signed in with ${providerLabel}. Set a password to also sign in with your email and password.`
+                : 'Set a password to sign in with your email and password.'}
+          </p>
+          {!showPassword ? (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.signOut}
+                onClick={() => setShowPassword(true)}
+              >
+                {hasPassword ? 'Change password' : 'Set a password'}
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSavePassword}>
+              <label className={styles.fieldLabel}>
+                New password
+                <input
+                  className={styles.passwordInput}
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  disabled={isSavingPassword}
+                />
+              </label>
+              <label className={styles.fieldLabel}>
+                Confirm new password
+                <input
+                  className={styles.passwordInput}
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  disabled={isSavingPassword}
+                />
+              </label>
+              <div className={styles.actions}>
+                <button type="submit" className={styles.primaryButton} disabled={isSavingPassword}>
+                  {isSavingPassword ? 'Saving…' : 'Save password'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.actionLink}
+                  disabled={isSavingPassword}
+                  onClick={() => {
+                    setShowPassword(false);
+                    setNewPassword('');
+                    setConfirmPassword('');
+                    setPasswordError(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+              {passwordError ? <p className={styles.notice}>{passwordError}</p> : null}
+            </form>
+          )}
+          {passwordSaved ? (
+            <p className={styles.noticeSuccess}>
+              Password updated. You can now sign in with your email and this password.
+            </p>
+          ) : null}
         </div>
 
         <div className={styles.actions}>

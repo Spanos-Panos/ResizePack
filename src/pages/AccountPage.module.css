@@ -282,6 +282,29 @@
   align-items: center;
 }
 
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: var(--ink);
+  font-size: 0.92rem;
+  margin-top: 0.9rem;
+}
+
+.passwordInput {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.62rem 0.7rem;
+  background: var(--surface-raised);
+  color: var(--ink);
+  max-width: 280px;
+}
+
+.passwordInput:focus-visible {
+  border-color: var(--clay);
+  outline: none;
+}
+
 @media (max-width: 640px) {
   .page {
     padding: 1.25rem 0.85rem;
