@@ -247,6 +247,11 @@ server.post(
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
       customer: customerId,
+      // Show a "promotion code" box at checkout. Codes live in Stripe (not in
+      // our code), and Stripe validates/enforces them server-side — so there's
+      // nothing to leak here and discounts can't be forged. Configure the
+      // coupons + their limits in the Stripe Dashboard.
+      allow_promotion_codes: true,
       line_items: [
         {
           price: env.STRIPE_PRICE_ID,
