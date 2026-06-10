@@ -18,6 +18,13 @@ export interface PresetConfig {
   description: string;
 }
 
+export interface RenameOptions {
+  /** User-supplied base name, already trimmed (non-empty when active). */
+  baseName: string;
+  /** First sequence number, e.g. 1 → "summer-001". */
+  startAt: number;
+}
+
 export interface ProcessingOptions {
   presetId: PresetId;
   maxLongestSidePx: number;
@@ -25,6 +32,8 @@ export interface ProcessingOptions {
   formats: OutputFormat[];
   stripExif: boolean;
   targetMaxBytes?: number;
+  /** Pro-only: rename outputs to a sequential pattern instead of the default. */
+  rename?: RenameOptions;
 }
 
 export interface ProcessedOutput {

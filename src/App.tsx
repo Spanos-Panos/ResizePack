@@ -54,6 +54,8 @@ function App() {
   const [includeJpeg, setIncludeJpeg] = useState(true);
   const [includeWebp, setIncludeWebp] = useState(false);
   const [stripExif, setStripExif] = useState(true);
+  const [customBaseName, setCustomBaseName] = useState('');
+  const [customStartNumber, setCustomStartNumber] = useState(1);
   const [errors, setErrors] = useState<string[]>([]);
   const [result, setResult] = useState<BatchResult | null>(null);
   const [progress, setProgress] = useState<FileProgress[]>([]);
@@ -64,6 +66,7 @@ function App() {
   const activePreset: PresetId =
     isPlanLoading || limits.presets.includes(selectedPreset) ? selectedPreset : 'etsy-listing';
   const effectiveIncludeWebp = allowWebp && includeWebp;
+  const allowRename = plan === 'pro';
 
   const presetDescription = useMemo(() => {
     if (activePreset === 'custom') {
@@ -84,6 +87,11 @@ function App() {
   }, [includeJpeg, effectiveIncludeWebp]);
 
   const activeProcessingOptions = useMemo<ProcessingOptions>(() => {
+    const rename =
+      allowRename && customBaseName.trim()
+        ? { baseName: customBaseName.trim(), startAt: clampValue(customStartNumber, 0, 99999) }
+        : undefined;
+
     if (activePreset === 'custom') {
       return {
         presetId: 'custom',
@@ -91,6 +99,7 @@ function App() {
         quality: clampValue(customQuality, 50, 95),
         formats: outputFormats,
         stripExif,
+        rename,
       };
     }
 
@@ -102,8 +111,18 @@ function App() {
       formats: outputFormats,
       stripExif,
       targetMaxBytes: preset.targetMaxBytes,
+      rename,
     };
-  }, [activePreset, customMaxWidth, customQuality, outputFormats, stripExif]);
+  }, [
+    activePreset,
+    customMaxWidth,
+    customQuality,
+    outputFormats,
+    stripExif,
+    allowRename,
+    customBaseName,
+    customStartNumber,
+  ]);
 
   const goPro = () => {
     navigate(user ? '/account' : '/login');
@@ -290,6 +309,12 @@ function App() {
           onIncludeWebpChange={setIncludeWebp}
           onStripExifChange={setStripExif}
           onLockedFormatClick={goPro}
+          allowRename={allowRename}
+          customBaseName={customBaseName}
+          customStartNumber={customStartNumber}
+          onCustomBaseNameChange={setCustomBaseName}
+          onCustomStartNumberChange={(value) => setCustomStartNumber(clampValue(value, 0, 99999))}
+          onLockedRenameClick={goPro}
         />
 
         <div className={styles.actions}>

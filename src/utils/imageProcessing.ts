@@ -27,14 +27,24 @@ function sanitizeBaseName(fileName: string): string {
 
 function buildOutputFileName(
   originalName: string,
-  presetId: ProcessingOptions['presetId'],
+  options: ProcessingOptions,
   format: OutputFormat,
   index: number,
+  padWidth: number,
 ): string {
+  const ext = EXTENSION_BY_FORMAT[format];
+
+  // Pro sequential renaming: "summer-collection-001.jpg" etc. The extension
+  // differs per format, so jpeg+webp of the same file never collide.
+  if (options.rename) {
+    const base = sanitizeBaseName(options.rename.baseName) || 'image';
+    const seq = String(options.rename.startAt + index).padStart(padWidth, '0');
+    return `${base}-${seq}.${ext}`;
+  }
+
   const baseName = sanitizeBaseName(originalName) || 'image';
   const indexPrefix = String(index + 1).padStart(3, '0');
-  const suffix = PRESET_SUFFIX[presetId];
-  const ext = EXTENSION_BY_FORMAT[format];
+  const suffix = PRESET_SUFFIX[options.presetId];
   return `${indexPrefix}-${baseName}-${suffix}.${ext}`;
 }
 
@@ -43,6 +53,7 @@ async function convertSingleFormat(
   options: ProcessingOptions,
   format: OutputFormat,
   fileIndex: number,
+  padWidth: number,
 ): Promise<ProcessedOutput> {
   const compressedBlob = await imageCompression(file, {
     maxWidthOrHeight: options.maxLongestSidePx,
@@ -56,7 +67,7 @@ async function convertSingleFormat(
 
   const outputBlob = compressedBlob instanceof Blob ? compressedBlob : new Blob([compressedBlob]);
   return {
-    fileName: buildOutputFileName(file.name, options.presetId, format, fileIndex),
+    fileName: buildOutputFileName(file.name, options, format, fileIndex, padWidth),
     blob: outputBlob,
     format,
     originalName: file.name,
@@ -73,13 +84,19 @@ export async function processBatch(
   const outputs: ProcessedOutput[] = [];
   const failures: BatchResult['failures'] = [];
 
+  // Zero-pad sequence numbers to a consistent width so renamed files sort
+  // correctly (…-09, -10) in file managers. Default naming stays at 3.
+  const padWidth = options.rename
+    ? Math.max(2, String(options.rename.startAt + files.length - 1).length)
+    : 3;
+
   for (let fileIndex = 0; fileIndex < files.length; fileIndex += 1) {
     const file = files[fileIndex];
     onProgress?.(fileIndex, 'processing');
 
     try {
       for (const format of options.formats) {
-        const output = await convertSingleFormat(file, options, format, fileIndex);
+        const output = await convertSingleFormat(file, options, format, fileIndex, padWidth);
         outputs.push(output);
       }
 
