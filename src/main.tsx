@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { initAnalytics } from './utils/analytics';
+import { syncThemeColor } from './theme/theme';
 import { AppRouter } from './routes/AppRouter';
 
 // When the page is restored from the browser back/forward cache (bfcache), the
@@ -15,6 +16,7 @@ window.addEventListener('pageshow', (event) => {
 });
 
 initAnalytics();
+syncThemeColor();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

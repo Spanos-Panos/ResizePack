@@ -5,10 +5,28 @@
 export type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'theme';
+const THEME_COLOR = { light: '#f1e9da', dark: '#18140f' } as const;
 
 export function getTheme(): Theme {
   const attr = document.documentElement.dataset.theme;
   return attr === 'dark' ? 'dark' : 'light';
+}
+
+/** Keep the mobile browser UI (address bar) colour in sync with the theme. */
+function applyThemeColor(theme: Theme): void {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.setAttribute('content', THEME_COLOR[theme]);
+  }
+}
+
+/**
+ * Sync the address-bar colour to the theme the inline <head> script already
+ * applied. Called once at startup so light-mode users don't get a stale dark
+ * bar before any toggle.
+ */
+export function syncThemeColor(): void {
+  applyThemeColor(getTheme());
 }
 
 export function setTheme(theme: Theme): void {
@@ -18,11 +36,7 @@ export function setTheme(theme: Theme): void {
   } catch {
     /* ignore storage failures (e.g. private mode) */
   }
-  // Keep the mobile browser UI (address bar) colour in sync.
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) {
-    meta.setAttribute('content', theme === 'dark' ? '#18140f' : '#f1e9da');
-  }
+  applyThemeColor(theme);
 }
 
 export function toggleTheme(): Theme {

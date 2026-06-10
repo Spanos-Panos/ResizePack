@@ -296,8 +296,8 @@ function App() {
           </div>
         ) : (
           <div className={styles.proBadge}>
-            ★ Pro active{display.date ? ` — renews ${display.date}` : ''} — all presets, WebP &amp;
-            custom sizes, up to {limits.maxFiles} files
+            ★ Pro active{display.date ? ` — renews ${display.date}` : ''} — all presets, WebP, crop,
+            target size &amp; batch rename, up to {limits.maxFiles} files
           </div>
         )}
 
@@ -398,8 +398,8 @@ function App() {
           <article>
             <h3>Private browser processing</h3>
             <p>
-              Your files are processed in-browser for v1, so images are not uploaded for server-side
-              storage.
+              Your files are processed entirely in your browser — images are never uploaded to a
+              server, so your photos stay on your device.
             </p>
           </article>
         </div>

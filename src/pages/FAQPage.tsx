@@ -34,7 +34,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'What does Pro include?',
-    a: 'Pro raises the per-batch file count and size limits, adds WebP export, and unlocks every preset (Etsy, Shopify, Amazon, Instagram, Web, and Custom).',
+    a: 'Pro raises the per-batch limits (up to 500 images, 50 MB each), adds WebP export, and unlocks every preset (Etsy, Shopify, Amazon, Instagram, Web, and Custom). It also adds seller power tools: crop every photo to a fixed aspect ratio (1:1, 4:5, 16:9, and more), cap each file to a target size in KB, and rename your outputs to clean sequential names like listing-001.jpg.',
   },
   {
     q: 'How do I cancel or get a refund?',
