@@ -164,3 +164,138 @@ brightened for legibility on dark surfaces (≥ WCAG AA).
   pure black (dark base is `#18140f`).
 - Privacy is a core selling point — "processed entirely in your browser,
   never uploaded" is a recurring message; keep that tone in copy.
+
+---
+
+# Pages & UI inventory
+
+Everything to rebuild the screens in Figma. Base URL: **`https://www.resizepack.tech`**.
+
+## Pages / routes
+
+| Page | URL | Notes |
+|---|---|---|
+| Main tool | `https://www.resizepack.tech/` | Hero + tool + SEO + footer (the landing page) |
+| Sign in / Sign up | `https://www.resizepack.tech/login` | One page, multiple states (below) |
+| Reset password | `https://www.resizepack.tech/reset-password` | Opened from the reset email link |
+| Account | `https://www.resizepack.tech/account` | **Protected** — redirects to `/login` if signed out |
+| FAQ | `https://www.resizepack.tech/faq` | Q&A + FAQ schema |
+| Privacy Policy | `https://www.resizepack.tech/privacy` | Legal layout |
+| Terms of Service | `https://www.resizepack.tech/terms` | Legal layout |
+| Refund & Cancellation | `https://www.resizepack.tech/refund` | Legal layout |
+
+**Login page states (same URL):** Sign in · Create account · Forgot password
+("Reset password" → "Check your email") · Confirm email ("check your email",
+auto-advances cross-device) · "You're already signed in".
+
+## Per-page elements
+
+### Main tool — `/`
+- **Hero:** brand pill `ResizePack`; account row → **Account** (signed in) or
+  **Sign in** (signed out) + **theme toggle**; `h1` "Bulk Resize & Compress
+  Images"; subhead + highlights line.
+- **CTA row:** **Start optimizing now** (primary, anchors to `#tool`) ·
+  **Privacy first** (secondary → `/privacy`).
+- **Preset tabs** (see Preset list below) + preset description.
+- **Tool card:** plan banner (Free upsell **Upgrade to Pro** / Pro badge);
+  **drop zone**; error list; **file list**; **options panel**; **Process and
+  download ZIP** (primary) + **Download ZIP again** (secondary, after a run);
+  progress summary.
+- **SEO section:** `h2` + three `h3` cards + **Questions? Read the FAQ →** link.
+- **Footer links:** `not affiliated` note · **FAQ** · **Privacy** · **Terms** · **Refunds**.
+
+### Login — `/login`
+- **OAuth:** **Continue with Google** · **Continue with GitHub**; "or use email" divider.
+- **Email form:** Email input · Password input + **Show/Hide** toggle.
+- **Buttons:** **Sign in** / **Create account** (primary) · **Need an account?
+  Sign up** / **Already have an account? Sign in** (secondary) · **Forgot
+  password?** (secondary, sign-in only).
+- **Forgot flow:** Email input · **Send reset link** · **Back to sign in**.
+- **Confirm-email state:** **Back to sign in** + `← Back to tool`.
+- **Bottom link:** `← Back to tool`; theme toggle top-corner.
+
+### Reset password — `/reset-password`
+- New password + **Show/Hide** toggle · Confirm new password · **Update
+  password** (primary). States: verifying / set-new / **Password updated**
+  (`Go to sign in →`) / **Link expired** (`Back to sign in →`). `← Back to sign in`.
+
+### Account — `/account`
+- Theme toggle; "Signed in as {email}".
+- **Plan section:** status badge + detail; **Upgrade with Stripe — €9/mo** /
+  **Resume subscription** / **Manage billing** (primary) · **Cancel
+  subscription** (underline link).
+- **Password section:** **Set or change password** (or **Change password**) →
+  reveals New password + Confirm + **Save password** / **Cancel**.
+- **Account actions:** **Sign out** (secondary) · **Back to tool** (link).
+- **Danger zone:** **Delete my account** → type-`DELETE` confirm input +
+  **Permanently delete** / **Cancel**.
+
+### Legal pages — `/privacy`, `/terms`, `/refund`, `/faq`
+- Shared **LegalLayout**: eyebrow `ResizePack` · `h1` title · optional "Last
+  updated" · prose · footer links (**Privacy Policy · Terms of Service · Refund
+  & Cancellation · FAQ**) · `← Back to ResizePack` · theme toggle.
+
+---
+
+## Component inventory (reusable)
+
+### Buttons — by variant
+| Variant | Style | Examples |
+|---|---|---|
+| **Primary** | `--clay` fill, white text, `--clay-deep` border, hover darken + 1px lift | Process and download ZIP · Start optimizing now · Sign in · Create account · Send reset link · Update password · Save password · Upgrade with Stripe — €9/mo · Resume subscription · Manage billing |
+| **Secondary / ghost** | transparent, `--line-ink` border, ink text, hover inverts to ink/paper | Back to sign in · Need an account? Sign up · Forgot password? · Sign out · Set or change password · Download ZIP again · Privacy first |
+| **OAuth** | bordered neutral button | Continue with Google · Continue with GitHub |
+| **Locked (Pro)** | dashed `--clay-line` border, `--clay-tint` bg, `--clay-deep` text, ` 🔒 Pro` tag | WebP · Crop · Target size · Rename · locked preset tabs |
+| **Danger** | `--danger-tint` bg + `--danger-line` border → solid `--danger` on hover | Delete my account · Permanently delete |
+| **Inline text** | borderless, in-field | Show / Hide (password) |
+
+### Links / underlines
+- **Underlined action links** (`--ink-soft`, clay underline, hover `--clay`):
+  Cancel subscription · Cancel (forms).
+- **Back links:** `← Back to tool` · `← Back to ResizePack` · `Go to sign in →` ·
+  `Back to sign in →`.
+- **Footer links:** FAQ · Privacy · Terms · Refunds (main) / Privacy Policy ·
+  Terms of Service · Refund & Cancellation · FAQ (legal).
+- **In-prose links:** clay text (e.g. the `mailto:` support links on legal pages).
+- **SEO link:** `Questions? Read the FAQ →`.
+
+### Theme toggle
+- Icon button, **☾** (offer dark) / **☀** (offer light), `aria-pressed`,
+  pill-ish; appears top-corner on login/account/legal and in the main hero row.
+
+### Preset tabs (`role="tablist"`)
+`Etsy listing` · `Web` · `Shopify` · `Amazon` · `Instagram` · `Custom`.
+States: default · **active** (selected) · **locked** (` 🔒 Pro` on Free —
+Shopify/Amazon/Instagram/Custom).
+
+### Drop zone
+- Dashed bordered area, drag-active + disabled states. Title **"Drop images
+  here"** · subtitle "JPEG, PNG, WebP | Max N files | Max N MB each" ·
+  **Browse files** button · hidden file input. `aria-label="Drop images here"`.
+
+### File list
+- Header "Files (N)" + **Clear all**; "Total input size: …"; rows with name +
+  size + **Remove**; empty state "No files added yet."
+
+### Form controls (Options panel + auth)
+| Control | Where |
+|---|---|
+| Text input | Email · Password · New/Confirm password · Custom file name · type-DELETE |
+| Number input | Max width (400–4000) · Start numbering at · Max size per image (KB) |
+| Range slider | Quality (50–95) |
+| Checkbox | JPEG · WebP · Strip EXIF metadata · "Keep each image under a max size" |
+| Select | Crop to aspect ratio: No crop · Square 1:1 · Portrait 4:5 · Photo 3:2 · Standard 4:3 · Wide 16:9 |
+| File input | (hidden, via Browse files) |
+
+### Badges / pills
+- **Brand pill** `ResizePack` (hero).
+- **Free upsell** banner ("You're on Free — …") + **Upgrade to Pro** / **Renew Pro**.
+- **Pro badge** (sage): "★ Pro active — … all presets, WebP, crop, target size &
+  batch rename, up to N files".
+- **Pro-until badge** (gold/warning): "★ Pro until {date} …".
+- **Account status badge:** Pro (sage) / warning (gold) / muted.
+
+### Notices / states
+- **Error list** (clay/danger) · field errors (inline) · **success notices**
+  (sage tint, e.g. "✓ Email confirmed", "Password updated") · **info notices**
+  (gold tint) · **consent banner** (Accept / Decline + Privacy link).
