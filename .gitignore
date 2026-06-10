@@ -29,3 +29,5 @@ dist-ssr
 *.sw?
 
 stripe_backup_code.txt
+# Local visual-check screenshots (scripts/screenshot.mjs)
+shots/

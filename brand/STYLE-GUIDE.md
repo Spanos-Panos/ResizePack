@@ -1,3 +1,8 @@
+> **⚠ SUPERSEDED (2026-06-10):** the live product now uses the **Neobrutalism**
+> design system — see [ResizePack-NeoBrutalist.md](./ResizePack-NeoBrutalist.md).
+> This file documents the previous "Print Studio" look (kept for reference;
+> the Pages & UI inventory section is still accurate).
+
 # ResizePack — Brand & Style Guide
 
 The single source of truth for Figma. Everything here mirrors the **live**

@@ -1,32 +1,20 @@
 // One-off generator for the social-share image (public/og.png, 1200x630).
 // Run: node scripts/make-og.mjs  (needs @resvg/resvg-js installed).
-// Uses system fonts (Georgia / Segoe UI on Windows) as Fraunces/Hanken stand-ins.
+// Neobrutalism edition: flat colour, black borders, hard offset shadows.
+// Uses system fonts (Segoe UI / Consolas on Windows) as Space Grotesk /
+// Space Mono stand-ins.
 import { Resvg } from '@resvg/resvg-js';
 import { writeFileSync } from 'node:fs';
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <defs>
-    <radialGradient id="clayWash" cx="88%" cy="-8%" r="70%">
-      <stop offset="0%" stop-color="#c2471a" stop-opacity="0.10"/>
-      <stop offset="60%" stop-color="#c2471a" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="sageWash" cx="-6%" cy="8%" r="60%">
-      <stop offset="0%" stop-color="#45614c" stop-opacity="0.09"/>
-      <stop offset="55%" stop-color="#45614c" stop-opacity="0"/>
-    </radialGradient>
-    <clipPath id="card"><rect x="800" y="180" width="300" height="270" rx="18"/></clipPath>
-  </defs>
+  <!-- flat background + black frame -->
+  <rect width="1200" height="630" fill="#dfe5f2"/>
+  <rect x="20" y="20" width="1160" height="590" rx="16" fill="none" stroke="#000" stroke-width="4"/>
 
-  <!-- paper base + warm washes -->
-  <rect width="1200" height="630" fill="#f1e9da"/>
-  <rect width="1200" height="630" fill="url(#clayWash)"/>
-  <rect width="1200" height="630" fill="url(#sageWash)"/>
-  <!-- thin ink frame -->
-  <rect x="24" y="24" width="1152" height="582" rx="24" fill="none" stroke="#221d16" stroke-opacity="0.85" stroke-width="2"/>
-
-  <!-- brand mark (the favicon, scaled 2x) + wordmark -->
-  <g transform="translate(72,60) scale(2)">
-    <rect width="48" height="48" rx="11" fill="#221d16"/>
+  <!-- brand mark tile (hard shadow) + wordmark -->
+  <rect x="78" y="66" width="96" height="96" rx="11" fill="#000"/>
+  <g transform="translate(70,58) scale(2)">
+    <rect width="48" height="48" rx="6" fill="#221d16" stroke="#000" stroke-width="2"/>
     <rect x="16" y="16" width="16" height="16" rx="2.5" fill="#f1e9da"/>
     <circle cx="27.5" cy="20.5" r="1.9" fill="#c2471a"/>
     <path d="M16.8 31 L22 23.5 L25 27 L27.5 24 L31.2 31 Z" fill="#45614c"/>
@@ -35,42 +23,46 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
       <path d="M38 33 L38 38 L33 38"/>
     </g>
   </g>
-  <text x="190" y="132" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="54" fill="#221d16">ResizePack</text>
+  <text x="190" y="125" font-family="'Segoe UI', Arial, sans-serif" font-weight="800" font-size="46" letter-spacing="-1" fill="#000">RESIZEPACK</text>
 
-  <!-- headline -->
-  <text x="80" y="305" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="74" fill="#221d16">Bulk Resize &amp;</text>
-  <text x="80" y="398" font-family="Georgia, 'Times New Roman', serif" font-weight="700" font-size="74" fill="#221d16">Compress Images</text>
-  <rect x="82" y="425" width="120" height="7" rx="3.5" fill="#c2471a"/>
+  <!-- headline: second line sits on a flat blue highlight block -->
+  <text x="80" y="300" font-family="'Segoe UI', Arial, sans-serif" font-weight="800" font-size="72" letter-spacing="-2" fill="#000">BULK RESIZE &amp;</text>
+  <rect x="72" y="324" width="706" height="84" fill="#4d8eff" stroke="#000" stroke-width="4"/>
+  <text x="88" y="388" font-family="'Segoe UI', Arial, sans-serif" font-weight="800" font-size="72" letter-spacing="-2" fill="#000">COMPRESS IMAGES</text>
 
   <!-- subtext -->
-  <text x="82" y="486" font-family="'Segoe UI', Arial, sans-serif" font-weight="500" font-size="29" fill="#5a5145">Drop images. Pick a preset. Download one ZIP.</text>
-  <text x="82" y="526" font-family="'Segoe UI', Arial, sans-serif" font-weight="400" font-size="26" fill="#5a5145">Etsy · Shopify · Web · Custom — processed in your browser.</text>
+  <text x="82" y="466" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" font-size="28" fill="#000">Drop images. Pick a preset. Download one ZIP.</text>
+  <text x="82" y="506" font-family="Consolas, 'Courier New', monospace" font-weight="700" font-size="21" fill="#3d3d3d">ETSY &#183; SHOPIFY &#183; WEB &#183; CUSTOM &#8212; PROCESSED IN YOUR BROWSER</text>
 
-  <!-- domain pill -->
-  <rect x="80" y="552" width="246" height="48" rx="24" fill="#c2471a"/>
-  <text x="203" y="583" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-weight="600" font-size="25" fill="#f1e9da">resizepack.tech</text>
+  <!-- domain chip (hard shadow) -->
+  <rect x="88" y="540" width="252" height="52" rx="26" fill="#000"/>
+  <rect x="80" y="532" width="252" height="52" rx="26" fill="#4d8eff" stroke="#000" stroke-width="4"/>
+  <text x="206" y="566" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-weight="800" font-size="24" fill="#000">resizepack.tech</text>
 
-  <!-- right-side illustration: a photo being resized -->
-  <g clip-path="url(#card)">
-    <rect x="800" y="180" width="300" height="270" rx="18" fill="#fffdf8"/>
-    <circle cx="1012" cy="252" r="28" fill="#c2471a"/>
-    <path d="M790 452 L890 318 L948 384 L1008 300 L1110 452 Z" fill="#45614c"/>
-    <path d="M948 452 L1010 372 L1110 452 Z" fill="#9b3712" fill-opacity="0.55"/>
+  <!-- right-side illustration: white photo card, hard shadow, corner handles -->
+  <rect x="812" y="192" width="300" height="270" rx="12" fill="#000"/>
+  <g>
+    <clipPath id="card"><rect x="800" y="180" width="300" height="270" rx="12"/></clipPath>
+    <rect x="800" y="180" width="300" height="270" rx="12" fill="#ffffff"/>
+    <g clip-path="url(#card)">
+      <circle cx="1012" cy="252" r="28" fill="#ffdc58" stroke="#000" stroke-width="4"/>
+      <path d="M790 452 L890 318 L948 384 L1008 300 L1110 452 Z" fill="#a3e636" stroke="#000" stroke-width="4"/>
+      <path d="M948 452 L1010 372 L1110 452 Z" fill="#4d8eff" stroke="#000" stroke-width="4"/>
+    </g>
+    <rect x="800" y="180" width="300" height="270" rx="12" fill="none" stroke="#000" stroke-width="4"/>
   </g>
-  <rect x="800" y="180" width="300" height="270" rx="18" fill="none" stroke="#ddd1bb" stroke-width="2"/>
-  <!-- clay resize handles on the card corners -->
-  <g fill="#c2471a">
-    <rect x="791" y="171" width="18" height="18" rx="4"/>
-    <rect x="1091" y="171" width="18" height="18" rx="4"/>
-    <rect x="791" y="441" width="18" height="18" rx="4"/>
-    <rect x="1091" y="441" width="18" height="18" rx="4"/>
+  <g fill="#4d8eff" stroke="#000" stroke-width="3">
+    <rect x="789" y="169" width="22" height="22" rx="4"/>
+    <rect x="1089" y="169" width="22" height="22" rx="4"/>
+    <rect x="789" y="439" width="22" height="22" rx="4"/>
+    <rect x="1089" y="439" width="22" height="22" rx="4"/>
   </g>
 </svg>`;
 
 const resvg = new Resvg(svg, {
   fitTo: { mode: 'width', value: 1200 },
   font: { loadSystemFonts: true },
-  background: '#f1e9da',
+  background: '#dfe5f2',
 });
 writeFileSync('public/og.png', resvg.render().asPng());
 console.log('Wrote public/og.png');

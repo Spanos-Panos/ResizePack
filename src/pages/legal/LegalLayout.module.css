@@ -6,22 +6,11 @@
 
 .card {
   position: relative;
-  border: 1px solid var(--line);
+  border: var(--bw) solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--secondary-background);
   padding: 2rem 1.75rem;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--clay);
+  box-shadow: var(--shadow-lg);
 }
 
 .themeCorner {
@@ -32,50 +21,57 @@
 }
 
 .eyebrow {
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--clay);
-  margin: 0 0 0.4rem;
+  color: var(--background);
+  background: var(--foreground);
+  padding: 0.2rem 0.6rem;
+  margin: 0 0 0.6rem;
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: 2.2rem;
-  letter-spacing: -0.01em;
-  color: var(--ink);
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
   margin: 0 0 0.3rem;
 }
 
 .meta {
-  color: var(--ink-soft);
+  color: var(--foreground-soft);
+  font-weight: 500;
   font-size: 0.9rem;
   margin: 0 0 1.2rem;
 }
 
 .note {
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--clay);
-  background: var(--surface-raised);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  background: var(--pro);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 0.9rem 1.1rem;
   font-size: 0.92rem;
-  color: var(--ink-soft);
+  font-weight: 500;
+  color: #000;
   margin: 0 0 1.4rem;
 }
 
 .prose h2 {
   font-family: var(--font-display);
-  font-size: 1.3rem;
-  color: var(--ink);
+  font-size: 1.15rem;
+  color: var(--foreground);
   margin: 1.9rem 0 0.4rem;
 }
 
 .prose p,
 .prose li {
-  color: var(--ink-soft);
-  line-height: 1.65;
+  color: var(--foreground-soft);
+  font-weight: 500;
+  line-height: 1.6;
 }
 
 .prose ul {
@@ -83,29 +79,98 @@
 }
 
 .prose a {
-  color: var(--clay);
+  color: var(--foreground);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  background: var(--main);
+  color: #000;
 }
 
 .prose strong {
-  color: var(--ink);
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+/* FAQ accordion (details/summary rendered by FAQPage) */
+.prose details {
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background: var(--main);
+  overflow: hidden;
+  margin: 0 0 0.85rem;
+}
+
+.prose details summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.prose details summary::-webkit-details-marker {
+  display: none;
+}
+
+.prose details summary h2 {
+  margin: 0;
+  font-size: 0.98rem;
+  color: #000;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.prose details summary::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000;
+  transform: rotate(45deg);
+  transition: transform 0.15s;
+  flex: none;
+  margin-top: -4px;
+}
+
+.prose details[open] summary::after {
+  transform: rotate(225deg);
+  margin-top: 4px;
+}
+
+.prose details p {
+  background: var(--secondary-background);
+  border-top: var(--bw) solid var(--border);
+  padding: 0.85rem 1.1rem;
+  margin: 0;
+  color: var(--foreground);
 }
 
 .footer {
   margin-top: 2rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--bw) solid var(--border);
   padding-top: 1rem;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: var(--ink-soft);
+  font-weight: 700;
+  color: var(--foreground-soft);
 }
 
 .footer a {
-  color: var(--ink-soft);
-  text-decoration: none;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .footer a:hover {
-  color: var(--clay);
+  background: var(--main);
+  color: #000;
 }
 
 .back {
@@ -113,12 +178,16 @@
   margin-top: 1.5rem;
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  color: var(--ink-soft);
-  text-decoration: none;
+  font-weight: 700;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .back:hover {
-  color: var(--clay);
+  background: var(--main);
+  color: #000;
 }
 
 @media (max-width: 640px) {
@@ -131,6 +200,6 @@
   }
 
   .title {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
 }

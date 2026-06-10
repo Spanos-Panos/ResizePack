@@ -1,0 +1,645 @@
+<!-- @dsCard group="Brand" viewport="1100x900" subtitle="Neobrutalism edition — flat color, black borders, hard shadows" name="Style guide (neobrutalism)" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ResizePack — Neobrutalism Style Guide</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&family=Space+Mono:wght@400;700&display=swap");
+
+  /* ── Neobrutalism tokens — LIGHT ─────────────────────────────── */
+  :root {
+    --background:#dfe5f2;            /* app background */
+    --secondary-background:#ffffff;  /* cards, panels, inputs */
+    --foreground:#000000;            /* text */
+    --foreground-soft:#3d3d3d;       /* secondary text */
+
+    --main:#4d8eff;                  /* THE action colour */
+    --main-foreground:#000000;       /* text on main */
+    --pro:#ffdc58;                   /* gold → Pro / premium */
+    --success:#a3e636;               /* sage → success */
+    --danger:#ff6b6b;                /* errors / destructive */
+
+    --border:#000000;
+    --bw:2px;                        /* border width */
+    --shadow:4px 4px 0px 0px var(--border);
+    --shadow-lg:8px 8px 0px 0px var(--border);
+    --radius:8px;
+
+    --font-display:"Space Grotesk",system-ui,sans-serif;
+    --font-body:"DM Sans",system-ui,sans-serif;
+    --font-mono:"Space Mono",ui-monospace,monospace;
+  }
+
+  * { box-sizing:border-box; }
+  body {
+    margin:0; background:var(--background); color:var(--foreground);
+    font-family:var(--font-body); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--main); color:#000; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:72px 40px 120px; }
+
+  /* ── Hero ─────────────────────────────────────────────────────── */
+  .hero{ display:flex; gap:30px; align-items:center; }
+  .hero .mark{ width:120px; height:120px; border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-lg); flex:none; background:#221d16; }
+  .hero h1{ font-family:var(--font-display); font-weight:700; letter-spacing:-0.03em; font-size:60px; margin:0; line-height:1; text-transform:uppercase; }
+  .hero .tag{ font-size:18px; font-weight:500; margin:12px 0 0; max-width:52ch; }
+  .sticker{ display:inline-block; font-family:var(--font-mono); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; background:var(--pro); border:var(--bw) solid var(--border); border-radius:999px; padding:5px 14px; box-shadow:var(--shadow); transform:rotate(-2deg); margin-bottom:14px; }
+
+  .rule{ height:var(--bw); background:var(--border); border:0; margin:48px 0 0; }
+
+  /* ── Section scaffold ─────────────────────────────────────────── */
+  section{ margin-top:72px; }
+  .eyebrow{ font-family:var(--font-mono); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin:0 0 10px; display:inline-block; background:var(--foreground); color:var(--background); padding:3px 10px; }
+  h2{ font-family:var(--font-display); font-weight:700; letter-spacing:-0.02em; font-size:38px; margin:0 0 8px; text-transform:uppercase; }
+  .lede{ margin:0 0 28px; max-width:64ch; font-weight:500; color:var(--foreground-soft); }
+  .sub{ font-family:var(--font-mono); font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin:32px 0 14px; }
+  .panel > .sub:first-child, .panel-flow > .sub:first-child{ margin-top:0; }
+
+  .panel{ background:var(--secondary-background); border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 28px; margin-bottom:20px; }
+
+  /* ── Swatches ─────────────────────────────────────────────────── */
+  .sw-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+  .sw{ border:var(--bw) solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--secondary-background); box-shadow:var(--shadow); }
+  .sw .chip{ height:74px; border-bottom:var(--bw) solid var(--border); }
+  .sw .meta{ padding:10px 12px 12px; }
+  .sw .tok{ font-family:var(--font-mono); font-size:12px; font-weight:700; }
+  .sw .hex{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; color:var(--foreground-soft); }
+  .sw .role{ font-size:12.5px; font-weight:500; margin-top:5px; line-height:1.4; }
+
+  .dark-panel{ background:#1d1f27; border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 28px; color:#e6e6e6; }
+  .dark-panel .sw{ background:#212121; box-shadow:4px 4px 0 0 #000; }
+  .dark-panel .sw .tok{ color:#fff; }
+  .dark-panel .sw .hex{ color:#9e9e9e; }
+  .dark-panel .sw .role{ color:#cfcfcf; }
+  .dark-panel .sub{ color:#fff; }
+
+  /* ── Type ─────────────────────────────────────────────────────── */
+  .type-card{ background:var(--secondary-background); border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 28px; margin-bottom:20px; }
+  .type-card .name{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+  .type-card .fam{ font-family:var(--font-display); font-weight:700; font-size:20px; white-space:nowrap; }
+  .type-card .spec{ font-family:var(--font-mono); font-size:11px; color:var(--foreground-soft); }
+  .specimen-display{ font-family:var(--font-display); font-weight:700; letter-spacing:-0.02em; font-size:46px; line-height:1.05; margin:0; text-transform:uppercase; }
+  .specimen-display em{ font-style:normal; background:var(--main); padding:0 8px; }
+  .specimen-body{ font-size:17px; margin:0; max-width:64ch; font-weight:500; }
+  .weights{ display:flex; gap:24px; margin-top:16px; flex-wrap:wrap; }
+  .weights span{ display:flex; flex-direction:column; gap:2px; font-size:18px; }
+  .weights small{ font-family:var(--font-mono); font-size:10px; color:var(--foreground-soft); }
+  .specimen-mono{ font-family:var(--font-mono); font-size:24px; margin:0; font-weight:700; }
+  .specimen-mono b{ background:var(--success); padding:0 6px; }
+
+  /* ── Shape & motion ───────────────────────────────────────────── */
+  .tile-row{ display:flex; gap:30px; flex-wrap:wrap; align-items:flex-end; }
+  .tile{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .tile .box{ width:120px; height:84px; background:var(--secondary-background); border:var(--bw) solid var(--border); border-radius:var(--radius); }
+  .tile .cap{ font-family:var(--font-mono); font-size:11px; text-align:center; line-height:1.5; }
+  .press-demo{ display:inline-flex; }
+
+  /* ── Buttons ──────────────────────────────────────────────────── */
+  .btn{ font-family:var(--font-body); font-weight:700; font-size:15px; line-height:1; padding:12px 20px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--main); color:var(--main-foreground); box-shadow:var(--shadow); cursor:pointer; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; transition:transform .1s, box-shadow .1s; text-decoration:none; }
+  .btn:hover{ transform:translate(4px,4px); box-shadow:none; }
+  .btn-neutral{ background:var(--secondary-background); }
+  .btn-pro{ background:var(--pro); }
+  .btn-success{ background:var(--success); }
+  .btn-danger{ background:var(--danger); }
+  .btn-noshadow{ box-shadow:none; }
+  .btn-noshadow:hover{ transform:none; }
+  .btn-reverse{ box-shadow:none; }
+  .btn-reverse:hover{ transform:translate(-4px,-4px); box-shadow:var(--shadow); }
+  .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+  .btn[disabled]:hover{ transform:none; box-shadow:var(--shadow); }
+  .row{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  .row + .row{ margin-top:16px; }
+
+  /* ── Accordion ────────────────────────────────────────────────── */
+  .acc{ max-width:640px; display:flex; flex-direction:column; gap:12px; }
+  .acc details{ border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; background:var(--main); }
+  .acc summary{ list-style:none; cursor:pointer; padding:15px 18px; font-weight:700; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .acc summary::-webkit-details-marker{ display:none; }
+  .acc summary::after{ content:""; width:10px; height:10px; border-right:3px solid #000; border-bottom:3px solid #000; transform:rotate(45deg); transition:transform .15s; flex:none; margin-top:-4px; }
+  .acc details[open] summary::after{ transform:rotate(225deg); margin-top:4px; }
+  .acc .acc-body{ background:var(--secondary-background); border-top:var(--bw) solid var(--border); padding:14px 18px; font-weight:500; }
+
+  /* ── Alerts ───────────────────────────────────────────────────── */
+  .alert{ border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); background:var(--main); padding:14px 18px; display:grid; grid-template-columns:24px 1fr; gap:4px 12px; max-width:640px; }
+  .alert + .alert{ margin-top:16px; }
+  .alert .ic{ grid-row:span 2; width:22px; height:22px; margin-top:2px; }
+  .alert .at{ font-weight:700; }
+  .alert .ad{ font-size:14.5px; font-weight:500; }
+  .alert-success{ background:var(--success); }
+  .alert-danger{ background:var(--danger); }
+  .alert-pro{ background:var(--pro); }
+
+  /* ── Dialog ───────────────────────────────────────────────────── */
+  dialog.nb-dialog{ border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow-lg); padding:26px 28px; max-width:430px; background:var(--secondary-background); }
+  dialog.nb-dialog::backdrop{ background:rgba(0,0,0,.55); }
+  .dlg-title{ font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 8px; }
+  .dlg-desc{ margin:0 0 22px; font-weight:500; color:var(--foreground-soft); font-size:14.5px; }
+  .dlg-foot{ display:flex; gap:12px; justify-content:flex-end; }
+
+  /* ── Card (login) ─────────────────────────────────────────────── */
+  .nb-card{ background:var(--secondary-background); border:var(--bw) solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; max-width:380px; }
+  .nb-card h3{ font-family:var(--font-display); font-weight:700; font-size:22px; margin:0 0 4px; }
+  .nb-card .desc{ font-size:14px; font-weight:500; color:var(--foreground-soft); margin:0 0 20px; }
+  .field{ display:flex; flex-direction:column; gap:7px; margin-bottom:16px; }
+  .field .lblrow{ display:flex; align-items:center; justify-content:space-between; }
+  label.lbl{ font-weight:700; font-size:14px; }
+  .minilink{ font-size:13px; font-weight:500; color:var(--foreground); text-underline-offset:4px; }
+  .input{ font-family:var(--font-body); font-weight:500; font-size:15px; padding:11px 13px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); width:100%; }
+  .input:focus-visible{ outline:var(--bw) solid var(--border); outline-offset:2px; }
+  .stack{ display:flex; flex-direction:column; gap:12px; }
+  .center-note{ text-align:center; font-size:14px; font-weight:500; margin-top:16px; }
+
+  /* ── Controls ─────────────────────────────────────────────────── */
+  .ctrl-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; }
+  .check{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:14.5px; }
+  input.cb{ appearance:none; width:20px; height:20px; border:var(--bw) solid var(--border); border-radius:5px; background:var(--secondary-background); cursor:pointer; display:grid; place-content:center; flex:none; }
+  input.cb:checked{ background:var(--main); }
+  input.cb:checked::before{ content:""; width:10px; height:6px; border-left:3px solid #000; border-bottom:3px solid #000; transform:rotate(-45deg) translate(1px,-1px); }
+  .switch{ width:50px; height:28px; border:var(--bw) solid var(--border); border-radius:999px; background:var(--secondary-background); position:relative; cursor:pointer; padding:0; flex:none; }
+  .switch::before{ content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#000; transition:left .15s; }
+  .switch[aria-checked="true"]{ background:var(--main); }
+  .switch[aria-checked="true"]::before{ left:24px; }
+  .progress{ height:18px; border:var(--bw) solid var(--border); border-radius:999px; background:var(--secondary-background); overflow:hidden; }
+  .progress > span{ display:block; height:100%; background:var(--main); border-right:var(--bw) solid var(--border); }
+  input.slider{ -webkit-appearance:none; appearance:none; width:100%; height:14px; border:var(--bw) solid var(--border); border-radius:999px; background:var(--secondary-background); cursor:pointer; }
+  input.slider::-webkit-slider-thumb{ -webkit-appearance:none; width:24px; height:24px; border:var(--bw) solid var(--border); border-radius:50%; background:var(--main); box-shadow:2px 2px 0 0 #000; }
+  .otp{ display:flex; gap:8px; align-items:center; }
+  .otp .slot{ width:42px; height:48px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); display:grid; place-content:center; font-family:var(--font-mono); font-weight:700; font-size:19px; }
+  .otp .slot.active{ background:var(--main); box-shadow:var(--shadow); }
+  .otp .sep{ font-weight:700; }
+
+  /* ── Tabs ─────────────────────────────────────────────────────── */
+  .tabs{ display:grid; grid-template-columns:1fr 1fr; gap:0; border:var(--bw) solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); max-width:380px; margin-bottom:18px; background:var(--secondary-background); }
+  .tabs button{ font-family:var(--font-body); font-weight:700; font-size:15px; padding:11px; border:0; background:var(--secondary-background); cursor:pointer; }
+  .tabs button + button{ border-left:var(--bw) solid var(--border); }
+  .tabs button[aria-selected="true"]{ background:var(--main); }
+  .preset-tabs{ display:flex; gap:12px; flex-wrap:wrap; }
+  .ptab{ font-family:var(--font-body); font-weight:700; font-size:14px; padding:9px 16px; border:var(--bw) solid var(--border); border-radius:999px; background:var(--secondary-background); cursor:pointer; box-shadow:var(--shadow); white-space:nowrap; transition:transform .1s, box-shadow .1s; }
+  .ptab:hover{ transform:translate(3px,3px); box-shadow:none; }
+  .ptab.active{ background:var(--main); }
+  .ptab.locked{ background:var(--pro); }
+
+  /* ── Badges ───────────────────────────────────────────────────── */
+  .badge{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:5px 12px; border:var(--bw) solid var(--border); border-radius:999px; background:var(--secondary-background); }
+  .badge-main{ background:var(--main); }
+  .badge-pro{ background:var(--pro); }
+  .badge-success{ background:var(--success); }
+  .badge-danger{ background:var(--danger); }
+  .badge-ink{ background:var(--foreground); color:var(--background); }
+
+  /* ── Tables ───────────────────────────────────────────────────── */
+  .nb-tablewrap{ border:var(--bw) solid var(--border); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); background:var(--secondary-background); }
+  table.nb{ width:100%; border-collapse:collapse; font-size:14.5px; }
+  table.nb th{ font-family:var(--font-display); font-weight:700; text-align:left; padding:12px 16px; background:var(--main); border-bottom:var(--bw) solid var(--border); }
+  table.nb td{ padding:11px 16px; border-bottom:var(--bw) solid var(--border); font-weight:500; }
+  table.nb tr:last-child td{ border-bottom:0; }
+  table.nb tr.selected td{ background:var(--main); }
+  table.nb td.num, table.nb th.num{ text-align:right; font-family:var(--font-mono); }
+  table.nb tfoot td{ background:var(--background); font-weight:700; }
+  .table-toolbar{ display:flex; gap:14px; margin-bottom:16px; align-items:center; }
+  .table-toolbar .input{ max-width:300px; }
+  .table-foot{ display:flex; align-items:center; justify-content:space-between; margin-top:16px; gap:14px; flex-wrap:wrap; }
+  .table-foot .cnt{ font-size:14px; font-weight:500; color:var(--foreground-soft); }
+
+  /* ── Menus & toast ────────────────────────────────────────────── */
+  .menu{ width:260px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); box-shadow:var(--shadow); padding:6px; font-size:14.5px; font-weight:500; }
+  .mi{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border-radius:5px; cursor:pointer; }
+  .mi:hover{ background:var(--main); }
+  .mi .kbd{ font-family:var(--font-mono); font-size:11px; color:var(--foreground-soft); }
+  .mi.disabled{ opacity:.45; cursor:not-allowed; }
+  .mi.disabled:hover{ background:transparent; }
+  .msep{ height:var(--bw); background:var(--border); margin:6px -6px; }
+  .mlabel{ font-family:var(--font-mono); font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; padding:6px 10px 2px; color:var(--foreground-soft); }
+  .mi .dot{ width:8px; height:8px; border-radius:50%; border:2px solid var(--border); flex:none; }
+  .mi .dot.on{ background:var(--main); }
+  .combo{ width:260px; }
+  .combo .trigger{ width:100%; justify-content:space-between; }
+  .combo .panel-dd{ margin-top:10px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); box-shadow:var(--shadow); overflow:hidden; }
+  .combo .search{ width:100%; border:0; border-bottom:var(--bw) solid var(--border); padding:11px 13px; font-family:var(--font-body); font-weight:500; font-size:14.5px; background:var(--secondary-background); }
+  .combo .search:focus{ outline:none; background:var(--background); }
+  .combo .opts{ padding:6px; }
+  .toast{ max-width:380px; border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); box-shadow:var(--shadow-lg); padding:14px 16px; display:flex; align-items:center; gap:14px; justify-content:space-between; }
+  .toast .tt{ font-weight:700; font-size:14.5px; }
+  .toast .td{ font-size:13px; font-weight:500; color:var(--foreground-soft); }
+
+  /* dropzone */
+  .dropzone{ border:var(--bw) dashed var(--border); background:var(--main); border-radius:var(--radius); box-shadow:var(--shadow); padding:32px; text-align:center; }
+  .dropzone h4{ font-family:var(--font-display); font-weight:700; font-size:21px; margin:0 0 4px; text-transform:uppercase; }
+  .dropzone p{ font-family:var(--font-mono); font-size:12px; margin:0 0 18px; }
+
+  /* routes */
+  .states{ display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+  .state{ font-family:var(--font-mono); font-size:11.5px; font-weight:700; border:var(--bw) solid var(--border); border-radius:5px; padding:6px 11px; background:var(--secondary-background); box-shadow:2px 2px 0 0 #000; }
+  .urlcell{ font-family:var(--font-mono); font-size:12.5px; white-space:nowrap; }
+
+  /* voice */
+  .notes{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .note{ border:var(--bw) solid var(--border); border-radius:var(--radius); background:var(--secondary-background); box-shadow:var(--shadow); padding:20px 22px; }
+  .note h3{ font-family:var(--font-display); font-weight:700; font-size:17px; margin:0 0 6px; }
+  .note p{ margin:0; font-size:14.5px; font-weight:500; }
+  .note .dot{ display:inline-block; width:12px; height:12px; border:2px solid var(--border); border-radius:50%; vertical-align:baseline; margin-right:4px; }
+
+  @media (max-width:760px){
+    .sw-grid{ grid-template-columns:repeat(2,1fr); }
+    .ctrl-grid, .notes{ grid-template-columns:1fr; }
+    .hero{ flex-direction:column; align-items:flex-start; }
+  }
+  @media (prefers-reduced-motion:reduce){ *{ transition-duration:0.001ms !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <svg class="mark" viewBox="0 0 1024 1024" aria-label="ResizePack">
+      <rect width="1024" height="1024" fill="#221d16"/>
+      <rect x="341.3" y="341.3" width="341.3" height="341.3" rx="53" fill="#f1e9da"/>
+      <circle cx="586.7" cy="437.3" r="40.5" fill="#c2471a"/>
+      <path d="M358.4 661.3 L469.3 501.3 L533.3 576 L586.7 512 L665.6 661.3 Z" fill="#45614c"/>
+      <g stroke="#c2471a" stroke-width="68.3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path d="M213.3 320 L213.3 213.3 L320 213.3"/><path d="M810.7 704 L810.7 810.7 L704 810.7"/>
+      </g>
+    </svg>
+    <div>
+      <span class="sticker">Neobrutalism · Design System</span>
+      <h1>ResizePack</h1>
+      <p class="tag">Flat colour, 2px black borders, hard shadows, zero blur. Images processed entirely in your browser — never uploaded.</p>
+    </div>
+  </header>
+
+  <hr class="rule">
+
+  <!-- 01 COLOR LIGHT -->
+  <section id="color-light">
+    <p class="eyebrow">01 — Colour · Light</p>
+    <h2>Flat &amp; loud</h2>
+    <p class="lede">Solid fills only — no gradients, no washes, no grain. Blue is the one action colour; yellow means Pro; lime means success; red means destructive.</p>
+
+    <p class="sub">Core</p>
+    <div class="sw-grid">
+      <div class="sw"><div class="chip" style="background:#dfe5f2"></div><div class="meta"><div class="tok">--background</div><div class="hex">#dfe5f2</div><div class="role">App background</div></div></div>
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="meta"><div class="tok">--secondary-background</div><div class="hex">#ffffff</div><div class="role">Cards, panels, inputs</div></div></div>
+      <div class="sw"><div class="chip" style="background:#000000"></div><div class="meta"><div class="tok">--foreground / --border</div><div class="hex">#000000</div><div class="role">Text, every border, every shadow</div></div></div>
+      <div class="sw"><div class="chip" style="background:#4d8eff"></div><div class="meta"><div class="tok">--main</div><div class="hex">#4d8eff</div><div class="role">CTAs, links, active states</div></div></div>
+    </div>
+
+    <p class="sub">Semantic</p>
+    <div class="sw-grid">
+      <div class="sw"><div class="chip" style="background:#ffdc58"></div><div class="meta"><div class="tok">--pro</div><div class="hex">#ffdc58</div><div class="role">Pro / premium signifiers</div></div></div>
+      <div class="sw"><div class="chip" style="background:#a3e636"></div><div class="meta"><div class="tok">--success</div><div class="hex">#a3e636</div><div class="role">Success, done states</div></div></div>
+      <div class="sw"><div class="chip" style="background:#ff6b6b"></div><div class="meta"><div class="tok">--danger</div><div class="hex">#ff6b6b</div><div class="role">Errors, destructive actions</div></div></div>
+      <div class="sw"><div class="chip" style="background:#3d3d3d"></div><div class="meta"><div class="tok">--foreground-soft</div><div class="hex">#3d3d3d</div><div class="role">Secondary text</div></div></div>
+    </div>
+  </section>
+
+  <!-- 02 COLOR DARK -->
+  <section id="color-dark">
+    <p class="eyebrow">02 — Colour · Dark</p>
+    <h2>Dark mode</h2>
+    <p class="lede">Same accents, dark canvas. Borders and shadows stay pure black; text flips to near-white.</p>
+    <div class="dark-panel">
+      <p class="sub">Tokens</p>
+      <div class="sw-grid">
+        <div class="sw"><div class="chip" style="background:#1d1f27"></div><div class="meta"><div class="tok">--background</div><div class="hex">#1d1f27</div></div></div>
+        <div class="sw"><div class="chip" style="background:#212121"></div><div class="meta"><div class="tok">--secondary-background</div><div class="hex">#212121</div></div></div>
+        <div class="sw"><div class="chip" style="background:#e6e6e6"></div><div class="meta"><div class="tok">--foreground</div><div class="hex">#e6e6e6</div></div></div>
+        <div class="sw"><div class="chip" style="background:#4d8eff"></div><div class="meta"><div class="tok">--main</div><div class="hex">#4d8eff</div><div class="role" style="color:#cfcfcf">accents unchanged</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 TYPE -->
+  <section id="type">
+    <p class="eyebrow">03 — Typography</p>
+    <h2>Chunky &amp; clear</h2>
+    <p class="lede">A geometric grotesque for shouting, a friendly sans for reading, a mono for numbers.</p>
+
+    <div class="type-card">
+      <div class="name"><span class="fam">Space Grotesk — display</span><span class="spec">400–700 · --font-display · headings 700 / uppercase / -0.02em</span></div>
+      <p class="specimen-display">Resize without <em>the upload</em></p>
+    </div>
+
+    <div class="type-card">
+      <div class="name"><span class="fam" style="font-family:var(--font-body)">DM Sans — body / UI</span><span class="spec">400 · 500 · 700 · 800 · --font-body · base weight 500</span></div>
+      <p class="specimen-body">Your images are processed entirely in your browser and never uploaded to a server. Drag a folder in, pick your sizes, and export a tidy pack in seconds.</p>
+      <div class="weights">
+        <span style="font-weight:400">Regular<small>400</small></span>
+        <span style="font-weight:500">Medium<small>500</small></span>
+        <span style="font-weight:700">Bold<small>700</small></span>
+        <span style="font-weight:800">Extrabold<small>800</small></span>
+      </div>
+    </div>
+
+    <div class="type-card">
+      <div class="name"><span class="fam" style="font-family:var(--font-mono)">Space Mono — numerics / labels</span><span class="spec">400 · 700 · --font-mono · labels uppercase</span></div>
+      <p class="specimen-mono">1920×1080 · <b>240 KB</b> · 0.42s</p>
+    </div>
+  </section>
+
+  <!-- 04 SHAPE -->
+  <section id="shape">
+    <p class="eyebrow">04 — Shape &amp; motion</p>
+    <h2>Hard edges</h2>
+    <p class="lede">One radius, one border, one shadow. Motion is mechanical: elements physically push into their shadow on hover — no fades, no easing curves.</p>
+    <div class="tile-row">
+      <div class="tile"><div class="box"></div><span class="cap">--radius · 8px<br>--bw · 2px solid #000</span></div>
+      <div class="tile"><div class="box" style="box-shadow:var(--shadow)"></div><span class="cap">--shadow<br>4px 4px 0 0 #000</span></div>
+      <div class="tile"><div class="box" style="box-shadow:var(--shadow-lg)"></div><span class="cap">--shadow-lg<br>8px 8px 0 0 #000</span></div>
+      <div class="tile"><span class="press-demo"><button class="btn">Hover me</button></span><span class="cap">hover: translate(4px,4px)<br>+ shadow → none</span></div>
+    </div>
+  </section>
+
+  <!-- 05 COMPONENTS -->
+  <section id="components">
+    <p class="eyebrow">05 — Components</p>
+    <h2>The kit</h2>
+    <p class="lede">Ported from the neobrutalism shadcn registry. Every control: white or main fill, black border, hard shadow, push-in hover.</p>
+
+    <div class="panel">
+      <p class="sub">Buttons</p>
+      <div class="row">
+        <button class="btn">Process and download ZIP</button>
+        <button class="btn btn-neutral">Neutral</button>
+        <button class="btn btn-pro">Upgrade to Pro</button>
+        <button class="btn btn-danger">Delete my account</button>
+      </div>
+      <div class="row">
+        <button class="btn btn-noshadow">No shadow</button>
+        <button class="btn btn-reverse">Reverse</button>
+        <button class="btn" disabled>Disabled</button>
+        <button class="btn btn-neutral"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/></svg> Continue with Google</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Accordion — FAQ</p>
+      <div class="acc">
+        <details open>
+          <summary>Are my images uploaded anywhere?</summary>
+          <div class="acc-body">No. Everything is processed entirely in your browser — your files never leave your device.</div>
+        </details>
+        <details>
+          <summary>What formats can I export?</summary>
+          <div class="acc-body">JPEG and WebP, at any quality from 50–95, with optional EXIF stripping.</div>
+        </details>
+        <details>
+          <summary>Is it accessible?</summary>
+          <div class="acc-body">Yes. It adheres to the WAI-ARIA design pattern.</div>
+        </details>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Alerts</p>
+      <div class="alert alert-success">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m8.5 12.5 2.5 2.5 4.5-5.5"/></svg>
+        <span class="at">Success! Your pack has been exported</span>
+        <span class="ad">12 files resized and zipped — 4.2 MB total.</span>
+      </div>
+      <div class="alert">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v5"/><circle cx="12" cy="16.5" r=".5" fill="#000"/></svg>
+        <span class="at">You're on the Free plan</span>
+        <span class="ad">Upgrade to unlock all presets, WebP and batch rename.</span>
+      </div>
+      <div class="alert alert-danger">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><path d="M12 3 2.5 20h19Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".5" fill="#000"/></svg>
+        <span class="at">Some files were skipped</span>
+        <span class="ad">3 files exceeded the 25 MB limit.</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Alert dialog</p>
+      <div class="row">
+        <button class="btn btn-danger" onclick="document.getElementById('dlg').showModal()">Delete my account</button>
+        <span style="font-size:14px;font-weight:500;color:var(--foreground-soft)">← opens a modal with backdrop</span>
+      </div>
+      <dialog class="nb-dialog" id="dlg">
+        <h3 class="dlg-title">Are you absolutely sure?</h3>
+        <p class="dlg-desc">This action cannot be undone. This will permanently delete your account and remove your data from our servers.</p>
+        <div class="dlg-foot">
+          <button class="btn btn-neutral" onclick="document.getElementById('dlg').close()">Cancel</button>
+          <button class="btn btn-danger" onclick="document.getElementById('dlg').close()">Continue</button>
+        </div>
+      </dialog>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Card — login</p>
+      <div class="ctrl-grid">
+        <div class="nb-card">
+          <h3>Login to your account</h3>
+          <p class="desc">Enter your email below to login to your account</p>
+          <div class="field"><label class="lbl" for="lg-email">Email</label><input class="input" id="lg-email" type="email" placeholder="m@example.com"></div>
+          <div class="field"><div class="lblrow"><label class="lbl" for="lg-pass">Password</label><a class="minilink" href="#components">Forgot your password?</a></div><input class="input" id="lg-pass" type="password"></div>
+          <div class="stack">
+            <button class="btn" style="width:100%;justify-content:center">Login</button>
+            <button class="btn btn-neutral" style="width:100%;justify-content:center">Login with Google</button>
+          </div>
+          <div class="center-note">Don't have an account? <a class="minilink" href="#components" style="font-weight:700">Sign up</a></div>
+        </div>
+        <div>
+          <div class="tabs" role="tablist">
+            <button role="tab" aria-selected="true" data-tab="account">Account</button>
+            <button role="tab" aria-selected="false" data-tab="password">Password</button>
+          </div>
+          <div class="nb-card" style="max-width:380px" id="tab-account">
+            <h3>Account</h3>
+            <p class="desc">Make changes to your account here.</p>
+            <div class="field"><label class="lbl" for="tb-name">Name</label><input class="input" id="tb-name" value="Pedro Duarte"></div>
+            <button class="btn btn-neutral" style="width:100%;justify-content:center">Save changes</button>
+          </div>
+          <div class="nb-card" style="max-width:380px;display:none" id="tab-password">
+            <h3>Password</h3>
+            <p class="desc">Change your password here. You'll be logged out after saving.</p>
+            <div class="field"><label class="lbl" for="tb-new">New password</label><input class="input" id="tb-new" type="password"></div>
+            <button class="btn btn-neutral" style="width:100%;justify-content:center">Save password</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Form controls</p>
+      <div class="ctrl-grid">
+        <div>
+          <div class="field"><label class="lbl" for="fc-w">Max width (px)</label><input class="input" id="fc-w" type="number" value="1920"></div>
+          <div class="field"><label class="lbl" for="fc-q">Quality — 82</label><input class="slider" id="fc-q" type="range" min="50" max="95" value="82"></div>
+          <div class="field"><label class="lbl">Processing</label><div class="progress"><span style="width:66%"></span></div></div>
+          <div class="field"><label class="lbl">Confirm email — code</label>
+            <div class="otp">
+              <span class="slot">4</span><span class="slot">2</span><span class="slot active">7</span>
+              <span class="sep">—</span>
+              <span class="slot"></span><span class="slot"></span><span class="slot"></span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <label class="check"><input class="cb" type="checkbox" checked> JPEG</label>
+          <label class="check"><input class="cb" type="checkbox"> WebP</label>
+          <label class="check"><input class="cb" type="checkbox" checked> Strip EXIF metadata</label>
+          <span class="check"><button class="switch" role="switch" aria-checked="true" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked')!=='true')"></button> Keep originals</span>
+          <span class="check"><button class="switch" role="switch" aria-checked="false" onclick="this.setAttribute('aria-checked', this.getAttribute('aria-checked')!=='true')"></button> Max size per image</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Preset tabs &amp; combobox</p>
+      <div class="preset-tabs">
+        <button class="ptab active">Etsy listing</button>
+        <button class="ptab">Web</button>
+        <button class="ptab locked">Shopify · Pro</button>
+        <button class="ptab locked">Amazon · Pro</button>
+        <button class="ptab locked">Custom · Pro</button>
+      </div>
+      <div class="ctrl-grid" style="margin-top:22px">
+        <div class="combo">
+          <button class="btn btn-neutral trigger">Select preset… <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="m7 9 5-5 5 5M7 15l5 5 5-5"/></svg></button>
+          <div class="panel-dd">
+            <input class="search" placeholder="Search preset…">
+            <div class="opts">
+              <div class="mi">Etsy listing <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="m5 13 4 4 9-10"/></svg></div>
+              <div class="mi">Web</div>
+              <div class="mi">Shopify</div>
+              <div class="mi">Instagram</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="menu">
+            <div class="mi">Download <span class="kbd">⌘D</span></div>
+            <div class="mi disabled">Re-process <span class="kbd">⌘R</span></div>
+            <div class="mi">Rename… <span class="kbd">⏎</span></div>
+            <div class="msep"></div>
+            <label class="mi"><span style="display:flex;gap:10px;align-items:center"><input class="cb" type="checkbox" checked style="width:16px;height:16px"> Keep original</span></label>
+            <div class="msep"></div>
+            <div class="mlabel">Export as</div>
+            <div class="mi"><span style="display:flex;gap:10px;align-items:center"><span class="dot on"></span> JPEG</span></div>
+            <div class="mi"><span style="display:flex;gap:10px;align-items:center"><span class="dot"></span> WebP</span></div>
+            <div class="msep"></div>
+            <div class="mi" style="color:#c81e1e;font-weight:700">Remove file</div>
+          </div>
+          <p style="font-family:var(--font-mono);font-size:11px;margin:10px 0 0">Context menu — right-click a file row</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Data table — file queue</p>
+      <div class="table-toolbar">
+        <input class="input" placeholder="Filter files…">
+        <button class="btn btn-neutral" style="margin-left:auto">Columns <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></button>
+      </div>
+      <div class="nb-tablewrap">
+        <table class="nb">
+          <thead><tr><th style="width:44px"><input class="cb" type="checkbox"></th><th>File</th><th>Status</th><th class="num">Output</th><th style="width:44px"></th></tr></thead>
+          <tbody>
+            <tr><td><input class="cb" type="checkbox"></td><td>hero-banner.png</td><td><span class="badge badge-success">done</span></td><td class="num">312 KB</td><td>⋯</td></tr>
+            <tr class="selected"><td><input class="cb" type="checkbox" checked></td><td>product-01.jpg</td><td><span class="badge">processing</span></td><td class="num">—</td><td>⋯</td></tr>
+            <tr><td><input class="cb" type="checkbox"></td><td>lifestyle-02.jpg</td><td><span class="badge badge-danger">failed</span></td><td class="num">—</td><td>⋯</td></tr>
+            <tr><td><input class="cb" type="checkbox"></td><td>detail-03.webp</td><td><span class="badge badge-success">done</span></td><td class="num">198 KB</td><td>⋯</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-foot">
+        <span class="cnt">1 of 4 row(s) selected.</span>
+        <span class="row"><button class="btn btn-neutral btn-noshadow">Previous</button><button class="btn btn-neutral btn-noshadow">Next</button></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Table — billing history</p>
+      <div class="nb-tablewrap">
+        <table class="nb">
+          <thead><tr><th>Invoice</th><th>Status</th><th>Method</th><th class="num">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>INV001</td><td><span class="badge badge-success">Paid</span></td><td>Credit Card</td><td class="num">$9.00</td></tr>
+            <tr><td>INV002</td><td><span class="badge badge-pro">Pending</span></td><td>PayPal</td><td class="num">$9.00</td></tr>
+            <tr><td>INV003</td><td><span class="badge badge-danger">Unpaid</span></td><td>Bank Transfer</td><td class="num">$9.00</td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="3">Total</td><td class="num">$27.00</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <p class="sub">Badges, toast &amp; drop zone</p>
+      <div class="row">
+        <span class="badge badge-ink">ResizePack</span>
+        <span class="badge badge-main">Active</span>
+        <span class="badge badge-pro">★ Pro until 12 Mar</span>
+        <span class="badge badge-success">Pro active</span>
+        <span class="badge">Free</span>
+        <span class="badge badge-danger">Failed</span>
+      </div>
+      <div class="ctrl-grid" style="margin-top:22px">
+        <div class="toast">
+          <span><span class="tt">Pack exported</span><br><span class="td">12 files · 4.2 MB · Sunday 9:00 AM</span></span>
+          <button class="btn btn-neutral btn-noshadow" style="padding:8px 14px;font-size:13px">Undo</button>
+        </div>
+        <div class="dropzone">
+          <h4>Drop images here</h4>
+          <p>JPEG, PNG, WebP · Max 30 files · Max 25 MB each</p>
+          <button class="btn btn-neutral">Browse files</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 PAGES -->
+  <section id="pages">
+    <p class="eyebrow">06 — Pages &amp; routes</p>
+    <h2>Screen inventory</h2>
+    <p class="lede">Base URL <span style="font-family:var(--font-mono);font-weight:700">https://www.resizepack.tech</span></p>
+    <div class="nb-tablewrap">
+      <table class="nb">
+        <thead><tr><th>Page</th><th>Route</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Main tool</td><td class="urlcell">/</td><td>Hero + tool + SEO + footer</td></tr>
+          <tr><td>Sign in / Sign up</td><td class="urlcell">/login</td><td>One page, multiple states</td></tr>
+          <tr><td>Reset password</td><td class="urlcell">/reset-password</td><td>Opened from the reset email link</td></tr>
+          <tr><td>Account <span class="badge badge-pro" style="margin-left:6px">Protected</span></td><td class="urlcell">/account</td><td>Redirects to /login if signed out</td></tr>
+          <tr><td>FAQ</td><td class="urlcell">/faq</td><td>Accordion Q&amp;A + FAQ schema</td></tr>
+          <tr><td>Privacy / Terms / Refund</td><td class="urlcell">/privacy · /terms · /refund</td><td>Legal layout</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="sub">Login page states (same URL)</p>
+    <div class="states">
+      <span class="state">Sign in</span><span class="state">Create account</span><span class="state">Forgot password</span>
+      <span class="state">Reset password</span><span class="state">Check your email</span><span class="state">Confirm email</span><span class="state">Already signed in</span>
+    </div>
+  </section>
+
+  <!-- 07 VOICE -->
+  <section id="voice">
+    <p class="eyebrow">07 — Voice &amp; usage</p>
+    <h2>The rules</h2>
+    <div class="notes">
+      <div class="note"><h3><span class="dot" style="background:var(--main)"></span> Blue is the only money colour</h3><p>Reserve <strong>--main</strong> for the primary action, active states and links. One blue CTA per view.</p></div>
+      <div class="note"><h3><span class="dot" style="background:var(--pro)"></span> Yellow = Pro</h3><p>Pro tints, locked presets and premium badges are always yellow — never use it for general emphasis.</p></div>
+      <div class="note"><h3><span class="dot" style="background:var(--foreground)"></span> Borders on everything</h3><p>Every surface, control and chip gets a 2px black border. Shadows are hard offsets — never blurred.</p></div>
+      <div class="note"><h3><span class="dot" style="background:var(--success)"></span> Privacy is the pitch</h3><p>"Processed entirely in your browser, never uploaded" stays the recurring line. Plain, confident copy — speak to "you".</p></div>
+    </div>
+  </section>
+
+</div>
+<script>
+  // Tabs demo
+  document.querySelectorAll('.tabs [role="tab"]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tabs [role="tab"]').forEach(function(b){ b.setAttribute('aria-selected','false'); });
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-account').style.display = btn.dataset.tab==='account' ? '' : 'none';
+      document.getElementById('tab-password').style.display = btn.dataset.tab==='password' ? '' : 'none';
+    });
+  });
+</script>
+</body>
+</html>

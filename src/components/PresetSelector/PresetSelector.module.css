@@ -1,6 +1,6 @@
 .container {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-wrap: wrap;
 }
 
@@ -8,54 +8,45 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border: 1px solid var(--line-ink);
-  background: transparent;
-  color: var(--ink);
+  border: var(--bw) solid var(--border);
+  background: var(--secondary-background);
+  color: var(--foreground);
   border-radius: var(--radius-pill);
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1rem;
   cursor: pointer;
-  font-size: 0.92rem;
-  font-weight: 600;
-  transition: background 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+  font-size: 0.88rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .item:hover {
-  background: var(--line-soft);
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .itemActive {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.itemActive:hover {
-  background: var(--ink);
+  background: var(--main);
+  color: var(--main-foreground);
 }
 
 .itemLocked {
-  border-style: dashed;
-  border-color: var(--clay-line);
-  color: var(--clay-deep);
-  background: transparent;
-}
-
-.itemLocked:hover {
-  background: var(--clay-tint);
-  border-color: var(--clay);
+  background: var(--pro);
+  color: #000;
 }
 
 .lock {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  font-weight: 500;
+  font-size: 0.64rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: #000;
 }
 
 .itemActive .lock {
-  color: var(--gold-tint);
+  color: var(--main-foreground);
 }
 
 @media (max-width: 640px) {

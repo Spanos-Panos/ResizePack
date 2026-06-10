@@ -1,63 +1,119 @@
 .wrapper {
-  margin-top: 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  margin-top: 1.4rem;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
   padding: 1.1rem;
-  background: var(--surface-raised);
+  background: var(--secondary-background);
+  box-shadow: var(--shadow);
 }
 
 .title {
   margin: 0 0 1rem;
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--background);
+  background: var(--foreground);
+  padding: 0.2rem 0.6rem;
 }
 
 .group {
-  margin-top: 1rem;
+  margin-top: 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .label {
   margin: 0;
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--foreground);
 }
 
 .input {
   width: 100%;
   max-width: 260px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 0.6rem;
-  background: var(--surface-raised);
-  color: var(--ink);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.7rem;
+  background: var(--secondary-background);
+  color: var(--foreground);
   font-family: var(--font-mono);
-}
-
-.input:focus-visible {
-  border-color: var(--clay);
-  outline: none;
+  font-weight: 700;
+  font-size: 0.88rem;
 }
 
 .checkbox {
   display: inline-flex;
-  gap: 0.55rem;
+  gap: 0.6rem;
   align-items: center;
-  font-size: 0.94rem;
-  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--foreground);
+  cursor: pointer;
 }
 
 .checkbox input {
-  accent-color: var(--clay);
-  width: 1.05rem;
-  height: 1.05rem;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: var(--bw) solid var(--border);
+  border-radius: 5px;
+  background: var(--secondary-background);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex: none;
+  margin: 0;
+}
+
+.checkbox input:checked {
+  background: var(--main);
+}
+
+.checkbox input:checked::before {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 3px solid #000;
+  border-bottom: 3px solid #000;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* Quality slider (range input) */
+.group input[type='range'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  max-width: 260px;
+  height: 14px;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--secondary-background);
+  cursor: pointer;
+}
+
+.group input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border: var(--bw) solid var(--border);
+  border-radius: 50%;
+  background: var(--main);
+  box-shadow: 2px 2px 0 0 #000;
+}
+
+.group input[type='range']::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: var(--bw) solid var(--border);
+  border-radius: 50%;
+  background: var(--main);
+  box-shadow: 2px 2px 0 0 #000;
 }
 
 .lockedOption {
@@ -65,40 +121,54 @@
   align-items: center;
   gap: 0.4rem;
   align-self: flex-start;
-  border: 1px dashed var(--clay-line);
-  background: var(--clay-tint);
-  color: var(--clay-deep);
-  border-radius: var(--radius-sm);
-  padding: 0.4rem 0.7rem;
-  font-size: 0.92rem;
-  font-weight: 600;
+  border: var(--bw) solid var(--border);
+  background: var(--pro);
+  color: #000;
+  border-radius: var(--radius);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.14s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .lockedOption:hover {
-  background: var(--clay-tint);
+  transform: translate(3px, 3px);
+  box-shadow: none;
 }
 
 .lockTag {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  font-weight: 500;
+  font-size: 0.64rem;
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .value {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
-  color: var(--clay);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.value::before {
+  content: '» ';
+  color: var(--foreground-soft);
 }
 
 .hint {
   margin: 0;
   font-size: 0.84rem;
+  font-weight: 500;
   line-height: 1.45;
-  color: var(--ink-soft);
+  color: var(--foreground-soft);
+}
+
+/* Aspect-ratio select shares .input styling via the same class. */
+.group select {
+  cursor: pointer;
 }
 
 @media (max-width: 640px) {

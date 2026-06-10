@@ -1,117 +1,59 @@
-/* ResizePack — "Print Studio" design system
-   Warm paper + ink, characterful serif display (Fraunces) over a clean
-   grotesque (Hanken Grotesk), DM Mono for technical numerics. */
+/* ResizePack — Neobrutalism design system
+   Flat saturated colour, 2px black borders, hard offset shadows, zero blur,
+   mechanical motion. Space Grotesk (display) over DM Sans (body), Space Mono
+   for technical numerics. Patterns follow the neobrutalism.dev registry
+   (MIT), ported into our CSS-module architecture. */
 
 :root {
-  /* Surfaces */
-  --paper: #f1e9da;
-  --paper-2: #ece2cf;
-  --surface: #fbf7ee;
-  --surface-raised: #fffdf8;
+  /* Core */
+  --background: #dfe5f2; /* app background */
+  --secondary-background: #ffffff; /* cards, panels, inputs */
+  --foreground: #000000; /* text */
+  --foreground-soft: #3d3d3d; /* secondary text */
 
-  /* Ink / text */
-  --ink: #221d16;
-  --ink-soft: #5a5145;
-  --ink-faint: #6e6553; /* darkened to pass WCAG AA (4.8:1 on --paper) */
+  --main: #4d8eff; /* THE action colour — fills only (fails AA as text) */
+  --main-foreground: #000000; /* text on main */
+  --pro: #ffdc58; /* Pro / premium signifiers */
+  --success: #a3e636; /* success, done states */
+  --danger: #ff6b6b; /* errors / destructive — fills only */
 
-  /* Lines */
-  --line: #ddd1bb;
-  --line-soft: #e7ddca;
-  --line-ink: #221d16;
-
-  /* Accent — clay / terracotta (the money action) */
-  --clay: #c2471a;
-  --clay-deep: #9b3712;
-  --clay-tint: #f6e1d4;
-  --clay-line: #e3a988;
-
-  /* Pro / gold */
-  --gold: #9a6b16;
-  --gold-tint: #f3e6c6;
-  --gold-line: #d9b878;
-
-  /* Success / sage */
-  --sage: #45614c;
-  --sage-tint: #e2ebe1;
-  --sage-line: #a9c0ac;
-
-  /* Danger */
-  --danger: #b03527;
-  --danger-tint: #f6ddd8;
-  --danger-line: #e2a89f;
+  --border: #000000; /* every border and shadow */
+  --bw: 2px; /* border width */
+  --shadow: 4px 4px 0px 0px var(--border);
+  --shadow-lg: 8px 8px 0px 0px var(--border);
+  --radius: 8px;
+  --radius-pill: 999px;
+  --ring: #000000; /* focus ring (flips in dark so it stays visible) */
 
   /* Type */
-  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
-  --font-body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'DM Mono', ui-monospace, 'SFMono-Regular', monospace;
-
-  /* Shape & depth */
-  --radius: 14px;
-  --radius-sm: 9px;
-  --radius-pill: 999px;
-  --shadow: 0 22px 48px -28px rgba(34, 29, 22, 0.5);
-  --shadow-sm: 0 8px 20px -12px rgba(34, 29, 22, 0.38);
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
 
   color-scheme: light;
   font-family: var(--font-body);
-  line-height: 1.55;
-  font-weight: 400;
-  color: var(--ink);
-  background: var(--paper);
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--foreground);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark theme — warm "espresso" inversion of Print Studio. Set via the
-   [data-theme="dark"] attribute on <html> (no-flash inline script in
-   index.html + ThemeToggle). Every token below mirrors its :root sibling so
-   components keep working through the same semantic variables. Text tokens are
-   tuned to stay ≥ WCAG AA on the dark surfaces. */
+/* Dark theme — same accents, dark canvas. Borders and shadows stay pure
+   black (neobrutalism.dev dark-mode convention). Set via [data-theme="dark"]
+   on <html> (no-flash inline script in index.html + ThemeToggle). */
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  /* Surfaces */
-  --paper: #18140f;
-  --paper-2: #211b15;
-  --surface: #221c16;
-  --surface-raised: #2b241c;
-
-  /* Ink / text (warm light) */
-  --ink: #f1e9da;
-  --ink-soft: #c9c0b1;
-  --ink-faint: #9d9485;
-
-  /* Lines */
-  --line: #3a322a;
-  --line-soft: #2c2620;
-  --line-ink: #f1e9da;
-
-  /* Accent — clay (brightened for dark) */
-  --clay: #d9602f;
-  --clay-deep: #b8481f;
-  --clay-tint: #3a241a;
-  --clay-line: #6f3c23;
-
-  /* Pro / gold */
-  --gold: #c89b3f;
-  --gold-tint: #322a17;
-  --gold-line: #5e4b25;
-
-  /* Success / sage */
-  --sage: #82a78a;
-  --sage-tint: #1f2a22;
-  --sage-line: #3b5042;
-
-  /* Danger */
-  --danger: #e06a5c;
-  --danger-tint: #341c19;
-  --danger-line: #6f342d;
-
-  /* Depth — deeper shadows on dark */
-  --shadow: 0 22px 48px -28px rgba(0, 0, 0, 0.7);
-  --shadow-sm: 0 8px 20px -12px rgba(0, 0, 0, 0.55);
+  --background: #1d1f27;
+  --secondary-background: #212121;
+  --foreground: #e6e6e6;
+  --foreground-soft: #c4c4c4;
+  /* --main / --pro / --success / --danger / --border unchanged */
+  --ring: #ffffff; /* black ring is invisible on a dark canvas */
 }
 
 *,
@@ -123,36 +65,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--ink);
-  background-color: var(--paper);
-  /* Layered warmth: two soft radial washes over the paper base. */
-  background-image:
-    radial-gradient(900px 520px at 88% -8%, rgba(194, 71, 26, 0.08), transparent 60%),
-    radial-gradient(720px 480px at -6% 8%, rgba(69, 97, 76, 0.07), transparent 55%);
-  background-attachment: fixed;
-}
-
-/* Fine film grain over everything, just enough to kill flatness. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
-}
-
-/* Dark theme: retune the warm washes for the dark base and dial back grain. */
-:root[data-theme='dark'] body {
-  background-image:
-    radial-gradient(900px 520px at 88% -8%, rgba(217, 96, 47, 0.1), transparent 60%),
-    radial-gradient(720px 480px at -6% 8%, rgba(130, 167, 138, 0.07), transparent 55%);
-}
-
-:root[data-theme='dark'] body::before {
-  opacity: 0.32;
+  color: var(--foreground);
+  background-color: var(--background);
 }
 
 #root {
@@ -163,38 +77,30 @@ h1,
 h2,
 h3 {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
 a {
-  color: var(--clay);
+  color: var(--foreground);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 ::selection {
-  background: var(--clay);
-  color: var(--paper);
+  background: var(--main);
+  color: #000;
 }
 
 :focus-visible {
-  outline: 2px solid var(--clay);
+  outline: var(--bw) solid var(--ring);
   outline-offset: 2px;
 }
 
 input,
 button {
   font-family: inherit;
-}
-
-@keyframes rp-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

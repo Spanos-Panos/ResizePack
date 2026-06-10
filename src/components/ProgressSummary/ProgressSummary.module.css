@@ -1,19 +1,23 @@
 .wrapper {
-  margin-top: 1.1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  margin-top: 1.4rem;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
   padding: 1.1rem;
-  background: var(--surface-raised);
+  background: var(--secondary-background);
+  box-shadow: var(--shadow);
 }
 
 .title {
   margin: 0 0 0.9rem;
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--background);
+  background: var(--foreground);
+  padding: 0.2rem 0.6rem;
 }
 
 .overview {
@@ -26,30 +30,33 @@
   gap: 0.75rem;
   font-family: var(--font-mono);
   font-size: 0.86rem;
-  color: var(--ink);
+  font-weight: 700;
+  color: var(--foreground);
 }
 
 .progressBarTrack {
-  margin-top: 0.5rem;
+  margin-top: 0.55rem;
   width: 100%;
-  height: 0.5rem;
+  height: 18px;
   border-radius: var(--radius-pill);
-  background: var(--paper-2);
+  background: var(--secondary-background);
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: var(--bw) solid var(--border);
 }
 
 .progressBarFill {
   height: 100%;
-  background: linear-gradient(90deg, var(--clay), var(--clay-deep));
+  background: var(--main);
+  border-right: var(--bw) solid var(--border);
   transition: width 0.25s ease;
 }
 
 .breakdown {
   margin: 0.55rem 0 0;
-  color: var(--ink-faint);
+  color: var(--foreground-soft);
   font-family: var(--font-mono);
   font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .list {
@@ -63,9 +70,10 @@
 .row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   padding: 0.45rem 0.2rem;
-  border-bottom: 1px solid var(--line-soft);
+  border-bottom: var(--bw) solid var(--border);
 }
 
 .row:last-child {
@@ -77,34 +85,43 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.92rem;
-  color: var(--ink);
+  font-weight: 500;
+  color: var(--foreground);
 }
 
 .status {
   text-transform: uppercase;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0.05em;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 0.15rem 0.6rem;
+  color: #000;
+  white-space: nowrap;
 }
 
 .statusSuccess {
-  color: var(--sage);
+  background: var(--success);
 }
 
 .statusFailed {
-  color: var(--danger);
+  background: var(--danger);
 }
 
 .statusNeutral {
-  color: var(--ink-faint);
+  background: var(--secondary-background);
+  color: var(--foreground);
 }
 
 .summary {
   margin-top: 0.9rem;
-  color: var(--ink);
-  border-top: 1px solid var(--line);
+  color: var(--foreground);
+  border-top: var(--bw) solid var(--border);
   padding-top: 0.9rem;
   font-size: 0.92rem;
+  font-weight: 500;
 }
 
 .summary p {
@@ -113,12 +130,18 @@
 
 .summary strong {
   font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 .failures {
-  margin: 0.6rem 0 0;
-  color: var(--danger);
+  margin: 0.8rem 0 0;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  background: var(--danger);
+  color: #000;
+  font-weight: 700;
   font-size: 0.88rem;
+  padding: 0.7rem 0.9rem 0.7rem 1.8rem;
 }
 
 @media (max-width: 640px) {

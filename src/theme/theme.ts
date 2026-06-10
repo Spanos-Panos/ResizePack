@@ -5,7 +5,7 @@
 export type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'theme';
-const THEME_COLOR = { light: '#f1e9da', dark: '#18140f' } as const;
+const THEME_COLOR = { light: '#dfe5f2', dark: '#1d1f27' } as const;
 
 export function getTheme(): Theme {
   const attr = document.documentElement.dataset.theme;

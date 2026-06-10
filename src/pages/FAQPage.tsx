@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from 'react';
+import { useEffect } from 'react';
 import { LegalLayout } from './legal/LegalLayout';
 
 // Single source of truth for the visible Q&A and the FAQPage JSON-LD, so they
@@ -70,11 +70,15 @@ export function FAQPage() {
 
   return (
     <LegalLayout title="Frequently Asked Questions">
-      {FAQS.map((item) => (
-        <Fragment key={item.q}>
-          <h2>{item.q}</h2>
+      {FAQS.map((item, index) => (
+        // Native accordion: details/summary needs no JS, stays keyboard
+        // accessible, and Google still indexes the collapsed answers.
+        <details key={item.q} open={index === 0}>
+          <summary>
+            <h2>{item.q}</h2>
+          </summary>
           <p>{item.a}</p>
-        </Fragment>
+        </details>
       ))}
     </LegalLayout>
   );

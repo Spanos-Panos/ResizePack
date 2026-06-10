@@ -1,25 +1,18 @@
 .zone {
-  border: 2px dashed var(--line-ink);
+  border: var(--bw) dashed var(--border);
   border-radius: var(--radius);
   padding: 2.4rem 1.25rem;
-  background:
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 11px,
-      rgba(34, 29, 22, 0.018) 11px,
-      rgba(34, 29, 22, 0.018) 22px
-    ),
-    var(--surface-raised);
+  background: var(--main);
+  box-shadow: var(--shadow);
   text-align: center;
-  transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  color: #000;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .zoneActive {
-  border-color: var(--clay);
   border-style: solid;
-  background-color: var(--clay-tint);
-  transform: scale(1.005);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .zoneDisabled {
@@ -29,34 +22,38 @@
 
 .title {
   margin: 0;
-  color: var(--ink);
+  color: #000;
   font-family: var(--font-display);
-  font-size: 1.7rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
 .subtitle {
   margin: 0.55rem 0 1.3rem;
-  color: var(--ink-faint);
+  color: #000;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
   letter-spacing: 0.01em;
 }
 
 .browseButton {
-  border: 1px solid var(--line-ink);
-  color: var(--ink);
-  background: transparent;
-  padding: 0.6rem 1.3rem;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
+  border: var(--bw) solid var(--border);
+  color: var(--foreground);
+  background: var(--secondary-background);
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--radius);
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .browseButton:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--paper);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .browseButton:disabled {

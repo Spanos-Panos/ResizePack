@@ -6,13 +6,11 @@
 
 .card {
   position: relative;
-  border: 1px solid var(--line);
+  border: var(--bw) solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface);
+  background: var(--secondary-background);
   padding: 2rem 1.75rem;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  animation: rp-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: var(--shadow-lg);
 }
 
 .themeCorner {
@@ -22,44 +20,40 @@
   z-index: 2;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--clay);
-}
-
 .card h1 {
   margin: 0 0 0.3rem;
-  font-size: 2.1rem;
-  color: var(--ink);
+  font-size: 1.9rem;
+  color: var(--foreground);
+  letter-spacing: -0.02em;
 }
 
 .card h2 {
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--background);
+  background: var(--foreground);
+  padding: 0.2rem 0.6rem;
   margin: 0 0 0.9rem;
 }
 
 .muted {
-  color: var(--ink-soft);
+  color: var(--foreground-soft);
+  font-weight: 500;
   font-size: 0.94rem;
 }
 
 .muted strong {
-  color: var(--ink);
+  color: var(--foreground);
+  font-weight: 700;
 }
 
 .section {
   margin-top: 1.5rem;
-  border-top: 1px solid var(--line);
+  border-top: var(--bw) solid var(--border);
   padding-top: 1.4rem;
 }
 
@@ -68,45 +62,43 @@
   align-items: center;
   gap: 0.85rem;
   flex-wrap: wrap;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface-raised);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  background: var(--secondary-background);
+  box-shadow: var(--shadow);
   padding: 0.95rem 1.1rem;
 }
 
 .badge {
   display: inline-block;
+  border: var(--bw) solid var(--border);
   border-radius: var(--radius-pill);
   padding: 0.25rem 0.8rem;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-size: 0.7rem;
+  font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   white-space: nowrap;
+  color: #000;
 }
 
 .badgePro {
-  background: var(--sage-tint);
-  color: var(--sage);
-  border: 1px solid var(--sage-line);
+  background: var(--success);
 }
 
 .badgeWarning {
-  background: var(--gold-tint);
-  color: var(--gold);
-  border: 1px solid var(--gold-line);
+  background: var(--pro);
 }
 
 .badgeMuted {
-  background: var(--paper-2);
-  color: var(--ink-soft);
-  border: 1px solid var(--line);
+  background: var(--secondary-background);
+  color: var(--foreground);
 }
 
 .statusDetail {
   margin: 0;
-  color: var(--ink);
+  color: var(--foreground);
   font-weight: 500;
 }
 
@@ -114,130 +106,147 @@
   margin-top: 1.4rem;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 0.85rem;
   align-items: center;
 }
 
 .primaryButton {
-  border: 1px solid var(--clay-deep);
-  background: var(--clay);
-  color: #fff;
-  border-radius: var(--radius-sm);
-  padding: 0.68rem 1.1rem;
+  border: var(--bw) solid var(--border);
+  background: var(--main);
+  color: var(--main-foreground);
+  border-radius: var(--radius);
+  padding: 0.7rem 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.14s ease, transform 0.14s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .primaryButton:hover:not(:disabled) {
-  background: var(--clay-deep);
-  transform: translateY(-1px);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .primaryButton:disabled,
 .signOut:disabled,
 .actionLink:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .signOut {
-  border: 1px solid var(--line-ink);
-  background: transparent;
-  color: var(--ink);
-  border-radius: var(--radius-sm);
-  padding: 0.68rem 1.1rem;
-  font-weight: 600;
+  border: var(--bw) solid var(--border);
+  background: var(--secondary-background);
+  color: var(--foreground);
+  border-radius: var(--radius);
+  padding: 0.7rem 1.1rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.14s ease, color 0.14s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .signOut:hover:not(:disabled) {
-  background: var(--ink);
-  color: var(--paper);
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .actionLink {
   border: none;
   background: none;
-  padding: 0;
-  color: var(--ink-soft);
+  padding: 0.2rem 0.3rem;
+  color: var(--foreground);
   font: inherit;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--clay-line);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 .actionLink:hover:not(:disabled) {
-  color: var(--clay);
+  background: var(--main);
+  color: #000;
 }
 
 .link {
-  color: var(--ink-soft);
-  text-decoration: none;
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
   font-family: var(--font-mono);
   font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .link:hover {
-  color: var(--clay);
+  background: var(--main);
+  color: #000;
 }
 
 .notice {
   margin: 0.95rem 0 0;
-  border: 1px solid var(--gold-line);
-  background: var(--gold-tint);
-  color: var(--gold);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  background: var(--pro);
+  color: #000;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 0.7rem 0.85rem;
   font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .noticeSuccess {
   margin: 0.95rem 0 0;
-  border: 1px solid var(--sage-line);
-  background: var(--sage-tint);
-  color: var(--sage);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  background: var(--success);
+  color: #000;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 0.7rem 0.85rem;
   font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .dangerZone {
   margin-top: 1.5rem;
-  border-top: 1px solid var(--danger-line);
+  border-top: var(--bw) solid var(--border);
   padding-top: 1.4rem;
 }
 
 .dangerTitle {
+  display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--danger);
+  color: #000;
+  background: var(--danger);
+  border: var(--bw) solid var(--border);
+  padding: 0.2rem 0.6rem;
   margin: 0 0 0.9rem;
 }
 
 .dangerButton {
-  border: 1px solid var(--danger-line);
-  background: var(--danger-tint);
-  color: var(--danger);
-  border-radius: var(--radius-sm);
-  padding: 0.68rem 1.1rem;
+  border: var(--bw) solid var(--border);
+  background: var(--danger);
+  color: #000;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.14s ease, color 0.14s ease;
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .dangerButton:hover:not(:disabled) {
-  background: var(--danger);
-  color: #fff;
+  transform: translate(4px, 4px);
+  box-shadow: none;
 }
 
 .dangerButton:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -251,58 +260,62 @@
 .dangerLabel {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  color: var(--ink);
+  gap: 0.45rem;
+  color: var(--foreground);
+  font-weight: 500;
   font-size: 0.92rem;
 }
 
 .dangerLabel strong {
   font-family: var(--font-mono);
-  color: var(--danger);
+  font-weight: 700;
 }
 
 .input {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
   padding: 0.62rem 0.7rem;
-  background: var(--surface-raised);
-  color: var(--ink);
+  background: var(--secondary-background);
+  color: var(--foreground);
+  font-weight: 700;
   max-width: 220px;
 }
 
 .input:focus-visible {
-  border-color: var(--danger);
-  outline: none;
+  outline: var(--bw) solid var(--ring);
+  outline-offset: 2px;
 }
 
 .dangerActions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 0.85rem;
   align-items: center;
 }
 
 .fieldLabel {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  color: var(--ink);
+  gap: 0.45rem;
+  color: var(--foreground);
+  font-weight: 700;
   font-size: 0.92rem;
   margin-top: 0.9rem;
 }
 
 .passwordInput {
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
   padding: 0.62rem 0.7rem;
-  background: var(--surface-raised);
-  color: var(--ink);
+  background: var(--secondary-background);
+  color: var(--foreground);
+  font-weight: 500;
   max-width: 280px;
 }
 
 .passwordInput:focus-visible {
-  border-color: var(--clay);
-  outline: none;
+  outline: var(--bw) solid var(--ring);
+  outline-offset: 2px;
 }
 
 @media (max-width: 640px) {
