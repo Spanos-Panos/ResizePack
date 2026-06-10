@@ -12,6 +12,9 @@ interface OptionsPanelProps {
   allowRename: boolean;
   customBaseName: string;
   customStartNumber: number;
+  allowTargetSize: boolean;
+  targetSizeOn: boolean;
+  targetSizeKb: number;
   onCustomMaxWidthChange: (value: number) => void;
   onCustomQualityChange: (value: number) => void;
   onIncludeJpegChange: (value: boolean) => void;
@@ -19,8 +22,11 @@ interface OptionsPanelProps {
   onStripExifChange: (value: boolean) => void;
   onCustomBaseNameChange: (value: string) => void;
   onCustomStartNumberChange: (value: number) => void;
+  onTargetSizeOnChange: (value: boolean) => void;
+  onTargetSizeKbChange: (value: number) => void;
   onLockedFormatClick: () => void;
   onLockedRenameClick: () => void;
+  onLockedTargetClick: () => void;
 }
 
 /** Mirror of the worker-side sanitizer so the preview matches the real output. */
@@ -42,6 +48,9 @@ export function OptionsPanel({
   allowRename,
   customBaseName,
   customStartNumber,
+  allowTargetSize,
+  targetSizeOn,
+  targetSizeKb,
   onCustomMaxWidthChange,
   onCustomQualityChange,
   onIncludeJpegChange,
@@ -49,8 +58,11 @@ export function OptionsPanel({
   onStripExifChange,
   onCustomBaseNameChange,
   onCustomStartNumberChange,
+  onTargetSizeOnChange,
+  onTargetSizeKbChange,
   onLockedFormatClick,
   onLockedRenameClick,
+  onLockedTargetClick,
 }: OptionsPanelProps) {
   const renameActive = allowRename && customBaseName.trim().length > 0;
   const renamePreviewBase = sanitizeBaseName(customBaseName.trim()) || 'image';
@@ -125,6 +137,50 @@ export function OptionsPanel({
           />
           Strip EXIF metadata
         </label>
+      </div>
+
+      <div className={styles.group}>
+        <p className={styles.label}>Target file size</p>
+        {allowTargetSize ? (
+          <>
+            <label className={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={targetSizeOn}
+                onChange={(event) => onTargetSizeOnChange(event.target.checked)}
+              />
+              Keep each image under a max size
+            </label>
+            {targetSizeOn ? (
+              <>
+                <label className={styles.label} htmlFor="target-size-kb">
+                  Max size per image (KB)
+                </label>
+                <input
+                  id="target-size-kb"
+                  className={styles.input}
+                  type="number"
+                  min={10}
+                  max={20000}
+                  step={10}
+                  value={targetSizeKb}
+                  onChange={(event) => onTargetSizeKbChange(Number(event.target.value))}
+                />
+                <span className={styles.value}>
+                  Each output compressed to ≤ {targetSizeKb} KB
+                </span>
+                <p className={styles.hint}>
+                  We shrink quality just enough to fit the limit. Very small limits on large photos
+                  may visibly reduce quality.
+                </p>
+              </>
+            ) : null}
+          </>
+        ) : (
+          <button type="button" className={styles.lockedOption} onClick={onLockedTargetClick}>
+            Max file size limit <span className={styles.lockTag}>🔒 Pro</span>
+          </button>
+        )}
       </div>
 
       <div className={styles.group}>

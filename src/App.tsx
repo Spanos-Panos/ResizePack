@@ -56,6 +56,8 @@ function App() {
   const [stripExif, setStripExif] = useState(true);
   const [customBaseName, setCustomBaseName] = useState('');
   const [customStartNumber, setCustomStartNumber] = useState(1);
+  const [targetSizeOn, setTargetSizeOn] = useState(false);
+  const [targetSizeKb, setTargetSizeKb] = useState(300);
   const [errors, setErrors] = useState<string[]>([]);
   const [result, setResult] = useState<BatchResult | null>(null);
   const [progress, setProgress] = useState<FileProgress[]>([]);
@@ -67,6 +69,7 @@ function App() {
     isPlanLoading || limits.presets.includes(selectedPreset) ? selectedPreset : 'etsy-listing';
   const effectiveIncludeWebp = allowWebp && includeWebp;
   const allowRename = plan === 'pro';
+  const allowTargetSize = plan === 'pro';
 
   const presetDescription = useMemo(() => {
     if (activePreset === 'custom') {
@@ -92,6 +95,11 @@ function App() {
         ? { baseName: customBaseName.trim(), startAt: clampValue(customStartNumber, 0, 99999) }
         : undefined;
 
+    // A user-set target overrides whatever the preset would cap to; otherwise
+    // we keep the preset's own targetMaxBytes (undefined for the custom preset).
+    const userTargetBytes =
+      allowTargetSize && targetSizeOn ? clampValue(targetSizeKb, 10, 20000) * 1024 : undefined;
+
     if (activePreset === 'custom') {
       return {
         presetId: 'custom',
@@ -99,6 +107,7 @@ function App() {
         quality: clampValue(customQuality, 50, 95),
         formats: outputFormats,
         stripExif,
+        targetMaxBytes: userTargetBytes,
         rename,
       };
     }
@@ -110,7 +119,7 @@ function App() {
       quality: preset.defaultQuality,
       formats: outputFormats,
       stripExif,
-      targetMaxBytes: preset.targetMaxBytes,
+      targetMaxBytes: userTargetBytes ?? preset.targetMaxBytes,
       rename,
     };
   }, [
@@ -122,6 +131,9 @@ function App() {
     allowRename,
     customBaseName,
     customStartNumber,
+    allowTargetSize,
+    targetSizeOn,
+    targetSizeKb,
   ]);
 
   const goPro = () => {
@@ -315,6 +327,12 @@ function App() {
           onCustomBaseNameChange={setCustomBaseName}
           onCustomStartNumberChange={(value) => setCustomStartNumber(clampValue(value, 0, 99999))}
           onLockedRenameClick={goPro}
+          allowTargetSize={allowTargetSize}
+          targetSizeOn={targetSizeOn}
+          targetSizeKb={targetSizeKb}
+          onTargetSizeOnChange={setTargetSizeOn}
+          onTargetSizeKbChange={(value) => setTargetSizeKb(clampValue(value, 10, 20000))}
+          onLockedTargetClick={goPro}
         />
 
         <div className={styles.actions}>
