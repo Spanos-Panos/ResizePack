@@ -33,16 +33,16 @@ export function AccountPage() {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [passwordSaved, setPasswordSaved] = useState(false);
 
-  // Which sign-in methods are linked. Email-signup users already have a
-  // password; OAuth-only users (Google/GitHub) can set one to also enable
-  // email + password sign-in.
-  const providers = (user?.app_metadata?.providers as string[] | undefined) ?? [];
-  const hasPassword = providers.includes('email');
+  // The sign-in provider is reliable; whether a password is *already* set is
+  // NOT exposed on the client (setting a password on an OAuth account doesn't
+  // add an 'email' identity), so we offer a neutral "set or change" rather
+  // than claiming to know the current state.
   const oauthProvider = user?.app_metadata?.provider;
   const providerLabel =
     oauthProvider && oauthProvider !== 'email'
       ? oauthProvider.charAt(0).toUpperCase() + oauthProvider.slice(1)
       : null;
+  const isOauthUser = providerLabel != null;
   const display = getSubscriptionDisplay(entitlements);
   const badgeClass =
     display.uiState === 'pro_active'
@@ -251,13 +251,11 @@ export function AccountPage() {
         </div>
 
         <div className={styles.section}>
-          <h2>{hasPassword ? 'Password' : 'Set a password'}</h2>
+          <h2>Password</h2>
           <p className={styles.muted}>
-            {hasPassword
-              ? 'Change the password you use to sign in with email.'
-              : providerLabel
-                ? `You signed in with ${providerLabel}. Set a password to also sign in with your email and password.`
-                : 'Set a password to sign in with your email and password.'}
+            {isOauthUser
+              ? `You sign in with ${providerLabel}. You can also set a password to sign in with your email — ${providerLabel} keeps working too.`
+              : 'Change the password you use to sign in with email.'}
           </p>
           {!showPassword ? (
             <div className={styles.actions}>
@@ -266,7 +264,7 @@ export function AccountPage() {
                 className={styles.signOut}
                 onClick={() => setShowPassword(true)}
               >
-                {hasPassword ? 'Change password' : 'Set a password'}
+                {isOauthUser ? 'Set or change password' : 'Change password'}
               </button>
             </div>
           ) : (
